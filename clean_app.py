@@ -23,7 +23,7 @@ async def home(request: Request):
     return templates.TemplateResponse("clean_home.html", {"request": request})
 
 @app.post("/lookup-strain")
-async def lookup_strain(strain_name: str = Form(...)):
+async def lookup_strain(request: Request, strain_name: str = Form(...)):
     """Look up a strain and add it to the database if not found"""
     strain_data = strain_db.get_strain(strain_name)
     
@@ -33,12 +33,13 @@ async def lookup_strain(strain_name: str = Form(...)):
     else:
         # Strain not found, show form to add it
         return templates.TemplateResponse("clean_add_strain.html", {
-            "request": Request,
+            "request": request,
             "strain_name": strain_name
         })
 
 @app.post("/add-custom-strain")
 async def add_custom_strain(
+    request: Request,
     strain_name: str = Form(...),
     strain_type: str = Form(...),
     description: str = Form(...),
@@ -114,7 +115,7 @@ async def analyze_page(request: Request):
     return templates.TemplateResponse("clean_analyze.html", {"request": request})
 
 @app.post("/analyze-strain")
-async def analyze_strain(strain_name: str = Form(...)):
+async def analyze_strain(request: Request, strain_name: str = Form(...)):
     strain_data = strain_db.get_strain(strain_name)
     if not strain_data:
         raise HTTPException(status_code=404, detail=f"Strain '{strain_name}' not found")
@@ -122,7 +123,7 @@ async def analyze_strain(strain_name: str = Form(...)):
     analysis = strain_db.analyze_strain_against_profile(strain_name, user_profile["terpene_profiles"])
     
     return templates.TemplateResponse("clean_results.html", {
-        "request": Request,
+        "request": request,
         "strain_name": strain_name,
         "strain_data": strain_data,
         "analysis": analysis
