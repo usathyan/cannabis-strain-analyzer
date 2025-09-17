@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cannabis Strain Recommendations</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCi4wQkDC-7x9nl6_DGXKmT3JqaKwYgPks&libraries=places"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -24,16 +25,18 @@
         }
         .container {
             display: flex;
-            justify-content: center;
             height: calc(100vh - 120px);
         }
         .left-panel {
-            width: 100%;
-            max-width: 800px;
+            width: 40%;
             padding: 20px;
             overflow-y: auto;
             background: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+        .right-panel {
+            width: 60%;
+            position: relative;
         }
         .form-container {
             background: white;
@@ -164,6 +167,10 @@
             font-size: 12px;
             color: #27ae60;
         }
+        #map {
+            height: 100%;
+            width: 100%;
+        }
         .recommendation-card {
             border-left: 4px solid #4CAF50;
             background: #f8fff8;
@@ -173,53 +180,6 @@
             font-size: 12px;
             color: #666;
             font-style: italic;
-        }
-        .terpene-analysis {
-            margin: 20px 0;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            border: 1px solid #e9ecef;
-        }
-        .terpene-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-        .terpene-card {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid #6c5ce7;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .terpene-name {
-            font-size: 18px;
-            font-weight: bold;
-            color: #2d3436;
-            margin-bottom: 5px;
-        }
-        .terpene-level {
-            font-size: 14px;
-            color: #6c5ce7;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-        .terpene-description {
-            font-size: 14px;
-            color: #636e72;
-            margin-bottom: 10px;
-            line-height: 1.4;
-        }
-        .terpene-effects {
-            font-size: 13px;
-            color: #2d3436;
-            margin-bottom: 8px;
-        }
-        .terpene-aroma {
-            font-size: 13px;
-            color: #2d3436;
         }
     </style>
 </head>
@@ -263,35 +223,34 @@
             </div>
         </div>
 
+        <div class="right-panel">
+            <div id="map"></div>
+        </div>
     </div>
 
     <script>
+        let map;
+        let markers = [];
+        let infoWindows = [];
 
+        // Initialize Google Map
+        function initMap() {
+            // Default location (will be updated based on user input)
+            const defaultLocation = { lat: 37.7749, lng: -122.4194 }; // San Francisco
 
-        // Check if there are query parameters in the URL and auto-submit
+            map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 12,
+                center: defaultLocation,
+                mapTypeControl: false,
+                streetViewControl: false,
+                fullscreenControl: false
+            });
+        }
+
+        // Initialize map when page loads
         window.onload = function() {
-            console.log('Page loaded');
-            
-            const urlParams = new URLSearchParams(window.location.search);
-            const strainName = urlParams.get('strain_name');
-            const location = urlParams.get('location');
-            const radius = urlParams.get('radius');
-
-            if (strainName) {
-                console.log('Found URL parameters, auto-filling form...');
-                // Auto-fill form
-                document.getElementById('strain_name').value = strainName;
-                if (location) document.getElementById('location').value = location;
-                if (radius) document.getElementById('radius').value = radius;
-
-                // Auto-submit the form after a short delay
-                setTimeout(() => {
-                    console.log('Auto-submitting form...');
-                    document.getElementById('recommendationForm').dispatchEvent(new Event('submit'));
-                }, 500); // Shorter delay since no map to wait for
-            }
+            initMap();
         };
-
 
         document.getElementById('recommendationForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -302,28 +261,24 @@
             // Show loading
             const resultsDiv = document.getElementById('results');
             const resultsContent = document.getElementById('resultsContent');
-
-            console.log('Results div found:', resultsDiv);
-            console.log('Results content found:', resultsContent);
-
             resultsDiv.style.display = 'block';
             resultsContent.innerHTML = '<div class="loading">Analyzing strain and finding recommendations...</div>';
 
-            console.log('Loading message set');
-
+            // Clear existing markers
+            clearMapMarkers();
 
             try {
-                // Build query parameters from form data
-                const params = new URLSearchParams();
-                for (const [key, value] of Object.entries(data)) {
-                    if (value) params.append(key, value);
-                }
-
-                const response = await fetch(`/api/recommendations?${params.toString()}`);
+                const response = await fetch('/api/recommendations', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
 
                 if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || 'Failed to get recommendations');
                 }
 
                 const result = await response.json();
@@ -334,10 +289,74 @@
             }
         });
 
+        function clearMapMarkers() {
+            markers.forEach(marker => marker.setMap(null));
+            markers = [];
+            infoWindows.forEach(infoWindow => infoWindow.close());
+            infoWindows = [];
+        }
+
+        function addDispensaryToMap(dispensary, index) {
+            if (!dispensary.latitude || !dispensary.longitude) return;
+
+            const position = {
+                lat: dispensary.latitude,
+                lng: dispensary.longitude
+            };
+
+            const marker = new google.maps.Marker({
+                position: position,
+                map: map,
+                title: dispensary.name,
+                icon: {
+                    url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+                        <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="20" cy="20" r="18" fill="#4CAF50" stroke="white" stroke-width="3"/>
+                            <text x="20" y="25" text-anchor="middle" fill="white" font-family="Arial" font-size="12" font-weight="bold">${index + 1}</text>
+                        </svg>
+                    `),
+                    scaledSize: new google.maps.Size(40, 40)
+                }
+            });
+
+            const infoWindow = new google.maps.InfoWindow({
+                content: `
+                    <div style="max-width: 250px;">
+                        <h4 style="margin: 0 0 8px 0; color: #4CAF50;">${dispensary.name}</h4>
+                        <p style="margin: 4px 0;"><strong>Address:</strong> ${dispensary.address}</p>
+                        <p style="margin: 4px 0;"><strong>Distance:</strong> ${dispensary.distance_miles} miles</p>
+                        <p style="margin: 4px 0;"><strong>Rating:</strong> ${dispensary.rating}/5.0 ⭐</p>
+                        ${dispensary.phone ? `<p style="margin: 4px 0;"><strong>Phone:</strong> ${dispensary.phone}</p>` : ''}
+                        ${dispensary.website ? `<p style="margin: 4px 0;"><a href="${dispensary.website}" target="_blank">Visit Website</a></p>` : ''}
+                    </div>
+                `
+            });
+
+            marker.addListener('click', () => {
+                infoWindows.forEach(iw => iw.close());
+                infoWindow.open(map, marker);
+            });
+
+            markers.push(marker);
+            infoWindows.push(infoWindow);
+
+            return marker;
+        }
 
         function displayResults(data, userLocation) {
             const resultsContent = document.getElementById('resultsContent');
 
+            // Update map center if we have dispensaries
+            if (data.dispensaries && data.dispensaries.length > 0) {
+                const firstDispensary = data.dispensaries[0];
+                if (firstDispensary.latitude && firstDispensary.longitude) {
+                    map.setCenter({
+                        lat: firstDispensary.latitude,
+                        lng: firstDispensary.longitude
+                    });
+                    map.setZoom(11);
+                }
+            }
 
             let html = `
                 <h3>🎯 Your Strain Analysis</h3>
@@ -354,39 +373,7 @@
                         <strong>Common Aliases:</strong> ${getStrainAliases(data.strain_analysis.name)}
                     </div>
                 </div>
-            `;
 
-            // Add detailed terpene analysis if available
-            if (data.strain_analysis.terpenes && data.strain_analysis.terpenes.length > 0) {
-                html += `
-                    <div class="terpene-analysis">
-                        <h3>🧪 Terpene Profile & Effects</h3>
-                        <div class="terpene-grid">
-                `;
-                
-                data.strain_analysis.terpenes.forEach(terpene => {
-                    html += `
-                        <div class="terpene-card">
-                            <div class="terpene-name">${terpene.name}</div>
-                            <div class="terpene-level">${terpene.level}%</div>
-                            <div class="terpene-description">${terpene.description}</div>
-                            <div class="terpene-effects">
-                                <strong>Effects:</strong> ${terpene.effects.join(', ')}
-                            </div>
-                            <div class="terpene-aroma">
-                                <strong>Aroma:</strong> ${terpene.aroma}
-                            </div>
-                        </div>
-                    `;
-                });
-                
-                html += `
-                        </div>
-                    </div>
-                `;
-            }
-
-            html += `
                 <h3>💚 Recommended Similar Strains</h3>
             `;
 
@@ -412,10 +399,7 @@
                     }
                 });
             } else {
-                html += '<div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 5px; margin-bottom: 15px;">';
-                html += '<p style="color: #856404; margin: 0; font-weight: bold;">⚠️ No similar strains found</p>';
-                html += '<p style="color: #856404; margin: 5px 0 0 0; font-size: 14px;">This can happen with newly generated strains. Try searching for known strains like "blueberry", "og kush", or "granddaddy purple" to see recommendations.</p>';
-                html += '</div>';
+                html += '<p style="color: #666; font-style: italic;">No recommendations found for this strain.</p>';
             }
 
             if (data.dispensaries && data.dispensaries.length > 0) {
@@ -423,17 +407,14 @@
                     <div class="dispensary-section">
                         <h3>🏪 Nearby Dispensaries (${data.dispensaries.length} found)</h3>
                         <p style="color: #666; font-size: 14px; margin-bottom: 15px;">
-                            Click "Open in Google Maps" to view each dispensary location
+                            Click on dispensary names to see them on the map
                         </p>
                 `;
 
                 data.dispensaries.forEach((dispensary, index) => {
-                    // Create Google Maps link for each dispensary
-                    const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(dispensary.address)}`;
-                    const mapsLink = `<a href="${mapsUrl}" target="_blank" style="color: #4CAF50; text-decoration: none; font-weight: bold;">🗺️ Open in Google Maps</a>`;
-                    
+                    const marker = addDispensaryToMap(dispensary, index);
                     html += `
-                        <div class="dispensary-card">
+                        <div class="dispensary-card" onclick="focusOnDispensary(${index})">
                             <div class="dispensary-name">${dispensary.name}</div>
                             <div class="dispensary-address">📍 ${dispensary.address}</div>
                             <div class="dispensary-rating">⭐ ${dispensary.rating}/5.0</div>
@@ -443,9 +424,6 @@
                                 '<div style="color: #4CAF50; font-weight: bold; font-size: 12px;">🟢 Currently Open</div>' :
                                 '<div style="color: #e74c3c; font-weight: bold; font-size: 12px;">🔴 Currently Closed</div>'
                             }
-                            <div style="margin-top: 8px; padding: 8px; background: #f0f8ff; border-radius: 4px; text-align: center;">
-                                ${mapsLink}
-                            </div>
                         </div>
                     `;
                 });
@@ -458,6 +436,13 @@
             resultsContent.innerHTML = html;
         }
 
+        function focusOnDispensary(index) {
+            if (markers[index]) {
+                map.setCenter(markers[index].getPosition());
+                map.setZoom(15);
+                google.maps.event.trigger(markers[index], 'click');
+            }
+        }
 
         function getStrainAliases(strainName) {
             const aliases = {
@@ -470,7 +455,7 @@
                 'purple punch': 'Purple Punch, PP',
                 'wedding cake': 'Wedding Cake, WC',
                 'gelato': 'Gelato, G',
-                'charlottes web': 'Charlotte\'s Web, CW',
+                'charlotte's web': 'Charlotte's Web, CW',
                 'harlequin': 'Harlequin, Harle',
                 'mystic dragon': 'Mystic Dragon, MD'
             };

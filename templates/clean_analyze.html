@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyze Strain</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin: 20px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .btn {
+            background: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        .btn:hover {
+            background: #45a049;
+        }
+        .btn-secondary {
+            background: #666;
+            margin-top: 10px;
+        }
+        .btn-secondary:hover {
+            background: #555;
+        }
+        .popular-strains {
+            margin-top: 20px;
+        }
+        .strain-chip {
+            display: inline-block;
+            background: #f0f0f0;
+            padding: 5px 10px;
+            margin: 5px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .strain-chip:hover {
+            background: #4CAF50;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Analyze a Strain</h1>
+        <p>Enter the name of any cannabis strain to see how it compares to your preferences.</p>
+        
+        <form method="post" action="/analyze-strain">
+            <div class="form-group">
+                <label for="strain_name">Strain Name:</label>
+                <input type="text" id="strain_name" name="strain_name" 
+                       placeholder="e.g., Blue Dream, OG Kush, Sour Diesel..." required>
+            </div>
+            
+            <button type="submit" class="btn">Analyze Strain</button>
+        </form>
+        
+        <a href="/dashboard" class="btn btn-secondary">Back to Dashboard</a>
+        
+        <div class="popular-strains">
+            <h3>Popular Strains:</h3>
+            <div class="strain-chip" onclick="selectStrain('blue dream')">Blue Dream</div>
+            <div class="strain-chip" onclick="selectStrain('og kush')">OG Kush</div>
+            <div class="strain-chip" onclick="selectStrain('sour diesel')">Sour Diesel</div>
+            <div class="strain-chip" onclick="selectStrain('granddaddy purple')">Granddaddy Purple</div>
+            <div class="strain-chip" onclick="selectStrain('jack herer')">Jack Herer</div>
+            <div class="strain-chip" onclick="selectStrain('wedding cake')">Wedding Cake</div>
+        </div>
+    </div>
+
+    <script>
+        function selectStrain(strainName) {
+            document.getElementById('strain_name').value = strainName;
+        }
+    </script>
+</body>
+</html>

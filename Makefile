@@ -78,6 +78,14 @@ run-streamlined:
 	fi
 	.venv/bin/python run_streamlined.py
 
+run-clean:
+	@echo "🚀 Starting clean cannabis strain analyzer..."
+	@if [ ! -d ".venv" ]; then \
+		echo "❌ Virtual environment not found. Run 'make install' first."; \
+		exit 1; \
+	fi
+	.venv/bin/python clean_app.py
+
 # Start development server with auto-reload
 dev:
 	@echo "🔧 Starting development server..."

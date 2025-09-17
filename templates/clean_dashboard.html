@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .favorites-list {
+            list-style: none;
+            padding: 0;
+        }
+        .favorites-list li {
+            background: #f0f0f0;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+        .terpene-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+        }
+        .terpene-item {
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .btn {
+            background: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 10px;
+        }
+        .btn:hover {
+            background: #45a049;
+        }
+        .btn-secondary {
+            background: #666;
+        }
+        .btn-secondary:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Your Profile Dashboard</h1>
+        
+        <div class="section">
+            <h2>Your Favorite Strains</h2>
+            {% if favorite_strains %}
+                <ul class="favorites-list">
+                    {% for strain in favorite_strains %}
+                        <li>{{ strain.title() }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No favorite strains selected yet.</p>
+            {% endif %}
+        </div>
+        
+        <div class="section">
+            <h2>Your Terpene Profile</h2>
+            {% if terpene_profiles and terpene_profiles.terpenes %}
+                <div class="terpene-grid">
+                    {% for terpene, level in terpene_profiles.terpenes.items() %}
+                        <div class="terpene-item">
+                            <strong>{{ terpene.title() }}</strong><br>
+                            {{ "%.1f"|format(level * 100) }}%
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>No terpene profile available. Select your favorite strains first.</p>
+            {% endif %}
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px;">
+            {% if favorite_strains %}
+                <a href="/analyze" class="btn">Analyze a New Strain</a>
+            {% endif %}
+            <a href="/select-favorites" class="btn btn-secondary">Edit Favorites</a>
+        </div>
+    </div>
+</body>
+</html>
