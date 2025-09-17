@@ -22,6 +22,69 @@ user_profile = {"favorite_strains": [], "terpene_profiles": {}}
 async def home(request: Request):
     return templates.TemplateResponse("clean_home.html", {"request": request})
 
+@app.post("/lookup-strain")
+async def lookup_strain(strain_name: str = Form(...)):
+    """Look up a strain and add it to the database if not found"""
+    strain_data = strain_db.get_strain(strain_name)
+    
+    if strain_data:
+        # Strain exists, redirect to select favorites
+        return RedirectResponse("/select-favorites", status_code=303)
+    else:
+        # Strain not found, show form to add it
+        return templates.TemplateResponse("clean_add_strain.html", {
+            "request": Request,
+            "strain_name": strain_name
+        })
+
+@app.post("/add-custom-strain")
+async def add_custom_strain(
+    strain_name: str = Form(...),
+    strain_type: str = Form(...),
+    description: str = Form(...),
+    effects: str = Form(...),
+    flavors: str = Form(...)
+):
+    """Add a custom strain to the database"""
+    try:
+        # Parse effects and flavors
+        effects_list = [e.strip() for e in effects.split(",") if e.strip()]
+        flavors_list = [f.strip() for f in flavors.split(",") if f.strip()]
+        
+        # Create basic terpene profile (user can refine later)
+        terpene_profile = {
+            "myrcene": 0.5,
+            "caryophyllene": 0.4,
+            "pinene": 0.3,
+            "limonene": 0.3,
+            "linalool": 0.2,
+            "humulene": 0.2,
+            "terpinolene": 0.1
+        }
+        
+        # Create strain data
+        strain_data = {
+            "terpenes": terpene_profile,
+            "effects": effects_list,
+            "medical_effects": [],
+            "type": strain_type.lower(),
+            "thc_range": "15-25%",
+            "cbd_range": "0.1-0.5%",
+            "description": description,
+            "flavors": flavors_list,
+            "aromas": flavors_list,
+            "best_time": "any",
+            "activity": "balanced"
+        }
+        
+        # Add to database
+        strain_db.add_custom_strain(strain_name, strain_data)
+        
+        return RedirectResponse("/select-favorites", status_code=303)
+        
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Failed to add strain: {str(e)}")
+
 @app.get("/select-favorites", response_class=HTMLResponse)
 async def select_favorites(request: Request):
     all_strains = list(strain_db.strains.keys())

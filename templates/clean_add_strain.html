@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Custom Strain</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin: 20px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        textarea {
+            height: 80px;
+            resize: vertical;
+        }
+        .help-text {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+        .btn {
+            background: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        .btn:hover {
+            background: #45a049;
+        }
+        .btn-secondary {
+            background: #666;
+            margin-top: 10px;
+        }
+        .btn-secondary:hover {
+            background: #555;
+        }
+        .strain-name {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Add Custom Strain</h1>
+        
+        <div class="strain-name">{{ strain_name.title() }}</div>
+        
+        <p>This strain wasn't found in our database. Please provide some basic information to add it:</p>
+        
+        <form method="post" action="/add-custom-strain">
+            <input type="hidden" name="strain_name" value="{{ strain_name }}">
+            
+            <div class="form-group">
+                <label for="strain_type">Strain Type:</label>
+                <select name="strain_type" id="strain_type" required>
+                    <option value="">Select type...</option>
+                    <option value="indica">Indica</option>
+                    <option value="sativa">Sativa</option>
+                    <option value="hybrid">Hybrid</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <textarea name="description" id="description" placeholder="Brief description of the strain..." required></textarea>
+                <div class="help-text">Describe the strain's characteristics, effects, or any notable features.</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="effects">Effects (comma-separated):</label>
+                <input type="text" name="effects" id="effects" 
+                       placeholder="e.g., relaxed, happy, euphoric, sleepy" required>
+                <div class="help-text">List the main effects you experience with this strain, separated by commas.</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="flavors">Flavors/Aromas (comma-separated):</label>
+                <input type="text" name="flavors" id="flavors" 
+                       placeholder="e.g., sweet, fruity, earthy, pine" required>
+                <div class="help-text">List the main flavors and aromas, separated by commas.</div>
+            </div>
+            
+            <button type="submit" class="btn">Add Strain</button>
+        </form>
+        
+        <a href="/" class="btn btn-secondary">Back to Home</a>
+    </div>
+</body>
+</html>

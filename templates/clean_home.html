@@ -48,7 +48,20 @@
     <div class="container">
         <h1>🌿 Cannabis Strain Analyzer</h1>
         <p>Select your favorite strains, then analyze any new strain to see how it compares to your preferences.</p>
-        <a href="/select-favorites" class="btn">Get Started</a>
+        
+        <div style="margin: 30px 0; padding: 20px; background: #f9f9f9; border-radius: 10px;">
+            <h3>🔍 Look up a strain</h3>
+            <p style="font-size: 14px; color: #666; margin-bottom: 15px;">
+                Enter a strain name to check if it's in our database, or add it if it's not found.
+            </p>
+            <form method="post" action="/lookup-strain" style="display: flex; gap: 10px;">
+                <input type="text" name="strain_name" placeholder="Enter strain name..." 
+                       style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px;" required>
+                <button type="submit" class="btn" style="margin: 0; padding: 10px 20px;">Look Up</button>
+            </form>
+        </div>
+        
+        <a href="/select-favorites" class="btn">Browse All Strains</a>
     </div>
 </body>
 </html>
