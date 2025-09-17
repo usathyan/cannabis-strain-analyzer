@@ -446,3 +446,169 @@ class EnhancedStrainDatabase:
                 print(f"✅ Saved {len(custom_strains)} custom strains to file")
         except Exception as e:
             print(f"⚠️  Could not save custom strains: {e}")
+
+    def compute_aggregated_terpene_profile(self, favorite_strains: List[str]) -> Dict[str, Any]:
+        """Compute aggregated terpene profile from user's favorite strains"""
+        if not favorite_strains:
+            return {}
+        
+        # Collect all terpene data from favorite strains
+        terpene_data = {}
+        strain_count = 0
+        
+        for strain_name in favorite_strains:
+            strain_data = self.get_strain(strain_name)
+            if strain_data and "terpenes" in strain_data:
+                strain_count += 1
+                for terpene, value in strain_data["terpenes"].items():
+                    if terpene not in terpene_data:
+                        terpene_data[terpene] = []
+                    terpene_data[terpene].append(value)
+        
+        if strain_count == 0:
+            return {}
+        
+        # Compute average values for each terpene
+        aggregated_terpenes = {}
+        for terpene, values in terpene_data.items():
+            aggregated_terpenes[terpene] = sum(values) / len(values)
+        
+        # Compute aggregated effects
+        all_effects = []
+        all_medical_effects = []
+        all_flavors = []
+        all_aromas = []
+        
+        for strain_name in favorite_strains:
+            strain_data = self.get_strain(strain_name)
+            if strain_data:
+                all_effects.extend(strain_data.get("effects", []))
+                all_medical_effects.extend(strain_data.get("medical_effects", []))
+                all_flavors.extend(strain_data.get("flavors", []))
+                all_aromas.extend(strain_data.get("aromas", []))
+        
+        # Get most common effects, flavors, and aromas
+        from collections import Counter
+        common_effects = [effect for effect, count in Counter(all_effects).most_common(5)]
+        common_medical_effects = [effect for effect, count in Counter(all_medical_effects).most_common(5)]
+        common_flavors = [flavor for flavor, count in Counter(all_flavors).most_common(5)]
+        common_aromas = [aroma for aroma, count in Counter(all_aromas).most_common(5)]
+        
+        return {
+            "terpenes": aggregated_terpenes,
+            "common_effects": common_effects,
+            "common_medical_effects": common_medical_effects,
+            "common_flavors": common_flavors,
+            "common_aromas": common_aromas,
+            "strain_count": strain_count,
+            "favorite_strains": favorite_strains
+        }
+
+    def analyze_strain_against_profile(self, strain_name: str, user_profile: Dict[str, Any]) -> Dict[str, Any]:
+        """Analyze how a strain compares to user's favorite profile"""
+        strain_data = self.get_strain(strain_name)
+        if not strain_data:
+            return {"error": f"Strain '{strain_name}' not found"}
+        
+        user_terpenes = user_profile.get("terpenes", {})
+        strain_terpenes = strain_data.get("terpenes", {})
+        
+        # Calculate terpene similarity
+        similarity_score = self._calculate_terpene_similarity(user_terpenes, strain_terpenes)
+        
+        # Analyze effects compatibility
+        user_effects = set(user_profile.get("common_effects", []))
+        strain_effects = set(strain_data.get("effects", []))
+        
+        matching_effects = user_effects.intersection(strain_effects)
+        new_effects = strain_effects - user_effects
+        
+        # Analyze flavor compatibility
+        user_flavors = set(user_profile.get("common_flavors", []))
+        strain_flavors = set(strain_data.get("flavors", []))
+        
+        matching_flavors = user_flavors.intersection(strain_flavors)
+        new_flavors = strain_flavors - user_flavors
+        
+        # Generate recommendation
+        recommendation = self._generate_recommendation(
+            similarity_score, 
+            len(matching_effects), 
+            len(new_effects),
+            len(matching_flavors),
+            len(new_flavors)
+        )
+        
+        # Analyze individual terpenes
+        terpene_analysis = []
+        for terpene, strain_value in strain_terpenes.items():
+            user_value = user_terpenes.get(terpene, 0)
+            terpene_info = self.get_terpene_info(terpene)
+            
+            if terpene_info:
+                terpene_analysis.append({
+                    "name": terpene,
+                    "user_level": user_value,
+                    "strain_level": strain_value,
+                    "difference": strain_value - user_value,
+                    "description": terpene_info["description"],
+                    "effects": terpene_info["effects"],
+                    "medical": terpene_info["medical"]
+                })
+        
+        return {
+            "strain_name": strain_name,
+            "strain_data": strain_data,
+            "similarity_score": similarity_score,
+            "similarity_percentage": round(similarity_score * 100, 1),
+            "matching_effects": list(matching_effects),
+            "new_effects": list(new_effects),
+            "matching_flavors": list(matching_flavors),
+            "new_flavors": list(new_flavors),
+            "terpene_analysis": terpene_analysis,
+            "recommendation": recommendation,
+            "analysis_summary": self._generate_analysis_summary(
+                strain_name, similarity_score, matching_effects, new_effects, recommendation
+            )
+        }
+
+    def _generate_recommendation(self, similarity: float, matching_effects: int, new_effects: int, 
+                                matching_flavors: int, new_flavors: int) -> Dict[str, Any]:
+        """Generate recommendation based on analysis"""
+        if similarity >= 0.8:
+            recommendation_type = "highly_recommended"
+            recommendation_text = "This strain is highly recommended! It closely matches your preferences."
+        elif similarity >= 0.6:
+            recommendation_type = "recommended"
+            recommendation_text = "This strain is recommended. It has good compatibility with your preferences."
+        elif similarity >= 0.4:
+            recommendation_type = "maybe"
+            recommendation_text = "This strain might be worth trying. It has some similarities but also new characteristics."
+        else:
+            recommendation_type = "not_recommended"
+            recommendation_text = "This strain is quite different from your preferences. You might not enjoy it."
+        
+        return {
+            "type": recommendation_type,
+            "text": recommendation_text,
+            "confidence": min(similarity * 100, 100)
+        }
+
+    def _generate_analysis_summary(self, strain_name: str, similarity: float, 
+                                 matching_effects: List[str], new_effects: List[str], 
+                                 recommendation: Dict[str, Any]) -> str:
+        """Generate a human-readable analysis summary"""
+        summary_parts = []
+        
+        summary_parts.append(f"Analysis of {strain_name.title()}:")
+        summary_parts.append(f"• Similarity to your preferences: {similarity:.1%}")
+        
+        if matching_effects:
+            summary_parts.append(f"• Effects you'll likely enjoy: {', '.join(matching_effects[:3])}")
+        
+        if new_effects:
+            summary_parts.append(f"• New effects you might experience: {', '.join(new_effects[:3])}")
+        
+        summary_parts.append(f"• Recommendation: {recommendation['text']}")
+        
+        return "\n".join(summary_parts)

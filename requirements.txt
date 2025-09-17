@@ -10,3 +10,6 @@ fastapi>=0.104.0
 uvicorn>=0.24.0
 jinja2>=3.1.0
 requests>=2.31.0
+fastapi-users[sqlalchemy]>=12.0.0
+httpx-oauth>=0.10.0
+sqlalchemy>=2.0.0

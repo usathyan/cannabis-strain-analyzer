@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyze Strain - Cannabis Strain Analyzer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .back-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .page-header {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .page-header h1 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .analysis-form {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 2rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1rem;
+        }
+        
+        .strain-input {
+            width: 100%;
+            padding: 1.5rem;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .strain-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .suggestions {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-top: none;
+            border-radius: 0 0 10px 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .suggestion {
+            padding: 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f3f4;
+            transition: background 0.2s ease;
+        }
+        
+        .suggestion:hover {
+            background: #f8f9ff;
+        }
+        
+        .suggestion:last-child {
+            border-bottom: none;
+        }
+        
+        .analyze-btn {
+            width: 100%;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 1.5rem;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+        
+        .analyze-btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+        
+        .analyze-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .popular-strains {
+            margin-top: 2rem;
+        }
+        
+        .popular-strains h3 {
+            color: #333;
+            margin-bottom: 1rem;
+        }
+        
+        .strain-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .strain-chip {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 20px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        
+        .strain-chip:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">🌿 Cannabis Strain Analyzer</div>
+        <a href="/dashboard" class="back-btn">← Back to Dashboard</a>
+    </div>
+    
+    <div class="container">
+        <div class="page-header">
+            <h1>🔍 Analyze a Strain</h1>
+            <p>Enter the name of any cannabis strain to see how it compares to your personal preferences.</p>
+        </div>
+        
+        <form method="post" action="/analyze-strain" class="analysis-form" id="analysisForm">
+            <div class="form-group">
+                <label for="strain_name">Strain Name:</label>
+                <input type="text" 
+                       id="strain_name" 
+                       name="strain_name" 
+                       class="strain-input" 
+                       placeholder="e.g., Blue Dream, OG Kush, Sour Diesel..."
+                       autocomplete="off"
+                       required>
+                <div class="suggestions" id="suggestions"></div>
+            </div>
+            
+            <button type="submit" class="analyze-btn" id="analyzeBtn">
+                🧬 Analyze Strain
+            </button>
+        </form>
+        
+        <div class="popular-strains">
+            <h3>💡 Popular Strains to Try:</h3>
+            <div class="strain-chips">
+                <div class="strain-chip" onclick="selectStrain('blue dream')">Blue Dream</div>
+                <div class="strain-chip" onclick="selectStrain('og kush')">OG Kush</div>
+                <div class="strain-chip" onclick="selectStrain('sour diesel')">Sour Diesel</div>
+                <div class="strain-chip" onclick="selectStrain('granddaddy purple')">Granddaddy Purple</div>
+                <div class="strain-chip" onclick="selectStrain('jack herer')">Jack Herer</div>
+                <div class="strain-chip" onclick="selectStrain('wedding cake')">Wedding Cake</div>
+                <div class="strain-chip" onclick="selectStrain('gelato')">Gelato</div>
+                <div class="strain-chip" onclick="selectStrain('green crack')">Green Crack</div>
+            </div>
+        </div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Analyzing strain against your preferences...</p>
+        </div>
+    </div>
+    
+    <script>
+        // Available strains for autocomplete
+        const availableStrains = [
+            'blue dream', 'og kush', 'sour diesel', 'granddaddy purple', 'jack herer',
+            'wedding cake', 'gelato', 'green crack', 'purple punch', 'blueberry',
+            'charlotte\'s web', 'harlequin'
+        ];
+        
+        const strainInput = document.getElementById('strain_name');
+        const suggestions = document.getElementById('suggestions');
+        const analysisForm = document.getElementById('analysisForm');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const loading = document.getElementById('loading');
+        
+        // Autocomplete functionality
+        strainInput.addEventListener('input', function() {
+            const value = this.value.toLowerCase();
+            if (value.length < 2) {
+                suggestions.style.display = 'none';
+                return;
+            }
+            
+            const matches = availableStrains.filter(strain => 
+                strain.toLowerCase().includes(value)
+            );
+            
+            if (matches.length > 0) {
+                suggestions.innerHTML = matches.map(strain => 
+                    `<div class="suggestion" onclick="selectStrain('${strain}')">${strain}</div>`
+                ).join('');
+                suggestions.style.display = 'block';
+            } else {
+                suggestions.style.display = 'none';
+            }
+        });
+        
+        // Hide suggestions when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!strainInput.contains(e.target) && !suggestions.contains(e.target)) {
+                suggestions.style.display = 'none';
+            }
+        });
+        
+        // Select strain function
+        function selectStrain(strainName) {
+            strainInput.value = strainName;
+            suggestions.style.display = 'none';
+            strainInput.focus();
+        }
+        
+        // Form submission with loading state
+        analysisForm.addEventListener('submit', function(e) {
+            if (!strainInput.value.trim()) {
+                e.preventDefault();
+                return;
+            }
+            
+            analyzeBtn.disabled = true;
+            analyzeBtn.textContent = 'Analyzing...';
+            loading.style.display = 'block';
+        });
+        
+        // Format strain name on blur
+        strainInput.addEventListener('blur', function() {
+            if (this.value) {
+                this.value = this.value.toLowerCase().trim();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -5,15 +5,16 @@ help:
 	@echo "Cannabis Strain Recommendation System"
 	@echo ""
 	@echo "Available targets:"
-	@echo "  install    Install dependencies using UV"
-	@echo "  sync       Sync dependencies with pyproject.toml"
-	@echo "  run        Start the web server"
-	@echo "  dev        Start development server with auto-reload"
-	@echo "  clean      Clean cache files and build artifacts"
-	@echo "  test       Run tests"
-	@echo "  lint       Run linting"
-	@echo "  format     Format code"
-	@echo "  check      Run all checks (lint + format)"
+	@echo "  install        Install dependencies using UV"
+	@echo "  sync           Sync dependencies with pyproject.toml"
+	@echo "  run            Start the web server"
+	@echo "  run-streamlined Start the streamlined strain analyzer"
+	@echo "  dev            Start development server with auto-reload"
+	@echo "  clean          Clean cache files and build artifacts"
+	@echo "  test           Run tests"
+	@echo "  lint           Run linting"
+	@echo "  format         Format code"
+	@echo "  check          Run all checks (lint + format)"
 	@echo ""
 	@echo "Examples:"
 	@echo "  make install    # Install all dependencies"
@@ -68,6 +69,14 @@ run-demo:
 		exit 1; \
 	fi
 	.venv/bin/python simple_personalized_interface.py
+
+run-streamlined:
+	@echo "🚀 Starting streamlined cannabis strain analyzer..."
+	@if [ ! -d ".venv" ]; then \
+		echo "❌ Virtual environment not found. Run 'make install' first."; \
+		exit 1; \
+	fi
+	.venv/bin/python run_streamlined.py
 
 # Start development server with auto-reload
 dev:

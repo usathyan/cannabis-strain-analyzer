@@ -13,11 +13,21 @@ A simple web application that helps users:
 - **Locate nearby dispensaries** with configurable search radius
 - **Get AI-powered recommendations** using LangGraph ReAct agent
 
-## 🔐 Personalized Features (NEW!)
+## 🔐 Streamlined Approach (NEW!)
 
-The personalized version adds Google OAuth authentication and user profiles:
+The streamlined version provides a focused, user-friendly experience:
 
 - **Google Authentication** - Secure login with Google accounts
+- **Favorite Strains Selection** - Choose your preferred strains from a curated list
+- **Terpene Profile Analysis** - Automatic analysis and aggregation of your favorites
+- **Simple Strain Comparison** - Enter any strain name to see how it compares to your preferences
+- **Personalized Recommendations** - Get clear recommendations based on terpene similarity
+- **Clean, Modern UI** - Beautiful, responsive interface designed for ease of use
+
+## 🔐 Legacy Personalized Features
+
+The original personalized version includes additional features:
+
 - **Personal Profiles** - Store name, address, and favorite strains
 - **Terpene Analysis** - Generate detailed terpene profiles for your favorites
 - **Personalized Ratings** - Compare any strain against your preferences
@@ -73,6 +83,16 @@ python3 setup_auth.py
 make run-personalized
 ```
 
+#### Streamlined Version (Recommended)
+```bash
+# Setup authentication first
+python3 setup_auth.py
+
+# Follow the printed instructions to configure Google OAuth
+# Then run the streamlined version
+make run-streamlined
+```
+
 #### Demo Personalized Version (No Auth Required)
 ```bash
 # Run the demo version (no Google OAuth setup needed)
@@ -82,6 +102,7 @@ make run-demo
 ### 4. Open Your Browser
 
 - **Basic App**: http://localhost:8000
+- **Streamlined App**: http://localhost:8000 (after running `make run-streamlined`)
 - **Personalized App**: http://localhost:8000 (after running `make run-personalized`)
 - **Demo Personalized App**: http://localhost:8000 (after running `make run-demo`)
 - **API Documentation**: http://localhost:8000/docs
@@ -111,16 +132,17 @@ make run
 
 ### Makefile Targets
 ```bash
-make install     # Install dependencies with UV
-make sync        # Sync dependencies
-make run         # Start production server
-make dev         # Start development server with auto-reload
-make clean       # Clean cache files and build artifacts
-make test        # Run tests
-make lint        # Run linting
-make format      # Format code with Black and isort
-make check       # Run all checks (lint + format)
-make status      # Show project status
+make install         # Install dependencies with UV
+make sync            # Sync dependencies
+make run             # Start production server
+make run-streamlined # Start streamlined strain analyzer
+make dev             # Start development server with auto-reload
+make clean           # Clean cache files and build artifacts
+make test            # Run tests
+make lint            # Run linting
+make format          # Format code with Black and isort
+make check           # Run all checks (lint + format)
+make status          # Show project status
 ```
 
 ### Direct Commands

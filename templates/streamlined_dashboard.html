@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Cannabis Strain Analyzer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .user-name {
+            color: #666;
+        }
+        
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .welcome {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .welcome h1 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .welcome p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .card h2 {
+            color: #333;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .favorites-list {
+            list-style: none;
+        }
+        
+        .favorites-list li {
+            background: #f8f9fa;
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .no-favorites {
+            color: #666;
+            font-style: italic;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .terpene-profile {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+        }
+        
+        .terpene-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .terpene-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .terpene-level {
+            color: #667eea;
+            font-size: 1.2rem;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+        
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">🌿 Cannabis Strain Analyzer</div>
+        <div class="user-info">
+            <span class="user-name">Welcome, {{ user.name or user.email }}</span>
+            <a href="/logout" class="logout-btn">Logout</a>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="welcome">
+            <h1>Welcome to Your Dashboard</h1>
+            <p>Manage your favorite strains and analyze new ones based on your personal terpene profile.</p>
+        </div>
+        
+        <div class="dashboard-grid">
+            <div class="card">
+                <h2>❤️ Your Favorite Strains</h2>
+                {% if favorite_strains %}
+                    <ul class="favorites-list">
+                        {% for strain in favorite_strains %}
+                            <li>{{ strain.title() }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="no-favorites">
+                        No favorite strains selected yet.<br>
+                        <a href="/select-favorites" style="color: #667eea;">Select your favorites</a> to get started!
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="card">
+                <h2>🧬 Your Terpene Profile</h2>
+                {% if terpene_profiles and terpene_profiles.terpenes %}
+                    <div class="terpene-profile">
+                        {% for terpene, level in terpene_profiles.terpenes.items() %}
+                            <div class="terpene-item">
+                                <div class="terpene-name">{{ terpene.title() }}</div>
+                                <div class="terpene-level">{{ "%.1f"|format(level * 100) }}%</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="no-favorites">
+                        No terpene profile available.<br>
+                        Select your favorite strains to generate your profile.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="action-buttons">
+            {% if favorite_strains %}
+                <a href="/analyze" class="btn btn-primary">🔍 Analyze a New Strain</a>
+            {% endif %}
+            <a href="/select-favorites" class="btn btn-secondary">
+                {% if favorite_strains %}✏️ Edit Favorites{% else %}❤️ Select Favorites{% endif %}
+            </a>
+        </div>
+    </div>
+</body>
+</html>
