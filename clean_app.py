@@ -81,7 +81,9 @@ async def add_custom_strain(
         # Add to database
         strain_db.add_custom_strain(strain_name, strain_data)
         
-        return RedirectResponse("/select-favorites", status_code=303)
+        # Check if this came from analyze page (has analyze parameter)
+        # For now, always redirect to analyze the newly added strain
+        return RedirectResponse(f"/analyze-strain?strain_name={strain_name}", status_code=303)
         
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Failed to add strain: {str(e)}")
@@ -114,11 +116,35 @@ async def dashboard(request: Request):
 async def analyze_page(request: Request):
     return templates.TemplateResponse("clean_analyze.html", {"request": request})
 
+@app.get("/analyze-strain", response_class=HTMLResponse)
+async def analyze_strain_get(request: Request, strain_name: str = None):
+    """Handle GET request to analyze a strain (after adding it)"""
+    if not strain_name:
+        return RedirectResponse("/analyze", status_code=303)
+    
+    strain_data = strain_db.get_strain(strain_name)
+    if not strain_data:
+        return RedirectResponse("/analyze", status_code=303)
+    
+    analysis = strain_db.analyze_strain_against_profile(strain_name, user_profile["terpene_profiles"])
+    
+    return templates.TemplateResponse("clean_results.html", {
+        "request": request,
+        "strain_name": strain_name,
+        "strain_data": strain_data,
+        "analysis": analysis
+    })
+
 @app.post("/analyze-strain")
 async def analyze_strain(request: Request, strain_name: str = Form(...)):
     strain_data = strain_db.get_strain(strain_name)
+    
     if not strain_data:
-        raise HTTPException(status_code=404, detail=f"Strain '{strain_name}' not found")
+        # Strain not found, show form to add it
+        return templates.TemplateResponse("clean_add_strain.html", {
+            "request": request,
+            "strain_name": strain_name
+        })
     
     analysis = strain_db.analyze_strain_against_profile(strain_name, user_profile["terpene_profiles"])
     
