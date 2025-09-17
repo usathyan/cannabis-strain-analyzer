@@ -595,7 +595,7 @@ class EnhancedStrainDatabase:
         }
 
     def _generate_analysis_summary(self, strain_name: str, similarity: float, 
-                                 matching_effects: List[str], new_effects: List[str], 
+                                 matching_effects: set, new_effects: set, 
                                  recommendation: Dict[str, Any]) -> str:
         """Generate a human-readable analysis summary"""
         summary_parts = []
@@ -604,10 +604,10 @@ class EnhancedStrainDatabase:
         summary_parts.append(f"• Similarity to your preferences: {similarity:.1%}")
         
         if matching_effects:
-            summary_parts.append(f"• Effects you'll likely enjoy: {', '.join(matching_effects[:3])}")
+            summary_parts.append(f"• Effects you'll likely enjoy: {', '.join(list(matching_effects)[:3])}")
         
         if new_effects:
-            summary_parts.append(f"• New effects you might experience: {', '.join(new_effects[:3])}")
+            summary_parts.append(f"• New effects you might experience: {', '.join(list(new_effects)[:3])}")
         
         summary_parts.append(f"• Recommendation: {recommendation['text']}")
         
