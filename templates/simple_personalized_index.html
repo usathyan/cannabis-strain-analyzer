@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personalized Cannabis Strain Recommendations</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .header {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        .btn-primary {
+            background-color: #2196F3;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #1976D2;
+        }
+        .btn-secondary {
+            background-color: #757575;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background-color: #616161;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .form-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .btn-submit {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        .btn-submit:hover {
+            background-color: #45a049;
+        }
+        .results {
+            display: none;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .strain-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #4CAF50;
+        }
+        .strain-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+        .strain-type {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .strain-type.indica {
+            background-color: #e8f5e8;
+            color: #2e7d32;
+        }
+        .strain-type.sativa {
+            background-color: #fff3e0;
+            color: #f57c00;
+        }
+        .strain-type.hybrid {
+            background-color: #f3e5f5;
+            color: #7b1fa2;
+        }
+        .personal-rating {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .rating-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .rating-score {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .rating-description {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        .similarity-comparison {
+            margin-top: 15px;
+        }
+        .similarity-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        .similarity-item:last-child {
+            border-bottom: none;
+        }
+        .similarity-name {
+            font-weight: bold;
+        }
+        .similarity-percentage {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        .recommendations {
+            margin-top: 20px;
+        }
+        .recommendation-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #4CAF50;
+        }
+        .dispensary-card {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #2196F3;
+        }
+        .dispensary-name {
+            font-weight: bold;
+            color: #1976D2;
+            margin-bottom: 5px;
+        }
+        .dispensary-address {
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .dispensary-rating {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        .error {
+            background-color: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .terpene-summary {
+            background: #f0f8ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        .terpene-summary h4 {
+            margin: 0 0 10px 0;
+            color: #1976D2;
+        }
+        .terpene-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .terpene-tag {
+            background: #e3f2fd;
+            color: #1976D2;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .demo-setup {
+            background: #fff3e0;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #ff9800;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🌿 Personalized Cannabis Recommendations</h1>
+        <div class="user-info">
+            {% if is_authenticated %}
+                <span>User ID: {{ user_id }}</span>
+                <a href="/config" class="btn btn-secondary">⚙️ Settings</a>
+            {% else %}
+                <span>Demo Mode</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="container">
+        {% if not is_authenticated %}
+            <div class="demo-setup">
+                <h3>🎯 Demo Setup</h3>
+                <p>This is a demo version. To use personalized features:</p>
+                <ol>
+                    <li>Set a user ID (for demo purposes)</li>
+                    <li>Configure your profile with favorite strains</li>
+                    <li>Get personalized recommendations</li>
+                </ol>
+                <button onclick="setUserId(1)" class="btn btn-primary">Set User ID to 1</button>
+            </div>
+        {% endif %}
+
+        {% if is_authenticated %}
+            <div class="form-container">
+                <h2>Find Your Perfect Strain Match</h2>
+                <form id="recommendationForm">
+                    <div class="form-group">
+                        <label for="strain_name">Strain Name</label>
+                        <input type="text" id="strain_name" name="strain_name" placeholder="e.g., Blue Dream, OG Kush, Sour Diesel" required>
+                    </div>
+                    <button type="submit" class="btn-submit">🔍 Get Personalized Analysis</button>
+                </form>
+            </div>
+
+            <div id="results" class="results">
+                <h2>Your Personalized Analysis</h2>
+                <div id="resultsContent"></div>
+            </div>
+        {% else %}
+            <div class="form-container">
+                <h2>Welcome to Personalized Cannabis Recommendations</h2>
+                <p>To get personalized strain recommendations based on your preferences, please set a user ID first.</p>
+                <p>Once configured, you can:</p>
+                <ul>
+                    <li>Set your favorite strains and get personalized terpene profiles</li>
+                    <li>Compare any strain against your preferences</li>
+                    <li>Get personalized ratings and recommendations</li>
+                    <li>Find dispensaries near your location</li>
+                </ul>
+                <button onclick="setUserId(1)" class="btn btn-primary" style="display: inline-block; width: auto; margin-top: 20px;">🔐 Set User ID (Demo)</button>
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        async function setUserId(userId) {
+            try {
+                const response = await fetch('/api/set-user', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(userId)
+                });
+                
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    alert('Failed to set user ID');
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        {% if is_authenticated %}
+        document.getElementById('recommendationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+            const strainName = formData.get('strain_name');
+
+            const resultsDiv = document.getElementById('results');
+            const resultsContent = document.getElementById('resultsContent');
+
+            resultsDiv.style.display = 'block';
+            resultsContent.innerHTML = '<div class="loading">Analyzing strain and finding personalized recommendations...</div>';
+
+            try {
+                const response = await fetch(`/api/recommendations?strain_name=${encodeURIComponent(strainName)}`);
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || 'Request failed');
+                }
+
+                const data = await response.json();
+                displayResults(data);
+
+            } catch (error) {
+                resultsContent.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            }
+        });
+
+        function displayResults(data) {
+            const resultsContent = document.getElementById('resultsContent');
+
+            let html = `
+                <div class="strain-card">
+                    <div class="strain-name">${data.strain_analysis.name}</div>
+                    <span class="strain-type ${data.strain_analysis.type}">${data.strain_analysis.type}</span>
+                    <p><strong>THC:</strong> ${data.strain_analysis.thc_range} | <strong>CBD:</strong> ${data.strain_analysis.cbd_range}</p>
+                    <p style="margin: 8px 0;">${data.strain_analysis.description}</p>
+                    <div class="effects">
+                        <strong>Effects:</strong>
+                        ${data.strain_analysis.effects.map(effect => `<span class="terpene-tag">${effect}</span>`).join('')}
+                    </div>
+                </div>
+
+                <div class="personal-rating">
+                    <div class="rating-title">🎯 Your Personal Match</div>
+                    <div class="rating-score">${data.personal_rating.personal_rating}</div>
+                    <div class="rating-description">${data.personal_rating.average_similarity_percentage.toFixed(1)}% similarity to your favorite strains</div>
+                    
+                    <div class="similarity-comparison">
+                        <h4>Comparison with Your Favorites:</h4>
+                        ${data.personal_rating.similarity_scores.map(score => `
+                            <div class="similarity-item">
+                                <span class="similarity-name">${score.strain_name}</span>
+                                <span class="similarity-percentage">${score.similarity_percentage.toFixed(1)}%</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <div class="terpene-summary">
+                    <h4>🧪 Dominant Terpenes</h4>
+                    <div class="terpene-list">
+                        ${data.strain_analysis.terpenes.slice(0, 3).map(terpene => `
+                            <span class="terpene-tag">${terpene.name} (${terpene.level}%)</span>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+
+            if (data.recommendations && data.recommendations.length > 0) {
+                html += `
+                    <div class="recommendations">
+                        <h3>💚 Similar Strains You Might Like</h3>
+                `;
+                
+                data.recommendations.forEach(rec => {
+                    if (rec.strain_data) {
+                        html += `
+                            <div class="recommendation-card">
+                                <div class="strain-name">${rec.strain_name}</div>
+                                <p><strong>Type:</strong> ${rec.strain_data.type} | <strong>THC:</strong> ${rec.strain_data.thc_range}</p>
+                                <p>${rec.strain_data.description}</p>
+                            </div>
+                        `;
+                    }
+                });
+                
+                html += `</div>`;
+            }
+
+            if (data.dispensaries && data.dispensaries.length > 0) {
+                html += `
+                    <div class="dispensaries">
+                        <h3>🏪 Nearest Dispensaries</h3>
+                `;
+                
+                data.dispensaries.forEach(dispensary => {
+                    const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(dispensary.address)}`;
+                    html += `
+                        <div class="dispensary-card">
+                            <div class="dispensary-name">${dispensary.name}</div>
+                            <div class="dispensary-address">📍 ${dispensary.address}</div>
+                            <div class="dispensary-rating">⭐ ${dispensary.rating}/5.0 • ${dispensary.distance_miles} miles away</div>
+                            <div style="margin-top: 8px;">
+                                <a href="${mapsUrl}" target="_blank" style="color: #4CAF50; text-decoration: none; font-weight: bold;">🗺️ Open in Google Maps</a>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `</div>`;
+            }
+
+            resultsContent.innerHTML = html;
+        }
+        {% endif %}
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,172 @@
+{
+  "mystic dragon": {
+    "terpenes": {
+      "myrcene": 0.45,
+      "caryophyllene": 0.2,
+      "pinene": 0.1,
+      "limonene": 0.15,
+      "linalool": 0.05,
+      "humulene": 0.05,
+      "terpinolene": 0.05
+    },
+    "effects": [
+      "relaxation",
+      "euphoria",
+      "creativity",
+      "pain relief",
+      "anxiety reduction"
+    ],
+    "medical_effects": [
+      "pain management",
+      "anxiety relief",
+      "sleep aid"
+    ],
+    "type": "hybrid",
+    "thc_range": "16-24%",
+    "cbd_range": "0.3-0.8%",
+    "description": "Mystic Dragon is a potent hybrid strain known for its deeply relaxing and euphoric effects. It\u2019s characterized by a complex aroma and flavor profile, making it a popular choice for evening relaxation and creative pursuits.  The high THC content combined with moderate CBD offers a balanced experience.",
+    "flavors": [
+      "berry",
+      "earth",
+      "pine",
+      "citrus"
+    ],
+    "aromas": [
+      "berry",
+      "woodsy",
+      "resin",
+      "citrus zest"
+    ],
+    "best_time": "evening",
+    "activity": "relaxation|creative|medical",
+    "name": "Mystic Dragon"
+  },
+  "nebula frost": {
+    "terpenes": {
+      "myrcene": 0.35,
+      "caryophyllene": 0.2,
+      "pinene": 0.15,
+      "limonene": 0.1,
+      "linalool": 0.08,
+      "humulene": 0.07,
+      "terpinolene": 0.05
+    },
+    "effects": [
+      "relaxation",
+      "euphoria",
+      "creativity",
+      "pain relief",
+      "anxiety reduction"
+    ],
+    "medical_effects": [
+      "pain management",
+      "anxiety relief",
+      "sleep aid"
+    ],
+    "type": "hybrid",
+    "thc_range": "16-24%",
+    "cbd_range": "0.3-0.8%",
+    "description": "Nebula Frost is a potent hybrid strain known for its frosty, resinous buds and deeply relaxing effects. It offers a balanced blend of cerebral and body high, making it a great choice for both recreational and medicinal users. The complex terpene profile contributes to its rich aroma and flavor.",
+    "flavors": [
+      "berry",
+      "pine",
+      "earth",
+      "chocolate",
+      "sweet"
+    ],
+    "aromas": [
+      "berry",
+      "pine",
+      "cedarwood",
+      "dark chocolate",
+      "musk"
+    ],
+    "best_time": "evening|night",
+    "activity": "relaxation|medical|work",
+    "name": "Nebula Frost"
+  },
+  "zereal milk": {
+    "terpenes": {
+      "myrcene": 0.45,
+      "caryophyllene": 0.2,
+      "pinene": 0.15,
+      "limonene": 0.1,
+      "linalool": 0.05,
+      "humulene": 0.05,
+      "terpinolene": 0.05
+    },
+    "effects": [
+      "relaxation",
+      "mood elevation",
+      "pain relief",
+      "anxiety reduction",
+      "sedation"
+    ],
+    "medical_effects": [
+      "chronic pain management",
+      "anxiety and stress reduction",
+      "sleep aid"
+    ],
+    "type": "hybrid",
+    "thc_range": "16-24%",
+    "cbd_range": "0.3-0.8%",
+    "description": "Zereal Milk is a smooth and creamy hybrid strain known for its relaxing and grounding effects. It offers a balanced blend of euphoria and calm, making it a great choice for unwinding after a long day or managing discomfort. The terpene profile contributes to its soothing qualities, promoting relaxation and easing tension.",
+    "flavors": [
+      "coconut",
+      "cream",
+      "hazelnut",
+      "earthy"
+    ],
+    "aromas": [
+      "coconut",
+      "dairy",
+      "nutty",
+      "woody"
+    ],
+    "best_time": "evening",
+    "activity": "relaxation",
+    "name": "Zereal Milk"
+  },
+  "unknown strain": {
+    "terpenes": {
+      "myrcene": 0.45,
+      "caryophyllene": 0.2,
+      "pinene": 0.15,
+      "limonene": 0.1,
+      "linalool": 0.05,
+      "humulene": 0.05,
+      "terpinolene": 0.05
+    },
+    "effects": [
+      "relaxation",
+      "euphoria",
+      "mood elevation",
+      "pain relief",
+      "anxiety reduction"
+    ],
+    "medical_effects": [
+      "pain management",
+      "anxiety relief",
+      "sleep aid"
+    ],
+    "type": "hybrid",
+    "thc_range": "16-24%",
+    "cbd_range": "0.3-0.8%",
+    "description": "This enigmatic strain offers a balanced experience, leaning towards relaxation with a subtle uplifting effect.  It\u2019s known for its smooth, calming properties and is a good choice for unwinding after a long day.  Its complex aroma and flavor profile adds to the overall enjoyment.",
+    "flavors": [
+      "earthy",
+      "pine",
+      "citrus",
+      "herbal"
+    ],
+    "aromas": [
+      "pine",
+      "citrus zest",
+      "earth",
+      "musk"
+    ],
+    "best_time": "evening",
+    "activity": "relaxation",
+    "name": "Unknown Strain"
+  }
+}
