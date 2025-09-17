@@ -126,47 +126,5 @@
     "best_time": "evening",
     "activity": "relaxation",
     "name": "Zereal Milk"
-  },
-  "unknown strain": {
-    "terpenes": {
-      "myrcene": 0.45,
-      "caryophyllene": 0.2,
-      "pinene": 0.15,
-      "limonene": 0.1,
-      "linalool": 0.05,
-      "humulene": 0.05,
-      "terpinolene": 0.05
-    },
-    "effects": [
-      "relaxation",
-      "euphoria",
-      "mood elevation",
-      "pain relief",
-      "anxiety reduction"
-    ],
-    "medical_effects": [
-      "pain management",
-      "anxiety relief",
-      "sleep aid"
-    ],
-    "type": "hybrid",
-    "thc_range": "16-24%",
-    "cbd_range": "0.3-0.8%",
-    "description": "This enigmatic strain offers a balanced experience, leaning towards relaxation with a subtle uplifting effect.  It\u2019s known for its smooth, calming properties and is a good choice for unwinding after a long day.  Its complex aroma and flavor profile adds to the overall enjoyment.",
-    "flavors": [
-      "earthy",
-      "pine",
-      "citrus",
-      "herbal"
-    ],
-    "aromas": [
-      "pine",
-      "citrus zest",
-      "earth",
-      "musk"
-    ],
-    "best_time": "evening",
-    "activity": "relaxation",
-    "name": "Unknown Strain"
   }
 }
