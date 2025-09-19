@@ -101,13 +101,19 @@ make run
 
 The application will be available at `http://localhost:8000`
 
-## 📸 Screenshots
+## 📸 Application Interface
 
 ### Configuration Tab - Managing Your Ideal Cannabis Profile
 
-The Configuration tab allows you to build and manage your personalized cannabis profile:
+The Configuration tab provides a comprehensive interface for building and managing your personalized cannabis profile:
 
-![Configuration Tab](screenshots/configuration-tab.png)
+**Interface Overview:**
+- **Header**: Clean navigation with "Cannabis Strain Analysis & Comparison" title and User ID display
+- **Tab Navigation**: Easy switching between Configuration and Compare tabs
+- **Current Profile Summary**: Large display showing your aggregated cannabis profile with all cannabinoids and terpenes
+- **Strain Selection Grid**: Interactive buttons for selecting from available strains
+- **Custom Strain Addition**: Input field and button to add new strains to the database
+- **Profile Management**: Real-time updates and comprehensive profile controls
 
 **Key Features:**
 - **Current Profile Summary**: View your aggregated cannabis profile with all cannabinoids and terpenes
@@ -118,9 +124,14 @@ The Configuration tab allows you to build and manage your personalized cannabis 
 
 ### Compare Tab - Advanced Strain Analysis
 
-The Compare tab provides detailed strain analysis and similarity comparison:
+The Compare tab provides detailed strain analysis and similarity comparison with advanced features:
 
-![Compare Tab](screenshots/compare-tab.png)
+**Interface Overview:**
+- **Strain Input**: Clean text field for entering strain names to analyze
+- **Z-Score Toggle**: Checkbox for enabling advanced z-score comparison
+- **Status Indicators**: Real-time status showing availability of ranked favorites
+- **Analysis Results**: Comprehensive display of similarity scores and detailed breakdowns
+- **AI Recommendations**: Intelligent analysis with benefits and drawbacks
 
 **Key Features:**
 - **Z-Score Comparison**: Advanced similarity analysis using your ranked favorite strains
