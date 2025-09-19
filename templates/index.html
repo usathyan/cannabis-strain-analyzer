@@ -306,6 +306,11 @@
             transform: scale(1.2);
         }
         
+        .checkbox-label input[type="checkbox"]:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
         .ranked-favorites {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -529,7 +534,7 @@
         {% if is_authenticated %}
             <div class="tab-container">
                 <div class="tab-header">
-                    <button class="tab-button active" onclick="switchTab('configuration')">⚙️ Configuration</button>
+                    <button class="tab-button active" onclick="switchToConfigTab()">⚙️ Configuration</button>
                     <button class="tab-button" onclick="switchToCompareTab()">🔍 Compare</button>
                 </div>
 
@@ -1124,11 +1129,71 @@
             if (checkbox.checked) {
                 helpDiv.style.display = 'block';
                 statusDiv.style.display = 'block';
-                updateZScoreStatus();
             } else {
                 helpDiv.style.display = 'none';
                 statusDiv.style.display = 'none';
             }
+        }
+
+        function updateRankedFavoritesSection() {
+            const rankedFavoritesDiv = document.getElementById('rankedFavorites');
+            
+            // Check if we have favorite strains to rank
+            fetch('/api/user-profile')
+                .then(response => response.json())
+                .then(profile => {
+                    const favoriteStrains = profile.favorite_strains || [];
+                    
+                    if (favoriteStrains.length >= 2) {
+                        rankedFavoritesDiv.style.display = 'block';
+                        populateRankedFavoritesList();
+                        // Enable save button by default when section is shown
+                        document.getElementById('saveRankedBtn').disabled = false;
+                        console.log('Ranked favorites section shown, save button enabled');
+                    } else {
+                        rankedFavoritesDiv.style.display = 'none';
+                        console.log('Not enough favorite strains to show ranked favorites section');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking profile for ranked favorites:', error);
+                    rankedFavoritesDiv.style.display = 'none';
+                });
+        }
+
+        function populateRankedFavoritesList() {
+            console.log('populateRankedFavoritesList called');
+            const listDiv = document.getElementById('rankedFavoritesList');
+            
+            fetch('/api/user-profile')
+                .then(response => response.json())
+                .then(profile => {
+                    const favoriteStrains = profile.favorite_strains || [];
+                    const rankedFavorites = profile.ranked_favorites || [];
+                    
+                    console.log('Favorite strains for ranking:', favoriteStrains);
+                    
+                    let html = '';
+                    favoriteStrains.forEach((strain, index) => {
+                        const rank = index + 1;
+                        html += `
+                            <div class="ranked-item">
+                                <span class="rank-number">${rank}</span>
+                                <span class="rank-strain-name">${strain}</span>
+                                <div class="rank-controls">
+                                    <button onclick="moveRankUp(${index})" ${index === 0 ? 'disabled' : ''}>↑</button>
+                                    <button onclick="moveRankDown(${index})" ${index === favoriteStrains.length - 1 ? 'disabled' : ''}>↓</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    listDiv.innerHTML = html;
+                    console.log('Ranked favorites list populated with', favoriteStrains.length, 'strains');
+                })
+                .catch(error => {
+                    console.error('Error populating ranked favorites list:', error);
+                });
         }
 
         function updateZScoreStatus() {
@@ -1145,34 +1210,127 @@
                     if (rankedFavorites.length >= 2) {
                         statusText.textContent = `✅ Available (${rankedFavorites.length} ranked favorites)`;
                         statusText.style.color = '#4CAF50';
-                        // Auto-enable z-score if we have enough ranked favorites
-                        if (!checkbox.checked) {
-                            checkbox.checked = true;
-                            toggleZScoreHelp();
-                        }
+                        // Keep checkbox enabled and visible
+                        checkbox.disabled = false;
                     } else if (favoriteStrains.length >= 2) {
                         statusText.textContent = `⚠️ Requires ranking (${favoriteStrains.length} favorites available to rank)`;
                         statusText.style.color = '#ff9800';
-                        // Don't auto-enable if we don't have ranked favorites
-                        if (checkbox.checked) {
-                            checkbox.checked = false;
-                            toggleZScoreHelp();
-                        }
+                        // Keep checkbox enabled but show warning
+                        checkbox.disabled = false;
                     } else {
                         statusText.textContent = '❌ Not available (need at least 2 ranked favorites)';
                         statusText.style.color = '#f44336';
-                        // Disable if not enough favorites
-                        if (checkbox.checked) {
-                            checkbox.checked = false;
-                            toggleZScoreHelp();
-                        }
+                        // Keep checkbox enabled but show warning
+                        checkbox.disabled = false;
                     }
                 })
                 .catch(error => {
                     console.error('Error checking z-score status:', error);
                     statusText.textContent = '❌ Error checking status';
                     statusText.style.color = '#f44336';
+                    checkbox.disabled = false; // Keep checkbox enabled even on error
                 });
+        }
+
+        function moveRankUp(index) {
+            // Move strain up in ranking
+            fetch('/api/user-profile')
+                .then(response => response.json())
+                .then(profile => {
+                    const favoriteStrains = profile.favorite_strains || [];
+                    if (index > 0) {
+                        [favoriteStrains[index], favoriteStrains[index - 1]] = [favoriteStrains[index - 1], favoriteStrains[index]];
+                        // Update the profile
+                        updateUserProfile({ favorite_strains: favoriteStrains });
+                        populateRankedFavoritesList();
+                        // Enable save button
+                        document.getElementById('saveRankedBtn').disabled = false;
+                    }
+                });
+        }
+
+        function moveRankDown(index) {
+            // Move strain down in ranking
+            fetch('/api/user-profile')
+                .then(response => response.json())
+                .then(profile => {
+                    const favoriteStrains = profile.favorite_strains || [];
+                    if (index < favoriteStrains.length - 1) {
+                        [favoriteStrains[index], favoriteStrains[index + 1]] = [favoriteStrains[index + 1], favoriteStrains[index]];
+                        // Update the profile
+                        updateUserProfile({ favorite_strains: favoriteStrains });
+                        populateRankedFavoritesList();
+                        // Enable save button
+                        document.getElementById('saveRankedBtn').disabled = false;
+                    }
+                });
+        }
+
+        async function saveRankedFavorites() {
+            console.log('saveRankedFavorites called - function is working!');
+            alert('Save function called!'); // Temporary alert to test
+            try {
+                const response = await fetch('/api/save-ranked-favorites', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({})
+                });
+
+                console.log('Response status:', response.status);
+                console.log('Response ok:', response.ok);
+
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('Save successful:', result);
+                    showMessage('Ranked favorites saved successfully!', 'success');
+                    updateZScoreStatus();
+                    // Disable save button after successful save
+                    document.getElementById('saveRankedBtn').disabled = true;
+                } else {
+                    const error = await response.json();
+                    console.log('Save error:', error);
+                    showMessage(`Error: ${error.detail}`, 'error');
+                }
+            } catch (error) {
+                console.log('Save exception:', error);
+                showMessage(`Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function updateUserProfile(updates) {
+            try {
+                const response = await fetch('/api/user-profile');
+                const currentProfile = await response.json();
+                
+                // Merge updates with current profile
+                const updatedProfile = { ...currentProfile, ...updates };
+                
+                // Save updated profile
+                const saveResponse = await fetch('/api/user-profile', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(updatedProfile)
+                });
+                
+                if (!saveResponse.ok) {
+                    throw new Error('Failed to update profile');
+                }
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                showMessage(`Error updating profile: ${error.message}`, 'error');
+            }
+        }
+
+        function clearRankedFavorites() {
+            if (confirm('Are you sure you want to clear all rankings?')) {
+                updateUserProfile({ ranked_favorites: [] });
+                showMessage('Rankings cleared!', 'success');
+                updateZScoreStatus();
+            }
         }
 
         // Auto-check z-score status when switching to compare tab
@@ -1180,6 +1338,15 @@
             switchTab('compare');
             // Small delay to ensure tab is visible
             setTimeout(updateZScoreStatus, 100);
+        }
+
+        // Show ranked favorites section when switching to configuration tab
+        function switchToConfigTab() {
+            switchTab('configuration');
+            // Small delay to ensure tab is visible
+            setTimeout(() => {
+                updateRankedFavoritesSection();
+            }, 100);
         }
 
         async function compareStrain() {
@@ -1381,6 +1548,8 @@
             loadAvailableStrains();
             // Load existing profile if user is already authenticated
             loadExistingProfile();
+            // Show ranked favorites section if we have favorite strains
+            updateRankedFavoritesSection();
         });
         {% endif %}
     </script>

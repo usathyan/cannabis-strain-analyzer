@@ -348,6 +348,19 @@ async def get_user_profile_endpoint():
     user_profile = get_user_profile(current_user_id)
     return user_profile
 
+@app.post("/api/user-profile")
+async def update_user_profile_endpoint(request: Request):
+    """Update the current user's profile"""
+    if not current_user_id:
+        raise HTTPException(status_code=401, detail="No user ID set")
+
+    try:
+        body = await request.json()
+        save_user_profile(current_user_id, body)
+        return {"message": "Profile updated successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.post("/api/compare-strain")
 async def compare_strain(request: Request):
     """Compare a strain against the user's ideal profile or ranked favorites"""
@@ -426,6 +439,53 @@ async def compare_strain(request: Request):
             "comparison": comparison,
             "comparison_type": comparison_type,
             "llm_analysis": llm_analysis
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/save-ranked-favorites")
+async def save_ranked_favorites():
+    """Save ranked favorites by creating individual profiles for each favorite strain"""
+    if not current_user_id:
+        raise HTTPException(status_code=401, detail="No user ID set")
+
+    try:
+        # Get user profile
+        user_profile = get_user_profile(current_user_id)
+        favorite_strains = user_profile.get("favorite_strains", [])
+
+        if len(favorite_strains) < 2:
+            raise HTTPException(status_code=400, detail="Need at least 2 favorite strains to create ranked favorites")
+
+        ranked_favorites = []
+
+        # Create individual profiles for each favorite strain
+        for strain_name in favorite_strains:
+            # Get or generate strain data
+            strain_data = await generate_strain_data(strain_name)
+            if strain_data:
+                # Normalize to fixed schema
+                normalized_strain = normalize_to_fixed_schema(strain_data)
+                ranked_favorites.append({
+                    "name": strain_name,
+                    "terpenes": normalized_strain.get("terpenes", {}),
+                    "cannabinoids": normalized_strain.get("cannabinoids", {}),
+                    "effects": strain_data.get("effects", []),
+                    "flavors": strain_data.get("flavors", []),
+                    "type": strain_data.get("type", "unknown"),
+                    "thc_range": strain_data.get("thc_range", "unknown"),
+                    "cbd_range": strain_data.get("cbd_range", "unknown")
+                })
+
+        # Update user profile with ranked favorites
+        current_profile = get_user_profile(current_user_id)
+        current_profile["ranked_favorites"] = ranked_favorites
+        save_user_profile(current_user_id, current_profile)
+
+        return {
+            "message": f"Successfully saved {len(ranked_favorites)} ranked favorites",
+            "ranked_favorites": ranked_favorites
         }
 
     except Exception as e:
