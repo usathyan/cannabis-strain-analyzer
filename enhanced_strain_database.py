@@ -2,30 +2,28 @@
 Enhanced Strain Database with Comprehensive Terpene Profiles
 """
 
-from typing import Dict, List, Optional, Any
 import json
 from pathlib import Path
-import numpy as np
-from sklearn.metrics.pairwise import cosine_similarity
-import os
+from typing import Any
+
 
 class EnhancedStrainDatabase:
     """Enhanced strain database with comprehensive terpene profiles and effects"""
-    
+
     def __init__(self):
         self.strains = self._load_comprehensive_database()
         self.terpene_effects = self._load_terpene_effects()
         self.effect_categories = self._load_effect_categories()
         self.custom_strains_file = Path("custom_strains.json")
         self._load_custom_strains()
-    
-    def _load_comprehensive_database(self) -> Dict[str, Dict]:
+
+    def _load_comprehensive_database(self) -> dict[str, dict]:
         """Load comprehensive strain database with detailed terpene profiles"""
         return {
             # Indica Dominant Strains
             "granddaddy purple": {
                 "terpenes": {
-                    "myrcene": 0.85, "caryophyllene": 0.65, "pinene": 0.45, 
+                    "myrcene": 0.85, "caryophyllene": 0.65, "pinene": 0.45,
                     "limonene": 0.35, "linalool": 0.25, "humulene": 0.20, "terpinolene": 0.10
                 },
                 "effects": ["relaxed", "sleepy", "happy", "euphoric", "hungry"],
@@ -41,7 +39,7 @@ class EnhancedStrainDatabase:
             },
             "og kush": {
                 "terpenes": {
-                    "myrcene": 0.75, "caryophyllene": 0.60, "limonene": 0.45, 
+                    "myrcene": 0.75, "caryophyllene": 0.60, "limonene": 0.45,
                     "pinene": 0.35, "linalool": 0.30, "humulene": 0.25, "terpinolene": 0.15
                 },
                 "effects": ["relaxed", "happy", "euphoric", "sleepy", "uplifted"],
@@ -87,11 +85,11 @@ class EnhancedStrainDatabase:
                 "best_time": "evening",
                 "activity": "relaxation"
             },
-            
+
             # Sativa Dominant Strains
             "sour diesel": {
                 "terpenes": {
-                    "limonene": 0.80, "caryophyllene": 0.55, "pinene": 0.45, 
+                    "limonene": 0.80, "caryophyllene": 0.55, "pinene": 0.45,
                     "myrcene": 0.35, "terpinolene": 0.40, "linalool": 0.20, "humulene": 0.25
                 },
                 "effects": ["energetic", "uplifted", "creative", "focused", "happy"],
@@ -107,7 +105,7 @@ class EnhancedStrainDatabase:
             },
             "jack herer": {
                 "terpenes": {
-                    "pinene": 0.85, "limonene": 0.65, "caryophyllene": 0.45, 
+                    "pinene": 0.85, "limonene": 0.65, "caryophyllene": 0.45,
                     "myrcene": 0.35, "terpinolene": 0.30, "linalool": 0.25, "humulene": 0.20
                 },
                 "effects": ["energetic", "uplifted", "creative", "focused", "happy"],
@@ -123,7 +121,7 @@ class EnhancedStrainDatabase:
             },
             "green crack": {
                 "terpenes": {
-                    "limonene": 0.75, "pinene": 0.70, "caryophyllene": 0.40, 
+                    "limonene": 0.75, "pinene": 0.70, "caryophyllene": 0.40,
                     "myrcene": 0.30, "terpinolene": 0.35, "linalool": 0.20, "humulene": 0.25
                 },
                 "effects": ["energetic", "uplifted", "focused", "happy", "creative"],
@@ -137,11 +135,11 @@ class EnhancedStrainDatabase:
                 "best_time": "morning",
                 "activity": "work"
             },
-            
+
             # Hybrid Strains
             "blue dream": {
                 "terpenes": {
-                    "myrcene": 0.55, "pinene": 0.70, "caryophyllene": 0.45, 
+                    "myrcene": 0.55, "pinene": 0.70, "caryophyllene": 0.45,
                     "limonene": 0.60, "linalool": 0.30, "humulene": 0.25, "terpinolene": 0.20
                 },
                 "effects": ["happy", "uplifted", "creative", "relaxed", "focused"],
@@ -157,7 +155,7 @@ class EnhancedStrainDatabase:
             },
             "wedding cake": {
                 "terpenes": {
-                    "limonene": 0.70, "caryophyllene": 0.60, "myrcene": 0.50, 
+                    "limonene": 0.70, "caryophyllene": 0.60, "myrcene": 0.50,
                     "pinene": 0.40, "linalool": 0.35, "humulene": 0.30, "terpinolene": 0.25
                 },
                 "effects": ["relaxed", "happy", "euphoric", "uplifted", "creative"],
@@ -173,7 +171,7 @@ class EnhancedStrainDatabase:
             },
             "gelato": {
                 "terpenes": {
-                    "limonene": 0.65, "caryophyllene": 0.55, "myrcene": 0.45, 
+                    "limonene": 0.65, "caryophyllene": 0.55, "myrcene": 0.45,
                     "pinene": 0.35, "linalool": 0.40, "humulene": 0.25, "terpinolene": 0.20
                 },
                 "effects": ["relaxed", "happy", "euphoric", "uplifted", "creative"],
@@ -187,11 +185,11 @@ class EnhancedStrainDatabase:
                 "best_time": "evening",
                 "activity": "social"
             },
-            
+
             # High CBD Strains
             "charlotte's web": {
                 "terpenes": {
-                    "myrcene": 0.40, "pinene": 0.35, "caryophyllene": 0.30, 
+                    "myrcene": 0.40, "pinene": 0.35, "caryophyllene": 0.30,
                     "limonene": 0.25, "linalool": 0.20, "humulene": 0.15, "terpinolene": 0.10
                 },
                 "effects": ["relaxed", "focused", "clear-headed", "uplifted"],
@@ -207,7 +205,7 @@ class EnhancedStrainDatabase:
             },
             "harlequin": {
                 "terpenes": {
-                    "myrcene": 0.35, "pinene": 0.40, "caryophyllene": 0.30, 
+                    "myrcene": 0.35, "pinene": 0.40, "caryophyllene": 0.30,
                     "limonene": 0.25, "linalool": 0.20, "humulene": 0.15, "terpinolene": 0.10
                 },
                 "effects": ["relaxed", "focused", "clear-headed", "uplifted"],
@@ -222,8 +220,8 @@ class EnhancedStrainDatabase:
                 "activity": "medical"
             }
         }
-    
-    def _load_terpene_effects(self) -> Dict[str, Dict]:
+
+    def _load_terpene_effects(self) -> dict[str, dict]:
         """Load terpene effects and properties"""
         return {
             "myrcene": {
@@ -276,8 +274,8 @@ class EnhancedStrainDatabase:
                 "description": "Uplifting and energizing, promotes creativity"
             }
         }
-    
-    def _load_effect_categories(self) -> Dict[str, List[str]]:
+
+    def _load_effect_categories(self) -> dict[str, list[str]]:
         """Load effect categories for filtering"""
         return {
             "relaxation": ["relaxed", "sleepy", "calm", "sedated"],
@@ -287,114 +285,114 @@ class EnhancedStrainDatabase:
             "time_of_day": ["morning", "afternoon", "evening", "night", "any"],
             "activity": ["work", "creative", "social", "relaxation", "medical", "balanced"]
         }
-    
-    def get_strain(self, strain_name: str) -> Optional[Dict]:
+
+    def get_strain(self, strain_name: str) -> dict | None:
         """Get strain data by name"""
         return self.strains.get(strain_name.lower().strip())
-    
-    def search_strains(self, 
-                      terpene_profile: Optional[Dict[str, float]] = None,
-                      effects: Optional[List[str]] = None,
-                      strain_type: Optional[str] = None,
-                      thc_min: Optional[float] = None,
-                      thc_max: Optional[float] = None,
-                      cbd_min: Optional[float] = None,
-                      cbd_max: Optional[float] = None,
-                      best_time: Optional[str] = None,
-                      activity: Optional[str] = None,
-                      limit: Optional[int] = None) -> List[Dict[str, Any]]:
+
+    def search_strains(self,
+                      terpene_profile: dict[str, float] | None = None,
+                      effects: list[str] | None = None,
+                      strain_type: str | None = None,
+                      thc_min: float | None = None,
+                      thc_max: float | None = None,
+                      cbd_min: float | None = None,
+                      cbd_max: float | None = None,
+                      best_time: str | None = None,
+                      activity: str | None = None,
+                      limit: int | None = None) -> list[dict[str, Any]]:
         """Search strains based on multiple criteria"""
         results = []
-        
+
         for name, data in self.strains.items():
             # Check strain type
             if strain_type and strain_type.lower() != "any" and data["type"] != strain_type.lower():
                 continue
-            
+
             # Check THC range
             if thc_min or thc_max:
                 thc_range = data["thc_range"]
                 thc_min_val = float(thc_range.split("-")[0].replace("%", ""))
                 thc_max_val = float(thc_range.split("-")[1].replace("%", ""))
-                
+
                 if thc_min and thc_max_val < thc_min:
                     continue
                 if thc_max and thc_min_val > thc_max:
                     continue
-            
+
             # Check CBD range
             if cbd_min or cbd_max:
                 cbd_range = data["cbd_range"]
                 cbd_min_val = float(cbd_range.split("-")[0].replace("%", ""))
                 cbd_max_val = float(cbd_range.split("-")[1].replace("%", ""))
-                
+
                 if cbd_min and cbd_max_val < cbd_min:
                     continue
                 if cbd_max and cbd_min_val > cbd_max:
                     continue
-            
+
             # Check effects
             if effects:
                 if not any(effect in data["effects"] for effect in effects):
                     continue
-            
+
             # Check best time
             if best_time and best_time.lower() != "any" and data["best_time"] != best_time.lower():
                 continue
-            
+
             # Check activity
             if activity and activity.lower() != "any" and data["activity"] != activity.lower():
                 continue
-            
+
             # Calculate terpene similarity if provided
             similarity = 1.0
             if terpene_profile:
                 similarity = self._calculate_terpene_similarity(terpene_profile, data["terpenes"])
-            
+
             results.append({
                 "name": name,
                 "data": data,
                 "similarity": similarity
             })
-        
+
         # Sort by similarity if terpene profile provided
         if terpene_profile:
             results.sort(key=lambda x: x["similarity"], reverse=True)
-        
+
         # Apply limit if specified
         if limit:
             results = results[:limit]
-        
+
         return results
-    
-    def _calculate_terpene_similarity(self, target: Dict[str, float], candidate: Dict[str, float]) -> float:
+
+    def _calculate_terpene_similarity(self, target: dict[str, float], candidate: dict[str, float]) -> float:
         """Calculate similarity between terpene profiles"""
         common_terpenes = set(target.keys()) & set(candidate.keys())
-        
+
         if not common_terpenes:
             return 0.0
-        
+
         similarities = []
         for terpene in common_terpenes:
             diff = abs(target[terpene] - candidate[terpene])
             similarity = 1.0 - diff
             similarities.append(similarity)
-        
+
         return sum(similarities) / len(similarities)
-    
-    def get_terpene_info(self, terpene_name: str) -> Optional[Dict]:
+
+    def get_terpene_info(self, terpene_name: str) -> dict | None:
         """Get terpene information"""
         return self.terpene_effects.get(terpene_name.lower())
-    
-    def get_all_terpenes(self) -> List[str]:
+
+    def get_all_terpenes(self) -> list[str]:
         """Get list of all terpenes"""
         return list(self.terpene_effects.keys())
-    
-    def get_effect_categories(self) -> Dict[str, List[str]]:
+
+    def get_effect_categories(self) -> dict[str, list[str]]:
         """Get effect categories"""
         return self.effect_categories
 
-    def get_similar_strains(self, strain_name: str, limit: int = 3) -> List[tuple]:
+    def get_similar_strains(self, strain_name: str, limit: int = 3) -> list[tuple]:
         """Get similar strains based on terpene profile"""
         target_strain = self.get_strain(strain_name)
         if not target_strain:
@@ -414,7 +412,7 @@ class EnhancedStrainDatabase:
         similarities.sort(key=lambda x: x[1], reverse=True)
         return similarities[:limit]
 
-    def add_custom_strain(self, strain_name: str, strain_data: Dict[str, Any]):
+    def add_custom_strain(self, strain_name: str, strain_data: dict[str, Any]):
         """Add a custom strain to the database and persist it"""
         key = strain_name.lower()
         self.strains[key] = strain_data
@@ -424,7 +422,7 @@ class EnhancedStrainDatabase:
         """Load custom strains from file"""
         if self.custom_strains_file.exists():
             try:
-                with open(self.custom_strains_file, 'r') as f:
+                with open(self.custom_strains_file) as f:
                     custom_strains = json.load(f)
                     self.strains.update(custom_strains)
                     print(f"✅ Loaded {len(custom_strains)} custom strains from file")
@@ -447,15 +445,15 @@ class EnhancedStrainDatabase:
         except Exception as e:
             print(f"⚠️  Could not save custom strains: {e}")
 
-    def compute_aggregated_terpene_profile(self, favorite_strains: List[str]) -> Dict[str, Any]:
+    def compute_aggregated_terpene_profile(self, favorite_strains: list[str]) -> dict[str, Any]:
         """Compute aggregated terpene profile from user's favorite strains"""
         if not favorite_strains:
             return {}
-        
+
         # Collect all terpene data from favorite strains
         terpene_data = {}
         strain_count = 0
-        
+
         for strain_name in favorite_strains:
             strain_data = self.get_strain(strain_name)
             if strain_data and "terpenes" in strain_data:
@@ -464,21 +462,21 @@ class EnhancedStrainDatabase:
                     if terpene not in terpene_data:
                         terpene_data[terpene] = []
                     terpene_data[terpene].append(value)
-        
+
         if strain_count == 0:
             return {}
-        
+
         # Compute average values for each terpene
         aggregated_terpenes = {}
         for terpene, values in terpene_data.items():
             aggregated_terpenes[terpene] = sum(values) / len(values)
-        
+
         # Compute aggregated effects
         all_effects = []
         all_medical_effects = []
         all_flavors = []
         all_aromas = []
-        
+
         for strain_name in favorite_strains:
             strain_data = self.get_strain(strain_name)
             if strain_data:
@@ -486,14 +484,14 @@ class EnhancedStrainDatabase:
                 all_medical_effects.extend(strain_data.get("medical_effects", []))
                 all_flavors.extend(strain_data.get("flavors", []))
                 all_aromas.extend(strain_data.get("aromas", []))
-        
+
         # Get most common effects, flavors, and aromas
         from collections import Counter
         common_effects = [effect for effect, count in Counter(all_effects).most_common(5)]
         common_medical_effects = [effect for effect, count in Counter(all_medical_effects).most_common(5)]
         common_flavors = [flavor for flavor, count in Counter(all_flavors).most_common(5)]
         common_aromas = [aroma for aroma, count in Counter(all_aromas).most_common(5)]
-        
+
         return {
             "terpenes": aggregated_terpenes,
             "common_effects": common_effects,
@@ -504,47 +502,47 @@ class EnhancedStrainDatabase:
             "favorite_strains": favorite_strains
         }
 
-    def analyze_strain_against_profile(self, strain_name: str, user_profile: Dict[str, Any]) -> Dict[str, Any]:
+    def analyze_strain_against_profile(self, strain_name: str, user_profile: dict[str, Any]) -> dict[str, Any]:
         """Analyze how a strain compares to user's favorite profile"""
         strain_data = self.get_strain(strain_name)
         if not strain_data:
             return {"error": f"Strain '{strain_name}' not found"}
-        
+
         user_terpenes = user_profile.get("terpenes", {})
         strain_terpenes = strain_data.get("terpenes", {})
-        
+
         # Calculate terpene similarity
         similarity_score = self._calculate_terpene_similarity(user_terpenes, strain_terpenes)
-        
+
         # Analyze effects compatibility
         user_effects = set(user_profile.get("common_effects", []))
         strain_effects = set(strain_data.get("effects", []))
-        
+
         matching_effects = user_effects.intersection(strain_effects)
         new_effects = strain_effects - user_effects
-        
+
         # Analyze flavor compatibility
         user_flavors = set(user_profile.get("common_flavors", []))
         strain_flavors = set(strain_data.get("flavors", []))
-        
+
         matching_flavors = user_flavors.intersection(strain_flavors)
         new_flavors = strain_flavors - user_flavors
-        
+
         # Generate recommendation
         recommendation = self._generate_recommendation(
-            similarity_score, 
-            len(matching_effects), 
+            similarity_score,
+            len(matching_effects),
             len(new_effects),
             len(matching_flavors),
             len(new_flavors)
         )
-        
+
         # Analyze individual terpenes
         terpene_analysis = []
         for terpene, strain_value in strain_terpenes.items():
             user_value = user_terpenes.get(terpene, 0)
             terpene_info = self.get_terpene_info(terpene)
-            
+
             if terpene_info:
                 terpene_analysis.append({
                     "name": terpene,
@@ -555,7 +553,7 @@ class EnhancedStrainDatabase:
                     "effects": terpene_info["effects"],
                     "medical": terpene_info["medical"]
                 })
-        
+
         return {
             "strain_name": strain_name,
             "strain_data": strain_data,
@@ -572,8 +570,8 @@ class EnhancedStrainDatabase:
             )
         }
 
-    def _generate_recommendation(self, similarity: float, matching_effects: int, new_effects: int, 
-                                matching_flavors: int, new_flavors: int) -> Dict[str, Any]:
+    def _generate_recommendation(self, similarity: float, matching_effects: int, new_effects: int,
+                                matching_flavors: int, new_flavors: int) -> dict[str, Any]:
         """Generate recommendation based on analysis"""
         if similarity >= 0.8:
             recommendation_type = "highly_recommended"
@@ -587,28 +585,28 @@ class EnhancedStrainDatabase:
         else:
             recommendation_type = "not_recommended"
             recommendation_text = "This strain is quite different from your preferences. You might not enjoy it."
-        
+
         return {
             "type": recommendation_type,
             "text": recommendation_text,
             "confidence": min(similarity * 100, 100)
         }
 
-    def _generate_analysis_summary(self, strain_name: str, similarity: float, 
-                                 matching_effects: set, new_effects: set, 
-                                 recommendation: Dict[str, Any]) -> str:
+    def _generate_analysis_summary(self, strain_name: str, similarity: float,
+                                 matching_effects: set, new_effects: set,
+                                 recommendation: dict[str, Any]) -> str:
         """Generate a human-readable analysis summary"""
         summary_parts = []
-        
+
         summary_parts.append(f"Analysis of {strain_name.title()}:")
         summary_parts.append(f"• Similarity to your preferences: {similarity:.1%}")
-        
+
         if matching_effects:
             summary_parts.append(f"• Effects you'll likely enjoy: {', '.join(list(matching_effects)[:3])}")
-        
+
         if new_effects:
             summary_parts.append(f"• New effects you might experience: {', '.join(list(new_effects)[:3])}")
-        
+
         summary_parts.append(f"• Recommendation: {recommendation['text']}")
-        
+
         return "\n".join(summary_parts)

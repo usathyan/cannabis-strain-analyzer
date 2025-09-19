@@ -1,466 +1,1206 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cannabis Strain Recommendations</title>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCi4wQkDC-7x9nl6_DGXKmT3JqaKwYgPks&libraries=places"></script>
+    <title>Tabbed Cannabis Strain Recommendations</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
             background-color: #f5f5f5;
-            height: 100vh;
-            overflow: hidden;
         }
         .header {
-            text-align: center;
-            margin-bottom: 20px;
             background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
             color: white;
             padding: 20px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        .btn-primary {
+            background-color: #2196F3;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #1976D2;
+        }
+        .btn-secondary {
+            background-color: #757575;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background-color: #616161;
         }
         .container {
-            display: flex;
-            height: calc(100vh - 120px);
-        }
-        .left-panel {
-            width: 40%;
+            max-width: 1200px;
+            margin: 0 auto;
             padding: 20px;
-            overflow-y: auto;
-            background: white;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
         }
-        .right-panel {
-            width: 60%;
-            position: relative;
-        }
-        .form-container {
+        .tab-container {
             background: white;
-            padding: 20px;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .tab-header {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .tab-button {
+            flex: 1;
+            padding: 15px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            color: #666;
+            transition: all 0.3s;
+        }
+        .tab-button.active {
+            background: white;
+            color: #4CAF50;
+            border-bottom: 3px solid #4CAF50;
+        }
+        .tab-button:hover {
+            background: #e9ecef;
+        }
+        .tab-content {
+            display: none;
+            padding: 30px;
+        }
+        .tab-content.active {
+            display: block;
         }
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
-        label {
+        .form-group label {
             display: block;
             margin-bottom: 5px;
             font-weight: bold;
-            font-size: 14px;
+            color: #333;
         }
-        input, select {
+        .form-group input, .form-group select, .form-group textarea {
             width: 100%;
-            padding: 8px;
+            padding: 12px;
             border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 14px;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
         }
-        button {
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        .btn-submit {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        .btn-submit:hover {
+            background-color: #45a049;
+        }
+        .strain-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .strain-option {
+            padding: 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        .strain-option:hover {
+            border-color: #4CAF50;
+            background-color: #f8fff8;
+        }
+        .strain-option.selected {
+            border-color: #4CAF50;
+            background-color: #e8f5e8;
+            color: #2e7d32;
+        }
+        .selected-strains {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .selected-strain {
+            display: inline-block;
             background: #4CAF50;
             color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            width: 100%;
+            padding: 5px 10px;
+            border-radius: 15px;
+            margin: 5px;
+            font-size: 14px;
         }
-        button:hover {
-            background: #45a049;
+        .selected-strain .remove {
+            margin-left: 8px;
+            cursor: pointer;
+            font-weight: bold;
         }
         .results {
+            display: block;
             background: white;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             margin-top: 20px;
         }
-        .strain-card {
-            border: 1px solid #ddd;
+        .ideal-profile {
+            background: #f0f8ff;
+            padding: 20px;
             border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-            background: #f9f9f9;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196F3;
         }
-        .strain-name {
+        .terpene-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .terpene-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #6c5ce7;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .terpene-name {
             font-size: 18px;
             font-weight: bold;
-            color: #333;
-            margin-bottom: 8px;
+            color: #2d3436;
+            margin-bottom: 5px;
         }
-        .strain-type {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 11px;
+        .terpene-level {
+            font-size: 14px;
+            color: #6c5ce7;
             font-weight: bold;
-            text-transform: uppercase;
             margin-bottom: 8px;
         }
-        .indica { background-color: #e74c3c; color: white; }
-        .sativa { background-color: #27ae60; color: white; }
-        .hybrid { background-color: #f39c12; color: white; }
-        .effects {
-            margin-top: 10px;
+        .terpene-description {
+            font-size: 14px;
+            color: #636e72;
+            margin-bottom: 10px;
+            line-height: 1.4;
         }
-        .effect-tag {
-            display: inline-block;
-            background: #3498db;
+        .terpene-effects {
+            font-size: 13px;
+            color: #2d3436;
+        }
+        .comparison-results {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 2px 6px;
-            border-radius: 10px;
-            font-size: 11px;
-            margin-right: 4px;
-            margin-bottom: 4px;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .match-rating {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .similarity-score {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        .llm-analysis {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+            margin-top: 20px;
+        }
+        .analysis-content {
+            line-height: 1.6;
+            color: #333;
+        }
+        .analysis-section {
+            margin-bottom: 20px;
+        }
+        .analysis-section h5 {
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .analysis-section p {
+            margin-bottom: 12px;
+            text-align: justify;
+        }
+        .analysis-highlight {
+            background: #e8f4fd;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 3px solid #3498db;
+            margin: 10px 0;
+        }
+        .analysis-benefits {
+            background: #e8f5e8;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 3px solid #27ae60;
+            margin: 10px 0;
+        }
+        .analysis-drawbacks {
+            background: #fdf2e8;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 3px solid #e67e22;
+            margin: 10px 0;
+        }
+        .help-text {
+            font-size: 0.9em;
+            color: #666;
+            margin: 8px 0 15px 0;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-left: 3px solid #4CAF50;
+            border-radius: 4px;
+            line-height: 1.4;
+        }
+        .current-profile {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .current-profile h3 {
+            margin-top: 0;
+            color: white;
+        }
+        .profile-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .profile-section {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 6px;
+        }
+        .profile-section h4 {
+            margin: 0 0 10px 0;
+            color: white;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .profile-section p {
+            margin: 5px 0;
+            font-size: 13px;
+            opacity: 0.9;
+        }
+        .strain-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8f9fa;
+            padding: 10px 15px;
+            margin: 5px 0;
+            border-radius: 6px;
+            border-left: 4px solid #6c5ce7;
+        }
+        .strain-item .strain-name {
+            font-weight: bold;
+            color: #2d3436;
+        }
+        .strain-item .remove-btn {
+            background: #e17055;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .strain-item .remove-btn:hover {
+            background: #d63031;
+        }
+        .bulk-actions {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+        .btn-danger {
+            background: #e17055;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-danger:hover {
+            background: #d63031;
+        }
+        .cannabinoid-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .cannabinoid-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .cannabinoid-name {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .cannabinoid-level {
+            font-size: 16px;
+            font-weight: bold;
+            color: #ffd700;
         }
         .loading {
             text-align: center;
-            padding: 40px;
-            font-size: 16px;
+            padding: 20px;
             color: #666;
         }
         .error {
-            background: #e74c3c;
-            color: white;
-            padding: 12px;
-            border-radius: 5px;
-            margin-top: 15px;
-            font-size: 14px;
+            background-color: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
         }
-        .dispensary-section {
-            margin-top: 25px;
+        .success {
+            background-color: #e8f5e8;
+            color: #2e7d32;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
         }
-        .dispensary-card {
-            border: 1px solid #ddd;
+        .demo-setup {
+            background: #fff3e0;
+            padding: 20px;
             border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 10px;
-            background: #f9f9f9;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        .dispensary-card:hover {
-            background: #f0f8ff;
-        }
-        .dispensary-name {
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 4px;
-        }
-        .dispensary-address {
-            font-size: 12px;
-            color: #666;
-            margin-bottom: 2px;
-        }
-        .dispensary-rating {
-            font-size: 12px;
-            color: #f39c12;
-            margin-bottom: 2px;
-        }
-        .dispensary-distance {
-            font-size: 12px;
-            color: #27ae60;
-        }
-        #map {
-            height: 100%;
-            width: 100%;
-        }
-        .recommendation-card {
-            border-left: 4px solid #4CAF50;
-            background: #f8fff8;
-        }
-        .aliases {
-            margin-top: 10px;
-            font-size: 12px;
-            color: #666;
-            font-style: italic;
+            margin-bottom: 20px;
+            border-left: 4px solid #ff9800;
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>🌿 Cannabis Strain Recommendations</h1>
-        <p>Enter your favorite strain and find similar options with nearby dispensaries on the map</p>
+        <h1>🌿 Cannabis Strain Analysis & Comparison</h1>
+        <div class="user-info">
+            {% if is_authenticated %}
+                <span>User ID: {{ user_id }}</span>
+            {% else %}
+                <span>Demo Mode</span>
+            {% endif %}
+        </div>
     </div>
 
     <div class="container">
-        <div class="left-panel">
-            <div class="form-container">
-                <form id="recommendationForm">
-                    <div class="form-group">
-                        <label for="strainName">Favorite Strain *</label>
-                        <input type="text" id="strainName" name="strain_name" required placeholder="e.g., Granddaddy Purple">
-                        <small style="color: #666; font-size: 12px;">💡 Try any strain! Popular: Blue Dream, OG Kush, Sour Diesel, Granddaddy Purple, Jack Herer</small>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="location">Your Location</label>
-                        <input type="text" id="location" name="location" placeholder="e.g., San Francisco, CA">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="radius">Search Radius (miles)</label>
-                        <select id="radius" name="radius">
-                            <option value="10">10 miles</option>
-                            <option value="25" selected>25 miles</option>
-                            <option value="50">50 miles</option>
-                        </select>
-                    </div>
-
-                    <button type="submit">Get Recommendations</button>
-                </form>
+        {% if not is_authenticated %}
+            <div class="demo-setup">
+                <h3>🎯 Demo Setup</h3>
+                <p>This is a demo version. To use the analysis features:</p>
+                <ol>
+                    <li>Set a user ID (for demo purposes)</li>
+                    <li>Configure your ideal terpene profile</li>
+                    <li>Compare strains against your profile</li>
+                </ol>
+                <button onclick="setUserId(1)" class="btn btn-primary">Set User ID to 1</button>
             </div>
+        {% endif %}
 
-            <div id="results" class="results" style="display: none;">
-                <h2>Results</h2>
-                <div id="resultsContent"></div>
+        {% if is_authenticated %}
+            <div class="tab-container">
+                <div class="tab-header">
+                    <button class="tab-button active" onclick="switchTab('configuration')">⚙️ Configuration</button>
+                    <button class="tab-button" onclick="switchTab('compare')">🔍 Compare</button>
+                </div>
+
+                <!-- Configuration Tab -->
+                <div id="configuration" class="tab-content active">
+                    <h2>Manage Your Ideal Cannabis Profile</h2>
+                    <p>Add or remove strains to build your ideal terpene and cannabinoid profile.</p>
+                    
+                    <!-- Current Profile Display -->
+                    <div id="currentProfile" class="current-profile" style="display: none;">
+                        <h3>Current Profile</h3>
+                        <div id="currentProfileContent"></div>
+                    </div>
+                    
+                    <!-- Add Strains Section -->
+                    <div class="form-group">
+                        <label>Add Strains to Profile</label>
+                        <p class="help-text"><strong>Available Strains:</strong> These represent strains that were already downloaded into the database and are available for selection. If your desired strain doesn't exist here, you can use the "Add Custom Strain" button below to add it.</p>
+                        <div id="strainSelector" class="strain-selector">
+                            <!-- Strain options will be loaded here -->
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Add Custom Strain</label>
+                        <input type="text" id="customStrain" placeholder="Enter strain name to add to database">
+                        <button onclick="addCustomStrain()" class="btn btn-secondary" style="margin-top: 10px;">Add Strain</button>
+                    </div>
+                    
+                    <!-- Selected Strains Management -->
+                    <div id="selectedStrains" class="selected-strains" style="display: none;">
+                        <h4>Your Favorite Strains:</h4>
+                        <div id="selectedStrainsList"></div>
+                    </div>
+                    
+                    <!-- Bulk Actions -->
+                    <div class="bulk-actions" style="display: none;" id="bulkActions">
+                        <button onclick="createIdealProfile()" class="btn-submit" id="createProfileBtn">
+                            🧪 Update Cannabis Profile
+                        </button>
+                        <button onclick="clearAllStrains()" class="btn btn-danger" style="margin-left: 10px;">
+                            🗑️ Clear All Strains
+                        </button>
+                    </div>
+                    
+                    <div id="configurationResults"></div>
+                </div>
+
+                <!-- Compare Tab -->
+                <div id="compare" class="tab-content">
+                    <h2>Compare Strain Against Your Ideal Profile</h2>
+                    <p>Enter a strain name to compare it against your ideal terpene profile.</p>
+
+                    <div class="form-group">
+                        <label for="compareStrainName">Strain Name</label>
+                        <input type="text" id="compareStrainName" placeholder="e.g., Blue Dream, OG Kush, Sour Diesel" required>
+                    </div>
+
+                    <button onclick="compareStrain()" class="btn-submit">
+                        🔍 Analyze & Compare
+                    </button>
+                    
+                    <div id="compareResults"></div>
+                </div>
             </div>
-        </div>
-
-        <div class="right-panel">
-            <div id="map"></div>
-        </div>
+        {% else %}
+            <div class="tab-container">
+                <div class="tab-header">
+                    <button class="tab-button active" onclick="switchTab('welcome')">🏠 Welcome</button>
+                </div>
+                <div id="welcome" class="tab-content active">
+                    <h2>Welcome to Cannabis Strain Analysis</h2>
+                    <p>To get started with personalized strain analysis and comparison, please set a user ID first.</p>
+                    <p>Once configured, you can:</p>
+                    <ul>
+                        <li>Create an ideal terpene profile from your favorite strains</li>
+                        <li>Compare any strain against your ideal profile</li>
+                        <li>Get detailed analysis and recommendations</li>
+                        <li>Understand terpene effects and biological impacts</li>
+                    </ul>
+                    <button onclick="setUserId(1)" class="btn btn-primary" style="display: inline-block; width: auto; margin-top: 20px;">🔐 Set User ID (Demo)</button>
+                </div>
+            </div>
+        {% endif %}
     </div>
 
     <script>
-        let map;
-        let markers = [];
-        let infoWindows = [];
+        let selectedStrains = [];
+        let availableStrains = [];
 
-        // Initialize Google Map
-        function initMap() {
-            // Default location (will be updated based on user input)
-            const defaultLocation = { lat: 37.7749, lng: -122.4194 }; // San Francisco
-
-            map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 12,
-                center: defaultLocation,
-                mapTypeControl: false,
-                streetViewControl: false,
-                fullscreenControl: false
-            });
-        }
-
-        // Initialize map when page loads
-        window.onload = function() {
-            initMap();
-        };
-
-        document.getElementById('recommendationForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            const formData = new FormData(e.target);
-            const data = Object.fromEntries(formData.entries());
-
-            // Show loading
-            const resultsDiv = document.getElementById('results');
-            const resultsContent = document.getElementById('resultsContent');
-            resultsDiv.style.display = 'block';
-            resultsContent.innerHTML = '<div class="loading">Analyzing strain and finding recommendations...</div>';
-
-            // Clear existing markers
-            clearMapMarkers();
-
+        async function setUserId(userId) {
             try {
-                const response = await fetch('/api/recommendations', {
+                const response = await fetch('/api/set-user', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(data)
+                    body: JSON.stringify(userId)
+                });
+                
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    alert('Failed to set user ID');
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tab buttons
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+            
+            // Load existing profile when switching to configuration tab
+            if (tabName === 'configuration') {
+                loadExistingProfile();
+            }
+        }
+
+        async function loadAvailableStrains() {
+            try {
+                const response = await fetch('/api/available-strains');
+                const data = await response.json();
+                availableStrains = data.strains;
+                
+                const selector = document.getElementById('strainSelector');
+                selector.innerHTML = '';
+                
+                availableStrains.forEach(strain => {
+                    const option = document.createElement('div');
+                    option.className = 'strain-option';
+                    option.textContent = strain;
+                    option.onclick = () => toggleStrainSelection(strain, option);
+                    selector.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading strains:', error);
+            }
+        }
+
+        function toggleStrainSelection(strain, element) {
+            if (selectedStrains.includes(strain)) {
+                // Remove from local selection
+                selectedStrains = selectedStrains.filter(s => s !== strain);
+                element.classList.remove('selected');
+            } else {
+                // Add to local selection
+                selectedStrains.push(strain);
+                element.classList.add('selected');
+            }
+            
+            updateSelectedStrainsDisplay();
+            updateCreateProfileButton();
+        }
+
+        function updateSelectedStrainsDisplay() {
+            const container = document.getElementById('selectedStrains');
+            const list = document.getElementById('selectedStrainsList');
+            const bulkActions = document.getElementById('bulkActions');
+            
+            if (selectedStrains.length > 0) {
+                container.style.display = 'block';
+                bulkActions.style.display = 'block';
+                list.innerHTML = selectedStrains.map(strain => `
+                    <div class="strain-item">
+                        <span class="strain-name">${strain}</span>
+                        <button onclick="removeStrainFromSelection('${strain}')" class="remove-btn">Remove from Selection</button>
+                    </div>
+                `).join('');
+            } else {
+                container.style.display = 'none';
+                bulkActions.style.display = 'none';
+            }
+        }
+
+        function removeStrain(strain) {
+            selectedStrains = selectedStrains.filter(s => s !== strain);
+            updateSelectedStrainsDisplay();
+            updateCreateProfileButton();
+            
+            // Update visual selection
+            const options = document.querySelectorAll('.strain-option');
+            options.forEach(option => {
+                if (option.textContent === strain) {
+                    option.classList.remove('selected');
+                }
+            });
+        }
+
+        function removeStrainFromSelection(strain) {
+            // Remove from local selection only
+            selectedStrains = selectedStrains.filter(s => s !== strain);
+            updateSelectedStrainsDisplay();
+            updateCreateProfileButton();
+            
+            // Update visual selection
+            const options = document.querySelectorAll('.strain-option');
+            options.forEach(option => {
+                if (option.textContent === strain) {
+                    option.classList.remove('selected');
+                }
+            });
+        }
+
+        async function addStrainToProfile(strainName) {
+            try {
+                const response = await fetch('/api/add-strain-to-profile', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({"strain_name": strainName})
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Update local state
+                    selectedStrains = data.favorite_strains;
+                    updateSelectedStrainsDisplay();
+                    updateCreateProfileButton();
+                    
+                    // Update visual selection
+                    const options = document.querySelectorAll('.strain-option');
+                    options.forEach(option => {
+                        if (data.favorite_strains.includes(option.textContent)) {
+                            option.classList.add('selected');
+                        }
+                    });
+                    
+                    // Display updated profile
+                    if (data.ideal_profile) {
+                        displayCurrentProfile(data.ideal_profile, data.favorite_strains);
+                    }
+                    
+                    showMessage(data.message, 'success');
+                } else {
+                    showMessage(data.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error adding strain to profile:', error);
+                showMessage('Error adding strain to profile', 'error');
+            }
+        }
+
+        async function removeStrainFromProfile(strainName) {
+            try {
+                const response = await fetch('/api/remove-strain-from-profile', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({"strain_name": strainName})
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Update local state
+                    selectedStrains = data.favorite_strains;
+                    updateSelectedStrainsDisplay();
+                    updateCreateProfileButton();
+                    
+                    // Update visual selection
+                    const options = document.querySelectorAll('.strain-option');
+                    options.forEach(option => {
+                        if (option.textContent === strainName) {
+                            option.classList.remove('selected');
+                        }
+                    });
+                    
+                    // Display updated profile or hide if empty
+                    if (data.ideal_profile) {
+                        displayCurrentProfile(data.ideal_profile, data.favorite_strains);
+                    } else {
+                        hideCurrentProfile();
+                        // Also clear the configuration results
+                        const resultsDiv = document.getElementById('configurationResults');
+                        resultsDiv.innerHTML = '';
+                    }
+                    
+                    showMessage(data.message, 'success');
+                } else {
+                    showMessage(data.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error removing strain from profile:', error);
+                showMessage('Error removing strain from profile', 'error');
+            }
+        }
+
+        async function clearAllStrains() {
+            if (confirm('Are you sure you want to clear all strains from your profile?')) {
+                try {
+                    // Get current saved strains from profile
+                    const response = await fetch('/api/user-profile');
+                    const profile = await response.json();
+                    const savedStrains = profile.favorite_strains || [];
+                    
+                    // Remove each saved strain individually
+                    for (const strain of savedStrains) {
+                        await removeStrainFromProfile(strain);
+                    }
+                    
+                    // Clear local selection
+                    selectedStrains = [];
+                    updateSelectedStrainsDisplay();
+                    updateCreateProfileButton();
+                    
+                    // Clear visual selection
+                    const options = document.querySelectorAll('.strain-option');
+                    options.forEach(option => {
+                        option.classList.remove('selected');
+                    });
+                    
+                    // Clear configuration results
+                    const resultsDiv = document.getElementById('configurationResults');
+                    resultsDiv.innerHTML = '';
+                    
+                    // Ensure current profile is hidden
+                    hideCurrentProfile();
+                    
+                    showMessage('All strains cleared from profile', 'success');
+                } catch (error) {
+                    console.error('Error clearing all strains:', error);
+                    showMessage('Error clearing strains', 'error');
+                }
+            }
+        }
+
+        function updateCreateProfileButton() {
+            const btn = document.getElementById('createProfileBtn');
+            btn.disabled = selectedStrains.length === 0;
+        }
+
+        async function addCustomStrain() {
+            const strainName = document.getElementById('customStrain').value.trim();
+            if (!strainName) {
+                showMessage('Please enter a strain name', 'error');
+                return;
+            }
+            
+            try {
+                // Check if strain already exists in database
+                const response = await fetch('/api/available-strains');
+                const data = await response.json();
+                
+                if (data.strains.includes(strainName.toLowerCase())) {
+                    showMessage('Strain already exists in database', 'error');
+                    return;
+                }
+                
+                // Add to local selection
+                if (!selectedStrains.includes(strainName)) {
+                    selectedStrains.push(strainName);
+                    updateSelectedStrainsDisplay();
+                    updateCreateProfileButton();
+                    
+                    // Add to strain selector
+                    const selector = document.getElementById('strainSelector');
+                    const option = document.createElement('div');
+                    option.className = 'strain-option selected';
+                    option.textContent = strainName;
+                    option.onclick = () => toggleStrainSelection(strainName, option);
+                    selector.appendChild(option);
+                    
+                    showMessage(`Strain "${strainName}" added to selection`, 'success');
+                } else {
+                    showMessage('Strain already in selection', 'error');
+                }
+                
+                document.getElementById('customStrain').value = '';
+                
+            } catch (error) {
+                console.error('Error adding custom strain:', error);
+                showMessage('Error adding custom strain', 'error');
+            }
+        }
+
+        async function createIdealProfile() {
+            if (selectedStrains.length === 0) return;
+            
+            const resultsDiv = document.getElementById('configurationResults');
+            resultsDiv.innerHTML = '<div class="loading">Creating ideal cannabis profile...</div>';
+            
+            try {
+                const response = await fetch('/api/create-ideal-profile', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(selectedStrains)
                 });
 
                 if (!response.ok) {
                     const errorData = await response.json();
-                    throw new Error(errorData.detail || 'Failed to get recommendations');
+                    throw new Error(errorData.detail || 'Failed to create profile');
                 }
 
-                const result = await response.json();
-                displayResults(result, data.location || 'San Francisco, CA');
+                const data = await response.json();
+                displayIdealProfile(data.ideal_profile);
 
             } catch (error) {
-                resultsContent.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+                resultsDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
             }
-        });
-
-        function clearMapMarkers() {
-            markers.forEach(marker => marker.setMap(null));
-            markers = [];
-            infoWindows.forEach(infoWindow => infoWindow.close());
-            infoWindows = [];
         }
 
-        function addDispensaryToMap(dispensary, index) {
-            if (!dispensary.latitude || !dispensary.longitude) return;
-
-            const position = {
-                lat: dispensary.latitude,
-                lng: dispensary.longitude
-            };
-
-            const marker = new google.maps.Marker({
-                position: position,
-                map: map,
-                title: dispensary.name,
-                icon: {
-                    url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
-                        <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="20" cy="20" r="18" fill="#4CAF50" stroke="white" stroke-width="3"/>
-                            <text x="20" y="25" text-anchor="middle" fill="white" font-family="Arial" font-size="12" font-weight="bold">${index + 1}</text>
-                        </svg>
-                    `),
-                    scaledSize: new google.maps.Size(40, 40)
-                }
-            });
-
-            const infoWindow = new google.maps.InfoWindow({
-                content: `
-                    <div style="max-width: 250px;">
-                        <h4 style="margin: 0 0 8px 0; color: #4CAF50;">${dispensary.name}</h4>
-                        <p style="margin: 4px 0;"><strong>Address:</strong> ${dispensary.address}</p>
-                        <p style="margin: 4px 0;"><strong>Distance:</strong> ${dispensary.distance_miles} miles</p>
-                        <p style="margin: 4px 0;"><strong>Rating:</strong> ${dispensary.rating}/5.0 ⭐</p>
-                        ${dispensary.phone ? `<p style="margin: 4px 0;"><strong>Phone:</strong> ${dispensary.phone}</p>` : ''}
-                        ${dispensary.website ? `<p style="margin: 4px 0;"><a href="${dispensary.website}" target="_blank">Visit Website</a></p>` : ''}
+        function displayIdealProfile(profile) {
+            const resultsDiv = document.getElementById('configurationResults');
+            
+            let html = `
+                <div class="success">✅ Ideal cannabis profile created successfully!</div>
+                <div class="ideal-profile">
+                    <h3>🧪 Your Ideal Cannabis Profile</h3>
+                    <p><strong>Based on ${profile.strain_count} strains (using maximum values)</strong></p>
+                    
+                    <h4>Major Cannabinoids (5):</h4>
+                    <div class="cannabinoid-grid">
+                        ${profile.aggregate_cannabinoids ? Object.entries(profile.aggregate_cannabinoids)
+                            .map(([name, value]) => `
+                                <div class="cannabinoid-card">
+                                    <div class="cannabinoid-name">${name.toUpperCase()}</div>
+                                    <div class="cannabinoid-level">${(value * 100).toFixed(1)}%</div>
+                                </div>
+                            `).join('') : '<p>No cannabinoid data available</p>'}
                     </div>
-                `
+                    
+                    <h4>Major Terpenes (11):</h4>
+                    <div class="terpene-grid">
+            `;
+            
+            profile.terpene_analysis.forEach(terpene => {
+                html += `
+                    <div class="terpene-card">
+                        <div class="terpene-name">${terpene.name}</div>
+                        <div class="terpene-level">${terpene.level}%</div>
+                        <div class="terpene-description">${terpene.description}</div>
+                        <div class="terpene-effects">
+                            <strong>Effects:</strong> ${terpene.effects.join(', ')}
+                        </div>
+                    </div>
+                `;
             });
-
-            marker.addListener('click', () => {
-                infoWindows.forEach(iw => iw.close());
-                infoWindow.open(map, marker);
-            });
-
-            markers.push(marker);
-            infoWindows.push(infoWindow);
-
-            return marker;
+            
+            html += `
+                    </div>
+                </div>
+            `;
+            
+            resultsDiv.innerHTML = html;
         }
 
-        function displayResults(data, userLocation) {
-            const resultsContent = document.getElementById('resultsContent');
+        function displayCurrentProfile(profile, favoriteStrains) {
+            const currentProfileDiv = document.getElementById('currentProfile');
+            const currentProfileContent = document.getElementById('currentProfileContent');
+            
+            // Format cannabinoids with percentages
+            const cannabinoidsHtml = profile.aggregate_cannabinoids ? 
+                Object.entries(profile.aggregate_cannabinoids)
+                    .map(([name, value]) => `${name.toUpperCase()}: ${(value * 100).toFixed(1)}%`)
+                    .join(', ') : 'N/A';
+            
+            // Format terpenes with percentages
+            const terpenesHtml = profile.aggregate_terpenes ? 
+                Object.entries(profile.aggregate_terpenes)
+                    .map(([name, value]) => `${name}: ${(value * 100).toFixed(1)}%`)
+                    .join(', ') : 'N/A';
+            
+            let html = `
+                <div class="profile-summary">
+                    <div class="profile-section">
+                        <h4>Strains (${favoriteStrains.length})</h4>
+                        <p>${favoriteStrains.join(', ')}</p>
+                    </div>
+                    
+                    <div class="profile-section">
+                        <h4>Major Cannabinoids (5)</h4>
+                        <p>${cannabinoidsHtml}</p>
+                    </div>
+                    
+                    <div class="profile-section">
+                        <h4>Major Terpenes (11)</h4>
+                        <p>${terpenesHtml}</p>
+                    </div>
+                    
+                    <div class="profile-section">
+                        <h4>Top Effects</h4>
+                        <p>${profile.top_effects.slice(0, 5).join(', ')}</p>
+                    </div>
+                    
+                    <div class="profile-section">
+                        <h4>Medical Effects</h4>
+                        <p>${profile.top_medical_effects ? profile.top_medical_effects.slice(0, 4).join(', ') : 'N/A'}</p>
+                    </div>
+                    
+                    <div class="profile-section">
+                        <h4>Flavors & Aromas</h4>
+                        <p>${profile.top_flavors ? profile.top_flavors.slice(0, 3).join(', ') : 'N/A'} | ${profile.top_aromas ? profile.top_aromas.slice(0, 3).join(', ') : 'N/A'}</p>
+                    </div>
+                </div>
+            `;
+            
+            currentProfileContent.innerHTML = html;
+            currentProfileDiv.style.display = 'block';
+        }
 
-            // Update map center if we have dispensaries
-            if (data.dispensaries && data.dispensaries.length > 0) {
-                const firstDispensary = data.dispensaries[0];
-                if (firstDispensary.latitude && firstDispensary.longitude) {
-                    map.setCenter({
-                        lat: firstDispensary.latitude,
-                        lng: firstDispensary.longitude
-                    });
-                    map.setZoom(11);
+        function hideCurrentProfile() {
+            const currentProfileDiv = document.getElementById('currentProfile');
+            currentProfileDiv.style.display = 'none';
+        }
+
+        function showMessage(message, type) {
+            // Create a temporary message element
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = message;
+            messageDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 20px;
+                border-radius: 6px;
+                color: white;
+                font-weight: bold;
+                z-index: 1000;
+                background: ${type === 'success' ? '#27ae60' : '#e74c3c'};
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            `;
+            
+            document.body.appendChild(messageDiv);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                if (messageDiv.parentNode) {
+                    messageDiv.parentNode.removeChild(messageDiv);
                 }
+            }, 3000);
+        }
+
+        async function compareStrain() {
+            const strainName = document.getElementById('compareStrainName').value.trim();
+            if (!strainName) {
+                alert('Please enter a strain name');
+                return;
+            }
+            
+            const resultsDiv = document.getElementById('compareResults');
+            resultsDiv.innerHTML = '<div class="loading">Analyzing strain and comparing to your ideal profile...</div>';
+            
+            try {
+                console.log('Sending request for strain:', strainName);
+                const response = await fetch('/api/compare-strain', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ strain_name: strainName })
+                });
+                
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || 'Failed to compare strain');
+                }
+                
+                const data = await response.json();
+                console.log('Received data:', data);
+                displayComparisonResults(data);
+                
+            } catch (error) {
+                console.error('Error in compareStrain:', error);
+                resultsDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            }
+        }
+
+        function displayComparisonResults(data) {
+            console.log('displayComparisonResults called with data:', data);
+            const resultsDiv = document.getElementById('compareResults');
+            console.log('Results div found:', resultsDiv);
+            
+            if (!data || !data.strain_analysis || !data.comparison) {
+                console.error('Invalid data structure:', data);
+                resultsDiv.innerHTML = '<div class="error">Invalid data received from server</div>';
+                return;
             }
 
             let html = `
-                <h3>🎯 Your Strain Analysis</h3>
+                <div class="results">
+                    <h3>🎯 Strain Analysis: ${data.strain_analysis.name}</h3>
+                    
                 <div class="strain-card">
-                    <div class="strain-name">${data.strain_analysis.name}</div>
-                    <span class="strain-type ${data.strain_analysis.type}">${data.strain_analysis.type}</span>
-                    <p><strong>THC:</strong> ${data.strain_analysis.thc_range} | <strong>CBD:</strong> ${data.strain_analysis.cbd_range}</p>
-                    <p style="margin: 8px 0;">${data.strain_analysis.description}</p>
-                    <div class="effects">
-                        <strong>Effects:</strong>
-                        ${data.strain_analysis.effects.map(effect => `<span class="effect-tag">${effect}</span>`).join('')}
+                        <p><strong>Type:</strong> ${data.strain_analysis.type} | <strong>THC:</strong> ${data.strain_analysis.thc_range} | <strong>CBD:</strong> ${data.strain_analysis.cbd_range}</p>
+                        <p>${data.strain_analysis.description}</p>
+                        <p><strong>Effects:</strong> ${data.strain_analysis.effects.join(', ')}</p>
                     </div>
-                    <div class="aliases">
-                        <strong>Common Aliases:</strong> ${getStrainAliases(data.strain_analysis.name)}
+                    
+                    <div class="comparison-results">
+                        <div class="match-rating">${data.comparison.match_rating}</div>
+                        <div class="similarity-score">${data.comparison.similarity_percentage.toFixed(1)}% Similarity</div>
+                        <p>This strain matches your ideal profile with ${data.comparison.similarity_percentage.toFixed(1)}% similarity.</p>
+                    </div>
+                    
+                    <div class="llm-analysis">
+                        <h4>🤖 AI Analysis & Recommendations</h4>
+                        <div class="analysis-content">${formatLLMAnalysis(data.llm_analysis || 'Analysis not available')}</div>
                     </div>
                 </div>
-
-                <h3>💚 Recommended Similar Strains</h3>
             `;
+            
+            console.log('Setting innerHTML with:', html);
+            resultsDiv.innerHTML = html;
+            console.log('HTML set successfully');
+        }
 
-            if (data.recommendations && data.recommendations.length > 0) {
-                data.recommendations.forEach(rec => {
-                    if (rec.strain_data) {
-                        html += `
-                            <div class="strain-card recommendation-card">
-                                <div class="strain-name">${rec.strain_name}</div>
-                                <span class="strain-type ${rec.strain_data.type}">${rec.strain_data.type}</span>
-                                <p><strong>Similarity:</strong> ${(rec.similarity * 100).toFixed(1)}% match</p>
-                                <p><strong>THC:</strong> ${rec.strain_data.thc_range} | <strong>CBD:</strong> ${rec.strain_data.cbd_range}</p>
-                                <p style="margin: 6px 0;">${rec.strain_data.description.substring(0, 80)}...</p>
-                                <div class="effects">
-                                    <strong>Effects:</strong>
-                                    ${rec.strain_data.effects.slice(0, 4).map(effect => `<span class="effect-tag">${effect}</span>`).join('')}
-                                </div>
-                                <div class="aliases">
-                                    <strong>Aliases:</strong> ${getStrainAliases(rec.strain_name)}
-                                </div>
-                            </div>
-                        `;
-                    }
-                });
-            } else {
-                html += '<p style="color: #666; font-style: italic;">No recommendations found for this strain.</p>';
+        function formatLLMAnalysis(text) {
+            if (!text || text === 'Analysis not available') {
+                return '<p>Analysis not available</p>';
             }
-
-            if (data.dispensaries && data.dispensaries.length > 0) {
-                html += `
-                    <div class="dispensary-section">
-                        <h3>🏪 Nearby Dispensaries (${data.dispensaries.length} found)</h3>
-                        <p style="color: #666; font-size: 14px; margin-bottom: 15px;">
-                            Click on dispensary names to see them on the map
-                        </p>
-                `;
-
-                data.dispensaries.forEach((dispensary, index) => {
-                    const marker = addDispensaryToMap(dispensary, index);
-                    html += `
-                        <div class="dispensary-card" onclick="focusOnDispensary(${index})">
-                            <div class="dispensary-name">${dispensary.name}</div>
-                            <div class="dispensary-address">📍 ${dispensary.address}</div>
-                            <div class="dispensary-rating">⭐ ${dispensary.rating}/5.0</div>
-                            <div class="dispensary-distance">📏 ${dispensary.distance_miles} miles away</div>
-                            ${dispensary.phone ? `<div style="font-size: 12px; color: #666;">📞 ${dispensary.phone}</div>` : ''}
-                            ${dispensary.opening_hours && dispensary.opening_hours.open_now ?
-                                '<div style="color: #4CAF50; font-weight: bold; font-size: 12px;">🟢 Currently Open</div>' :
-                                '<div style="color: #e74c3c; font-weight: bold; font-size: 12px;">🔴 Currently Closed</div>'
-                            }
+            
+            // Clean up markdown formatting
+            let formatted = text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Bold text
+                .replace(/\*(.*?)\*/g, '<em>$1</em>') // Italic text
+                .replace(/\n\n/g, '</p><p>') // Paragraph breaks
+                .replace(/\n/g, '<br>'); // Line breaks
+            
+            // Split into sections based on common patterns
+            const sections = [];
+            const sectionPatterns = [
+                { pattern: /\*\*Analysis[^:]*:\*\*/gi, title: '📊 Analysis' },
+                { pattern: /\*\*Effects Comparison[^:]*:\*\*/gi, title: '⚖️ Effects Comparison' },
+                { pattern: /\*\*Terpene Differences[^:]*:\*\*/gi, title: '🧪 Terpene Differences' },
+                { pattern: /\*\*Recommendation[^:]*:\*\*/gi, title: '💡 Recommendation' },
+                { pattern: /\*\*Potential Benefits[^:]*:\*\*/gi, title: '✅ Benefits' },
+                { pattern: /\*\*Potential Drawbacks[^:]*:\*\*/gi, title: '⚠️ Drawbacks' }
+            ];
+            
+            let currentText = formatted;
+            let lastIndex = 0;
+            
+            // Find all section markers
+            const markers = [];
+            sectionPatterns.forEach(({ pattern, title }) => {
+                let match;
+                while ((match = pattern.exec(currentText)) !== null) {
+                    markers.push({
+                        index: match.index,
+                        title: title,
+                        original: match[0]
+                    });
+                }
+            });
+            
+            // Sort markers by index
+            markers.sort((a, b) => a.index - b.index);
+            
+            if (markers.length === 0) {
+                // No sections found, return as single paragraph
+                return `<p>${formatted}</p>`;
+            }
+            
+            // Build sections
+            let result = '';
+            markers.forEach((marker, index) => {
+                const nextMarker = markers[index + 1];
+                const startIndex = marker.index + marker.original.length;
+                const endIndex = nextMarker ? nextMarker.index : currentText.length;
+                
+                const sectionContent = currentText.substring(startIndex, endIndex)
+                    .replace(/^<br>/, '') // Remove leading break
+                    .trim();
+                
+                // Determine section type for styling
+                let sectionClass = 'analysis-section';
+                if (marker.title.includes('Benefits')) {
+                    sectionClass = 'analysis-benefits';
+                } else if (marker.title.includes('Drawbacks')) {
+                    sectionClass = 'analysis-drawbacks';
+                } else if (marker.title.includes('Recommendation')) {
+                    sectionClass = 'analysis-highlight';
+                }
+                
+                result += `
+                    <div class="${sectionClass}">
+                        <h5>${marker.title}</h5>
+                        <p>${sectionContent}</p>
                         </div>
                     `;
                 });
 
-                html += `</div>`;
-            } else {
-                html += '<p style="color: #666; font-style: italic;">No dispensaries found in this area.</p>';
+            return result;
+        }
+
+        async function loadExistingProfile() {
+            try {
+                const response = await fetch('/api/user-profile');
+                if (response.ok) {
+                    const profile = await response.json();
+                    const favoriteStrains = profile.favorite_strains || [];
+                    const idealProfile = profile.ideal_profile;
+                    
+                    if (favoriteStrains.length > 0) {
+                        // Pre-select the favorite strains
+                        selectedStrains = [...favoriteStrains];
+                        updateSelectedStrainsDisplay();
+                        updateCreateProfileButton();
+                        
+                        // Update visual selection in the strain selector
+                        const options = document.querySelectorAll('.strain-option');
+                        options.forEach(option => {
+                            if (selectedStrains.includes(option.textContent)) {
+                                option.classList.add('selected');
+                            }
+                        });
+                    }
+                    
+                    if (idealProfile) {
+                        // Display the existing ideal profile
+                        displayCurrentProfile(idealProfile, favoriteStrains);
+                    }
+                }
+            } catch (error) {
+                console.log('No existing profile found or error loading:', error);
+                // This is normal for new users, so we don't show an error
             }
-
-            resultsContent.innerHTML = html;
         }
 
-        function focusOnDispensary(index) {
-            if (markers[index]) {
-                map.setCenter(markers[index].getPosition());
-                map.setZoom(15);
-                google.maps.event.trigger(markers[index], 'click');
-            }
-        }
-
-        function getStrainAliases(strainName) {
-            const aliases = {
-                'blue dream': 'Blueberry Dream, BD',
-                'og kush': 'OG, Original Gangster',
-                'sour diesel': 'Sour D, Sour Deez',
-                'granddaddy purple': 'GDP, Grand Daddy Purp',
-                'jack herer': 'JH, Jack',
-                'green crack': 'Green Crack, GC',
-                'purple punch': 'Purple Punch, PP',
-                'wedding cake': 'Wedding Cake, WC',
-                'gelato': 'Gelato, G',
-                'charlotte's web': 'Charlotte's Web, CW',
-                'harlequin': 'Harlequin, Harle',
-                'mystic dragon': 'Mystic Dragon, MD'
-            };
-            return aliases[strainName.toLowerCase()] || 'None known';
-        }
+        // Load available strains when page loads
+        {% if is_authenticated %}
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAvailableStrains();
+            // Load existing profile if user is already authenticated
+            loadExistingProfile();
+        });
+        {% endif %}
     </script>
 </body>
 </html>

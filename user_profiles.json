@@ -1,0 +1,139 @@
+{
+  "1": {
+    "id": "1",
+    "name": "User 1",
+    "address": "Default Location",
+    "radius": 25,
+    "favorite_strains": [
+      "blue dream",
+      "Blueberry Thai"
+    ],
+    "ideal_profile": {
+      "aggregate_terpenes": {
+        "myrcene": 0.55,
+        "pinene": 0.7,
+        "caryophyllene": 0.45,
+        "limonene": 0.6,
+        "linalool": 0.3,
+        "humulene": 0.25,
+        "terpinolene": 0.2,
+        "ocimene": 0.017835538667033614,
+        "nerolidol": 0.025118457992750812,
+        "bisabolol": 0.03427448056376317,
+        "eucalyptol": 0.010159279799933512
+      },
+      "aggregate_cannabinoids": {
+        "thc": 0.15521321797310392,
+        "cbd": 0.07919804658833972,
+        "cbg": 0.018099515765080516,
+        "cbn": 0.0045911238775764186,
+        "thcv": 0.004276932697728066
+      },
+      "terpene_analysis": [
+        {
+          "name": "Pinene",
+          "level": "70.0",
+          "description": "A pine-scented terpene that promotes alertness and memory retention. Found in pine needles and rosemary.",
+          "effects": [
+            "alertness",
+            "memory retention",
+            "bronchodilator",
+            "anti-inflammatory"
+          ],
+          "aroma": "Pine, fresh, woody"
+        },
+        {
+          "name": "Limonene",
+          "level": "60.0",
+          "description": "A citrusy terpene that promotes mood elevation and stress relief. Also found in citrus fruits and peppermint.",
+          "effects": [
+            "mood elevation",
+            "stress relief",
+            "anxiety reduction",
+            "antidepressant"
+          ],
+          "aroma": "Citrus, lemon, orange"
+        },
+        {
+          "name": "Myrcene",
+          "level": "55.0",
+          "description": "The most common terpene in cannabis, known for its sedative and relaxing effects. Found in hops, mango, and lemongrass.",
+          "effects": [
+            "relaxation",
+            "sedation",
+            "muscle relaxation",
+            "pain relief"
+          ],
+          "aroma": "Earthy, musky, clove-like"
+        },
+        {
+          "name": "Caryophyllene",
+          "level": "45.0",
+          "description": "A unique terpene that also acts as a cannabinoid, binding to CB2 receptors. Known for anti-inflammatory properties.",
+          "effects": [
+            "anti-inflammatory",
+            "pain relief",
+            "stress relief",
+            "anxiety reduction"
+          ],
+          "aroma": "Spicy, peppery, woody"
+        },
+        {
+          "name": "Linalool",
+          "level": "30.0",
+          "description": "A floral terpene with calming and sedative properties. Found in lavender and jasmine.",
+          "effects": [
+            "calming",
+            "sedation",
+            "anxiety relief",
+            "antidepressant"
+          ],
+          "aroma": "Floral, lavender, sweet"
+        }
+      ],
+      "top_effects": [
+        "uplifted",
+        "focused",
+        "happy",
+        "creative",
+        "relaxed",
+        "alert"
+      ],
+      "top_medical_effects": [
+        "pain relief",
+        "depression",
+        "stress",
+        "anxiety"
+      ],
+      "top_flavors": [
+        "sweet",
+        "berry",
+        "earthy",
+        "blueberry",
+        "fruity",
+        "tropical"
+      ],
+      "top_aromas": [
+        "sweet",
+        "berry",
+        "earthy",
+        "fruity"
+      ],
+      "strain_count": 2,
+      "dominant_terpenes": [
+        "pinene",
+        "limonene",
+        "myrcene",
+        "caryophyllene",
+        "linalool"
+      ],
+      "dominant_cannabinoids": [
+        "thc",
+        "cbd",
+        "cbg"
+      ],
+      "terpene_diversity": 11,
+      "cannabinoid_diversity": 5
+    }
+  }
+}

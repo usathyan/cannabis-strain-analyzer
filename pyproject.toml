@@ -3,14 +3,14 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "weed"
-version = "0.1.0"
-description = "AI-powered cannabis strain recommendation system with terpene analysis"
+name = "cannabis-strain-analyzer"
+version = "1.0.0"
+description = "Advanced cannabis strain analysis system with terpene and cannabinoid profiling using z-scored similarity matching"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.11"
 authors = [
-    {name = "Cannabis Recommendation System", email = "dev@example.com"},
+    {name = "Cannabis Strain Analyzer", email = "dev@example.com"},
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -37,21 +37,14 @@ dependencies = [
     "uvicorn>=0.24.0",
     "jinja2>=3.1.0",
     "requests>=2.31.0",
-    "fastapi-users[oauth,sqlalchemy]==12.1.2",
-    "sqlalchemy>=2.0.0",
-    "alembic>=1.12.0",
-    "httpx-oauth>=0.10.0",
-    "python-multipart>=0.0.6",
-    "passlib[bcrypt]>=1.7.4",
-    "python-jose[cryptography]>=3.3.0",
     "setuptools>=65.0.0",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "black>=23.0.0",
-    "isort>=5.12.0",
-    "flake8>=6.0.0",
+    "ruff>=0.1.0",
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
 ]
 
 [project.urls]
@@ -62,12 +55,41 @@ Issues = "https://github.com/yourusername/cannabis-strain-recommendations/issues
 [tool.hatch.build.targets.wheel]
 packages = ["."]
 
-[tool.black]
+[tool.ruff]
+target-version = "py311"
 line-length = 88
-target-version = ['py311']
-include = '\.pyi?$'
 
-[tool.isort]
-profile = "black"
-multi_line_output = 3
-line_length = 88
+[tool.ruff.lint]
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "B",  # flake8-bugbear
+    "C4", # flake8-comprehensions
+    "UP", # pyupgrade
+]
+ignore = [
+    "E501",  # line too long, handled by black
+    "B008",  # do not perform function calls in argument defaults
+    "C901",  # too complex
+    "B904",  # raise exceptions with from err
+]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+asyncio_mode = "auto"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.2",
+    "pytest-asyncio>=1.2.0",
+    "ruff>=0.13.1",
+]

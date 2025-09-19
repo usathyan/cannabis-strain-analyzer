@@ -1,119 +1,211 @@
-# Architecture Overview
+# 🏗️ Cannabis Strain Analyzer - Technical Architecture
 
-## 🏗️ System Architecture
+## Overview
 
-This is a simple cannabis strain recommendation system built with LangGraph and FastAPI.
+The Cannabis Strain Analyzer is a sophisticated web application that combines advanced mathematical similarity algorithms, AI-powered data generation, and comprehensive chemovar analysis to provide personalized cannabis strain recommendations.
 
-### Core Components
+## 🎯 Core Architecture Principles
 
-#### 1. Web Interface (`web_interface.py`)
-- **FastAPI Server**: Handles HTTP requests and serves the web interface
-- **HTML Template**: Simple form for strain input and results display
-- **API Endpoints**:
-  - `POST /api/recommendations` - Main recommendation endpoint
-  - `GET /api/dispensaries` - Dispensary search endpoint
-  - `GET /api/health` - Health check
+- **Fixed Schema Design**: Consistent terpene and cannabinoid profiles across all strains
+- **Z-Scored Similarity**: Robust mathematical comparison focusing on chemovar shape
+- **Conservative Imputation**: Scientifically-backed default values for missing data
+- **AI Integration**: LLM-powered strain data generation for unknown strains
+- **Modular Design**: Clean separation of concerns with focused components
 
-#### 2. LangGraph Agent (`langgraph_agent.py`)
-- **ReAct Agent**: Uses LangGraph for workflow management
-- **Tool Integration**: Routes queries to appropriate tools
-- **State Management**: Tracks conversation state and workflow progress
+## 🧩 System Components
 
-##### Agent Workflow:
+### 1. Main Application (`app.py`)
+
+**Purpose**: FastAPI-based web server providing RESTful API and web interface
+
+**Key Responsibilities**:
+- HTTP request handling and routing
+- User session management
+- API endpoint implementation
+- Template rendering
+- Error handling and validation
+
+**Architecture**:
 ```
-User Query → Router Node → Orchestrator → Analysis/Recommendation/Dispensary Tools → Response
-```
-
-#### 3. Core Tools
-
-##### Strain Analysis Tool
-- Analyzes terpene profiles from the strain database
-- Returns detailed strain information (effects, THC/CBD, type)
-
-##### Recommendation Tool
-- Calculates terpene similarity between strains
-- Returns top 3 most similar strains based on cosine similarity
-
-##### Dispensary Tool
-- Searches for dispensaries near user location
-- Supports configurable radius (10, 25, 50 miles)
-
-#### 4. Data Layer (`enhanced_strain_database.py`)
-- **In-Memory Database**: Stores 10+ strain profiles with terpene data
-- **Similarity Calculation**: Cosine similarity on terpene vectors
-- **Terpene Effects**: Predefined effects for each terpene
-
-#### 5. Location Service (`google_maps_integration.py`)
-- **Geocoding**: Converts addresses to coordinates
-- **Dispensary Search**: Mock implementation for demonstration
-- **Distance Calculation**: Calculates distances between locations
-
-### Data Flow
-
-1. **User Input**: Strain name + optional location/radius
-2. **Agent Processing**: LangGraph agent interprets the query
-3. **Tool Execution**: Appropriate tools are called (analysis, recommendation, dispensary)
-4. **Result Aggregation**: Results combined and formatted
-5. **Response**: JSON response sent to frontend
-6. **Display**: Results rendered in HTML
-
-### Technology Stack
-
-- **Backend**: FastAPI (Python web framework)
-- **Agent Framework**: LangGraph (workflow management)
-- **LLM Integration**: LangChain + Ollama (local LLM)
-- **Frontend**: Vanilla HTML/CSS/JavaScript (no frameworks)
-- **Data Processing**: NumPy, scikit-learn
-- **Geospatial**: Geopy (location services)
-
-### Key Design Decisions
-
-#### Simplicity First
-- **Single Responsibility**: Each component has one clear purpose
-- **Minimal Dependencies**: Only essential packages included
-- **No Complex ML**: Basic similarity calculations instead of advanced ML
-- **Mock Data**: Dispensary data uses mock implementation for simplicity
-
-#### LangGraph Integration
-- **Tool-Based Architecture**: Agent routes to specific tools
-- **State Management**: Clean state transitions between nodes
-- **Extensibility**: Easy to add new tools or modify workflow
-
-#### Web-First Design
-- **Direct API**: Frontend calls backend directly via AJAX
-- **Simple UI**: Clean, responsive interface focused on core functionality
-- **Progressive Enhancement**: Works without JavaScript (basic form submission)
-
-### File Structure
-
-```
-/
-├── web_interface.py          # FastAPI server and HTML template
-├── langgraph_agent.py        # LangGraph ReAct agent implementation
-├── enhanced_strain_database.py # Strain data and similarity calculations
-├── google_maps_integration.py  # Location and dispensary services
-├── requirements.txt          # Python dependencies
-├── README.md                 # Project documentation
-└── Architecture.md          # This file
+FastAPI App
+├── Routes
+│   ├── GET / (Web Interface)
+│   ├── POST /api/set-user
+│   ├── GET /api/available-strains
+│   ├── POST /api/create-ideal-profile
+│   ├── POST /api/compare-strain
+│   └── GET /api/user-profile
+├── Services
+│   └── EnhancedStrainDatabase
+└── Templates
+    └── Jinja2 HTML Templates
 ```
 
-### Future Extensions
+### 2. Strain Database (`enhanced_strain_database.py`)
 
-The architecture is designed to be easily extensible:
+**Purpose**: Manages strain data storage, retrieval, and persistence
 
-- **Add New Tools**: New recommendation algorithms or data sources
-- **Enhanced UI**: Add charts, filters, or advanced interactions
-- **Real APIs**: Replace mock data with real dispensary/location APIs
-- **User Accounts**: Add authentication and personalization
-- **Caching**: Add Redis or database caching for performance
+**Key Features**:
+- In-memory strain database with file-based persistence
+- Custom strain addition and management
+- Strain data validation and normalization
+- JSON-based data serialization
 
-### Performance Considerations
+**Data Structure**:
+```python
+StrainData = {
+    "name": str,
+    "terpenes": Dict[str, float],      # Fixed schema terpenes
+    "cannabinoids": Dict[str, float],  # Fixed schema cannabinoids
+    "effects": List[str],
+    "type": str,                       # indica/sativa/hybrid
+    "thc_range": str,
+    "cbd_range": str,
+    "description": str,
+    "flavors": List[str]
+}
+```
 
-- **Response Time**: <2 seconds for typical queries
-- **Memory Usage**: Lightweight with in-memory data
-- **Scalability**: Single-threaded design, can be scaled with async workers
-- **Caching**: No caching implemented (could be added for frequent queries)
+## 🧮 Similarity Algorithm Architecture
+
+### Z-Scored Cosine Similarity Implementation
+
+**Mathematical Foundation**:
+```
+cos(θ) = x·y / (||x|| ||y||)
+```
+
+Where `x` and `y` are z-scored (standardized) terpene + cannabinoid vectors.
+
+**Implementation Flow**:
+```python
+def compare_against_ideal_profile(strain_data, ideal_profile):
+    # 1. Normalize to fixed schema
+    normalized_strain = normalize_to_fixed_schema(strain_data)
+    
+    # 2. Create vectors in fixed order
+    strain_vector = create_chemovar_vector(normalized_strain)
+    ideal_vector = create_chemovar_vector(ideal_profile)
+    
+    # 3. Z-score standardization
+    scaler = StandardScaler()
+    combined_vectors = np.vstack([strain_vector, ideal_vector])
+    scaled_vectors = scaler.fit_transform(combined_vectors)
+    
+    # 4. Calculate multiple similarity metrics
+    z_scored_cosine = cosine_similarity(scaled_vectors[0], scaled_vectors[1])
+    euclidean_sim = 1 / (1 + euclidean_distance(scaled_vectors))
+    correlation_sim = correlation(scaled_vectors[0], scaled_vectors[1])
+    
+    # 5. Weighted combination
+    combined_similarity = (
+        0.5 * z_scored_cosine +    # Primary metric
+        0.2 * euclidean_sim +      # Distance-based
+        0.2 * correlation_sim +    # Pattern correlation
+        0.1 * original_cosine      # Reference
+    )
+    
+    return combined_similarity
+```
+
+### Multi-Metric Analysis
+
+**Similarity Metrics**:
+1. **Z-Scored Cosine Similarity (50%)**: Primary chemovar shape comparison
+2. **Z-Scored Euclidean Similarity (20%)**: Distance-based comparison
+3. **Z-Scored Correlation (20%)**: Profile pattern correlation
+4. **Original Cosine Similarity (10%)**: Reference metric
+
+## 🤖 AI Integration Architecture
+
+### LLM-Powered Strain Generation
+
+**Purpose**: Generate realistic strain data for unknown strains using AI
+
+**Implementation**:
+```python
+async def generate_strain_data(strain_name: str):
+    # 1. Create LLM prompt with fixed schema
+    prompt = create_schema_based_prompt(strain_name)
+    
+    # 2. Call Ollama LLM
+    llm = ChatOllama(model="llama3.2:latest")
+    response = await llm.ainvoke(prompt)
+    
+    # 3. Parse and validate JSON response
+    strain_data = json.loads(response.content)
+    validate_required_fields(strain_data)
+    
+    # 4. Fallback to conservative generation if LLM fails
+    if validation_fails:
+        return generate_fallback_strain_data(strain_name)
+    
+    return strain_data
+```
+
+## 🌐 Web Interface Architecture
+
+### Frontend Design
+
+**Technology Stack**:
+- **HTML5**: Semantic markup
+- **CSS3**: Modern styling with flexbox/grid
+- **JavaScript**: Vanilla JS for interactivity
+- **Jinja2**: Server-side templating
+
+**Component Structure**:
+```
+Tabbed Interface
+├── Configuration Tab
+│   ├── Strain Selection
+│   ├── Ideal Profile Display
+│   └── Profile Management
+└── Compare Tab
+    ├── Strain Input
+    ├── Analysis Results
+    └── AI Recommendations
+```
+
+## 🔧 Development Architecture
+
+### Build System
+
+**Makefile Targets**:
+```makefile
+install    # Install dependencies and create virtual environment
+run        # Start the web application
+test       # Run tests
+clean      # Clean up generated files and virtual environment
+```
+
+### Project Structure
+```
+cannabis-strain-analyzer/
+├── app.py                          # Main FastAPI application
+├── enhanced_strain_database.py     # Strain database management
+├── templates/
+│   └── index.html                  # Web interface template
+├── pyproject.toml                  # Project configuration
+├── Makefile                        # Build automation
+├── README.md                       # User documentation
+├── Architecture.md                 # This file
+└── LICENSE                         # MIT license
+```
+
+## 🚀 Deployment Architecture
+
+### Development Environment
+- **Local Development**: `make run` starts local server
+- **Hot Reloading**: FastAPI automatic reload on changes
+- **Debug Mode**: Detailed error logging and stack traces
+
+### Production Considerations
+- **WSGI Server**: Gunicorn or similar for production
+- **Reverse Proxy**: Nginx for static files and load balancing
+- **Database**: Consider PostgreSQL for production data persistence
+- **Caching**: Redis for session management and API caching
+- **Monitoring**: Application performance monitoring and logging
 
 ---
 
-**This architecture prioritizes simplicity and clarity while demonstrating LangGraph's capabilities for tool routing and workflow management.**
+This architecture document provides a comprehensive overview of the Cannabis Strain Analyzer's technical design and implementation details.

@@ -1,236 +1,256 @@
-# 🌿 Cannabis Strain Recommendation System
+# 🌿 Cannabis Strain Analyzer
 
-**Simple web interface for cannabis strain analysis and dispensary recommendations based on terpene profiles.**
+An advanced cannabis strain analysis and recommendation system that uses comprehensive terpene and cannabinoid profiling with z-scored similarity matching to provide personalized strain recommendations.
 
-[![Python](https://img.shields.io/badge/python-3.11+-blue)](https://python.org)
+## 🚀 Features
 
-## ✨ What This Does
+- **Comprehensive Chemovar Analysis**: Analyzes both terpenes and cannabinoids using a fixed schema
+- **Z-Scored Similarity Matching**: Uses advanced mathematical similarity algorithms for robust strain comparison
+- **Personalized Profiles**: Create ideal terpene/cannabinoid profiles from your favorite strains
+- **AI-Powered Generation**: Generates realistic strain data using LLM when strains aren't found
+- **Interactive Web Interface**: Clean, tabbed interface for configuration and comparison
+- **Conservative Imputation**: Handles missing data with scientifically-backed default values
 
-A simple web application that helps users:
+## 🧬 Scientific Approach
 
-- **Enter their favorite strain** and get detailed terpene analysis
-- **Find similar strains** based on terpene profile matching
-- **Locate nearby dispensaries** with configurable search radius
-- **Get AI-powered recommendations** using LangGraph ReAct agent
+### Fixed Schema Implementation
 
-## 🔐 Streamlined Approach (NEW!)
+The system uses a comprehensive fixed schema for consistent analysis:
 
-The streamlined version provides a focused, user-friendly experience:
+**Major Cannabinoids (5):**
+- THC (0-30%)
+- CBD (0-15%) 
+- CBG (0-2%)
+- CBN (0-1%)
+- THCV (0-0.5%)
 
-- **Google Authentication** - Secure login with Google accounts
-- **Favorite Strains Selection** - Choose your preferred strains from a curated list
-- **Terpene Profile Analysis** - Automatic analysis and aggregation of your favorites
-- **Simple Strain Comparison** - Enter any strain name to see how it compares to your preferences
-- **Personalized Recommendations** - Get clear recommendations based on terpene similarity
-- **Clean, Modern UI** - Beautiful, responsive interface designed for ease of use
+**Major Terpenes (11):**
+- **Primary**: myrcene, limonene, caryophyllene, pinene, linalool
+- **Secondary**: humulene, terpinolene, ocimene, nerolidol, bisabolol, eucalyptol
 
-## 🔐 Legacy Personalized Features
+### Z-Scored Cosine Similarity
 
-The original personalized version includes additional features:
+The system implements the recommended approach for robust chemovar comparison:
 
-- **Personal Profiles** - Store name, address, and favorite strains
-- **Terpene Analysis** - Generate detailed terpene profiles for your favorites
-- **Personalized Ratings** - Compare any strain against your preferences
-- **Smart Recommendations** - Get recommendations tailored to your taste
-- **Configuration Page** - Manage your profile and view terpene analysis
-
-## 🚀 Quick Start
-
-### 1. Install UV (Package Manager)
-
-```bash
-# Install UV
-curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# Or using pip
-pip install uv
+```
+cos(θ) = x·y / (||x|| ||y||)
 ```
 
-### 2. Install Dependencies
+Where `x` and `y` are z-scored (standardized) terpene + cannabinoid vectors. This approach:
+
+- **Normalizes data** to focus on profile shape rather than absolute magnitudes
+- **Handles missing values** with conservative imputation
+- **Provides robust comparison** across different strain batches and products
+- **Eliminates bias** from dominant terpenes/cannabinoids
+
+### Multi-Metric Analysis
+
+The system combines multiple similarity metrics:
+
+1. **Z-Scored Cosine Similarity (50%)**: Primary metric for chemovar shape
+2. **Z-Scored Euclidean Similarity (20%)**: Distance-based comparison
+3. **Z-Scored Correlation (20%)**: Profile pattern correlation
+4. **Original Cosine Similarity (10%)**: Reference metric
+
+## 🛠️ Installation
+
+### Prerequisites
+
+- Python 3.11 or higher
+- [uv](https://docs.astral.sh/uv/) package manager
+
+### Quick Start
 
 ```bash
-# Using Makefile (recommended)
+# Clone the repository
+git clone <repository-url>
+cd cannabis-strain-analyzer
+
+# Install dependencies
 make install
 
-# Or manually
-uv venv .venv
-source .venv/bin/activate
-uv sync --extra dev
-
-# Activate virtual environment
-source .venv/bin/activate
-```
-
-### 3. Start the Web Server
-
-#### Basic Version (No Authentication)
-```bash
-# Using Makefile
+# Start the application
 make run
-
-# Or directly
-source .venv/bin/activate
-python web_interface.py
 ```
 
-#### Personalized Version (With Google Auth)
-```bash
-# Setup authentication first
-python3 setup_auth.py
+The application will be available at `http://localhost:8000`
 
-# Follow the printed instructions to configure Google OAuth
-# Then run the personalized version
-make run-personalized
+## 📖 Usage
+
+### Web Interface
+
+The application provides a clean tabbed interface:
+
+#### Configuration Tab
+1. **Select Favorite Strains**: Choose from available strains or add custom strains
+2. **Individual Management**: Add/remove strains from your profile with real-time updates
+3. **Create Ideal Profile**: Generate comprehensive cannabis profile using maximum values
+4. **Profile Display**: View your complete profile with all cannabinoids and terpenes
+5. **Profile Management**: Update, clear, or modify your ideal profile anytime
+
+#### Compare Tab
+1. **Enter Strain Name**: Type the strain you want to analyze
+2. **Get Analysis**: Receive comprehensive similarity analysis
+3. **View Results**: See detailed terpene/cannabinoid differences and AI recommendations
+
+### API Endpoints
+
+The system provides RESTful API endpoints:
+
+- `POST /api/set-user` - Set current user
+- `GET /api/available-strains` - Get list of available strains
+- `POST /api/create-ideal-profile` - Create ideal profile from selected strains
+- `POST /api/add-strain-to-profile` - Add individual strain to profile
+- `POST /api/remove-strain-from-profile` - Remove individual strain from profile
+- `POST /api/compare-strain` - Compare strain against ideal profile
+- `GET /api/user-profile` - Get user profile and ideal profile
+- `GET /api/ideal-profile` - Get current ideal profile
+
+## 🧪 How Matching Works
+
+### 1. Ideal Profile Creation
+When you select favorite strains, the system creates your ideal cannabis profile using **maximum values** (not averages) for each compound:
+
+#### Why Maximum Values?
+- **Represents Peak Preferences**: Your ideal profile should reflect the highest levels of compounds you enjoy
+- **Captures Full Range**: Shows the maximum potential of effects you prefer
+- **Better Matching**: More accurate similarity comparison with strains that have high levels of your preferred compounds
+
+#### Profile Generation Process:
+1. **Collect Data**: Gathers all terpene and cannabinoid data from your selected strains
+2. **Calculate Maximums**: For each compound, takes the highest value across all strains
+3. **Normalize to Schema**: Ensures all 16 compounds (5 cannabinoids + 11 terpenes) are represented
+4. **Conservative Imputation**: Fills missing values with scientifically-backed defaults
+5. **Create Profile**: Generates your personalized ideal cannabis profile
+
+#### Example:
+If you select 3 strains with THC levels of 15%, 22%, and 18%, your ideal profile will have **22% THC** (the maximum), not 18.3% (the average).
+
+#### Profile Display Format:
+Your ideal cannabis profile displays all compounds with their maximum values:
+
+**Major Cannabinoids (5):**
+- THC: 22.0%, CBD: 3.5%, CBG: 1.2%, CBN: 0.8%, THCV: 0.3%
+
+**Major Terpenes (11):**
+- myrcene: 0.65%, limonene: 0.45%, caryophyllene: 0.35%, pinene: 0.52%, linalool: 0.28%, humulene: 0.15%, terpinolene: 0.12%, ocimene: 0.08%, nerolidol: 0.05%, bisabolol: 0.04%, eucalyptol: 0.02%
+
+This comprehensive view shows exactly what your ideal cannabis profile looks like across all major compounds.
+
+### 2. Strain Analysis
+For each comparison strain:
+- Normalizes to fixed schema with conservative imputation
+- Generates missing data using AI if needed
+- Creates standardized chemovar vector
+
+### 3. Similarity Calculation
+The system calculates:
+- **Z-scored vectors** for both ideal and comparison profiles
+- **Multiple similarity metrics** for comprehensive analysis
+- **Combined similarity score** with weighted averaging
+- **Component differences** showing individual terpene/cannabinoid variations
+
+### 4. Results Interpretation
+- **90%+**: Perfect Match
+- **70-89%**: Excellent Match  
+- **50-69%**: Good Match
+- **30-49%**: Moderate Match
+- **<30%**: Poor Match
+
+## 🔧 Development
+
+### Available Commands
+
+```bash
+make install    # Install dependencies and create virtual environment
+make run        # Start the web application
+make test       # Run tests
+make clean      # Clean up generated files and virtual environment
 ```
 
-#### Streamlined Version (Recommended)
-```bash
-# Setup authentication first
-python3 setup_auth.py
+### Project Structure
 
-# Follow the printed instructions to configure Google OAuth
-# Then run the streamlined version
-make run-streamlined
+```
+cannabis-strain-analyzer/
+├── app.py                          # Main application
+├── enhanced_strain_database.py     # Strain database management
+├── templates/
+│   └── index.html                  # Web interface template
+├── pyproject.toml                  # Project configuration
+├── Makefile                        # Build automation
+├── README.md                       # This file
+└── Architecture.md                 # Technical architecture documentation
 ```
 
-#### Demo Personalized Version (No Auth Required)
-```bash
-# Run the demo version (no Google OAuth setup needed)
-make run-demo
-```
+### Key Components
 
-### 4. Open Your Browser
+- **Fixed Schema**: Comprehensive terpene/cannabinoid profiles
+- **Conservative Imputation**: Scientific default values for missing data
+- **Z-Scored Similarity**: Advanced mathematical comparison
+- **AI Integration**: LLM-powered strain data generation
+- **Web Interface**: Clean, responsive user interface
 
-- **Basic App**: http://localhost:8000
-- **Streamlined App**: http://localhost:8000 (after running `make run-streamlined`)
-- **Personalized App**: http://localhost:8000 (after running `make run-personalized`)
-- **Demo Personalized App**: http://localhost:8000 (after running `make run-demo`)
-- **API Documentation**: http://localhost:8000/docs
+## 🧬 Scientific Background
 
-## 🧪 Testing Your Installation
-
-After running `make install`, test that everything works:
-
-```bash
-# Check project status
-make status
-
-# Test server startup
-make run
-
-# Open http://localhost:8000 in your browser
-# Try searching for "Blueberry Thai" or "Granddaddy Purple"
-
-## 📝 Migration Notes
-
-- **✅ Migrated to UV**: Dependencies now managed via `pyproject.toml`
-- **✅ Modern Python tooling**: Black, isort, flake8 configured
-- **✅ Professional structure**: Makefile, proper virtual environment
-- **📝 Legacy cleanup**: You can safely delete `requirements.txt` after confirming everything works
-
-## 🛠️ Available Commands
-
-### Makefile Targets
-```bash
-make install         # Install dependencies with UV
-make sync            # Sync dependencies
-make run             # Start production server
-make run-streamlined # Start streamlined strain analyzer
-make dev             # Start development server with auto-reload
-make clean           # Clean cache files and build artifacts
-make test            # Run tests
-make lint            # Run linting
-make format          # Format code with Black and isort
-make check           # Run all checks (lint + format)
-make status          # Show project status
-```
-
-### Direct Commands
-```bash
-# Activate virtual environment
-source .venv/bin/activate
-
-# Start server
-python web_interface.py
-
-# Development server with auto-reload
-uvicorn web_interface:app --reload --host 127.0.0.1 --port 8000
-```
-
-## 📱 Usage
-
-1. **Enter a strain name** (e.g., "Granddaddy Purple")
-2. **Add your location** (optional, for dispensary search)
-3. **Set search radius** (10, 25, or 50 miles)
-4. **Click "Get Recommendations"**
-
-The system will:
-- Analyze your strain's terpene profile
-- Find similar strains based on terpene matching
-- Show nearby dispensaries (if location provided)
-
-## 🏗️ Architecture
-
-### Core Components
-
-1. **Web Interface** (`web_interface.py`)
-   - FastAPI web server with simple HTML frontend
-   - Single form for strain input and location
-   - Displays results with strain analysis and recommendations
-
-2. **Strain Database** (`enhanced_strain_database.py`)
-   - Stores comprehensive terpene profiles for 10+ strains
-   - Simple similarity calculation based on terpene matching
-   - No complex ML algorithms - just basic cosine similarity
-
-3. **LangGraph Agent** (`langgraph_agent.py`)
-   - Simple ReAct agent with 3 tools: analysis, recommendation, dispensary
-   - Routes user queries to appropriate tools
-   - Minimal workflow with router → orchestrator → tools
-
-4. **Location Service** (`google_maps_integration.py`)
-   - Finds dispensaries near user location
-   - Configurable search radius (10, 25, 50 miles)
-   - Simple mock data for demonstration
-
-### Data Flow
-
-1. User enters strain name and location
-2. LangGraph agent processes the query
-3. Agent calls analysis tool to get strain data
-4. Agent calls recommendation tool for similar strains
-5. Agent calls dispensary tool for nearby locations
-6. Results displayed in web interface
-
-## 🧬 Terpene Analysis
-
-The system analyzes strains based on these key terpenes:
-
-- **Myrcene**: Relaxing, sedating effects
-- **Caryophyllene**: Anti-inflammatory, stress relief
-- **Pinene**: Alertness, memory retention
+### Terpenes
+Terpenes are aromatic compounds that influence cannabis effects:
+- **Myrcene**: Sedative, relaxing effects
 - **Limonene**: Mood elevation, stress relief
-- **Linalool**: Calming, sedating
-- **Humulene**: Appetite suppressant, anti-inflammatory
-- **Terpinolene**: Uplifting, energetic
+- **Caryophyllene**: Anti-inflammatory, pain relief
+- **Pinene**: Alertness, memory retention
+- **Linalool**: Calming, anxiety relief
 
-## 🔧 Configuration
+### Cannabinoids
+Cannabinoids are the primary active compounds:
+- **THC**: Psychoactive effects, euphoria
+- **CBD**: Non-psychoactive, therapeutic benefits
+- **CBG**: Precursor cannabinoid, potential therapeutic value
+- **CBN**: Sedative effects, sleep aid
+- **THCV**: Appetite suppressant, energizing
 
-### Environment Variables
+## 📊 Example Analysis
 
-```bash
-# Required for LangGraph agent
-OLLAMA_BASE_URL=http://localhost:11434
-OLLAMA_MODEL=gemma3:latest
-
-# Optional for location services
-GOOGLE_MAPS_API_KEY=your_key_here
+```json
+{
+  "similarity_percentage": 75.4,
+  "match_rating": "Very Good Match",
+  "similarity_breakdown": {
+    "z_scored_cosine_similarity": 0.85,
+    "z_scored_euclidean_similarity": 0.72,
+    "z_scored_correlation_similarity": 0.78,
+    "combined_similarity": 0.754
+  },
+  "component_differences": {
+    "myrcene": {
+      "strain_value": 0.45,
+      "ideal_value": 0.65,
+      "difference": -0.20,
+      "percentage_diff": -30.8,
+      "type": "terpene"
+    }
+  }
+}
 ```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
 
 ## 📄 License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🙏 Acknowledgments
+
+- Scientific research on cannabis terpenes and cannabinoids
+- Z-scored similarity methodology for chemovar comparison
+- Conservative imputation strategies for missing data
+- AI/ML community for similarity algorithms
 
 ---
 
-**🌿 Simple, focused cannabis strain recommendations!**
+**Note**: This system is for educational and research purposes. Always consult with healthcare professionals regarding cannabis use.

@@ -1,184 +1,64 @@
-.PHONY: help install sync run dev clean test lint format check
+# Cannabis Strain Analysis & Matching System
+# Makefile for simplified project management
+
+.PHONY: clean install test run help
 
 # Default target
 help:
-	@echo "Cannabis Strain Recommendation System"
+	@echo "🌿 Cannabis Strain Analysis & Matching System"
 	@echo ""
 	@echo "Available targets:"
-	@echo "  install        Install dependencies using UV"
-	@echo "  sync           Sync dependencies with pyproject.toml"
-	@echo "  run            Start the web server"
-	@echo "  run-streamlined Start the streamlined strain analyzer"
-	@echo "  dev            Start development server with auto-reload"
-	@echo "  clean          Clean cache files and build artifacts"
-	@echo "  test           Run tests"
-	@echo "  lint           Run linting"
-	@echo "  format         Format code"
-	@echo "  check          Run all checks (lint + format)"
+	@echo "  install  - Install dependencies and create virtual environment"
+	@echo "  run      - Start the web application"
+	@echo "  test     - Run tests"
+	@echo "  clean    - Clean up generated files and virtual environment"
 	@echo ""
-	@echo "Examples:"
-	@echo "  make install    # Install all dependencies"
-	@echo "  make run        # Start production server"
-	@echo "  make dev        # Start development server"
 
-# Install dependencies using UV
+# Install dependencies and create virtual environment
 install:
-	@echo "📦 Installing dependencies with UV..."
-	@if command -v uv >/dev/null 2>&1; then \
-		uv venv .venv && \
-		source .venv/bin/activate && \
-		uv sync --extra dev; \
-	else \
-		echo "❌ UV not found. Install UV first:"; \
-		echo "curl -LsSf https://astral.sh/uv/install.sh | sh"; \
-		exit 1; \
+	@echo "🚀 Installing dependencies..."
+	@if [ ! -d ".venv" ]; then \
+		echo "Creating virtual environment..."; \
+		uv venv --python python3; \
 	fi
+	@echo "Installing packages..."
+	uv sync --dev
+	@echo "✅ Installation complete!"
+	@echo "Run 'make run' to start the application"
 
-# Sync dependencies
-sync:
-	@echo "🔄 Syncing dependencies..."
-	@if command -v uv >/dev/null 2>&1; then \
-		source .venv/bin/activate && \
-		uv sync; \
-	else \
-		echo "❌ UV not found. Run 'make install' first."; \
-		exit 1; \
-	fi
-
-# Start production server
+# Start the web application
 run:
-	@echo "🚀 Starting production server..."
+	@echo "🌿 Starting Cannabis Strain Analysis System..."
 	@if [ ! -d ".venv" ]; then \
 		echo "❌ Virtual environment not found. Run 'make install' first."; \
 		exit 1; \
 	fi
-	.venv/bin/python web_interface.py
+	.venv/bin/python app.py
 
-run-personalized:
-	@echo "🚀 Starting personalized server with Google Auth..."
+# Run tests and linting
+test:
+	@echo "🧪 Running tests and linting..."
 	@if [ ! -d ".venv" ]; then \
 		echo "❌ Virtual environment not found. Run 'make install' first."; \
 		exit 1; \
 	fi
-	.venv/bin/python personalized_web_interface.py
+	@echo "🔍 Running ruff linter..."
+	.venv/bin/ruff check .
+	@echo "🧪 Running pytest tests..."
+	.venv/bin/python -m pytest tests/ -v
 
-run-demo:
-	@echo "🚀 Starting demo personalized server..."
-	@if [ ! -d ".venv" ]; then \
-		echo "❌ Virtual environment not found. Run 'make install' first."; \
-		exit 1; \
-	fi
-	.venv/bin/python simple_personalized_interface.py
-
-run-tabbed:
-	@echo "🚀 Starting tabbed interface server..."
-	@if [ ! -d ".venv" ]; then \
-		echo "❌ Virtual environment not found. Run 'make install' first."; \
-		exit 1; \
-	fi
-	.venv/bin/python simple_tabbed_interface.py
-
-
-
-# Start development server with auto-reload
-dev:
-	@echo "🔧 Starting development server..."
-	@if [ ! -d ".venv" ]; then \
-		echo "❌ Virtual environment not found. Run 'make install' first."; \
-		exit 1; \
-	fi
-	.venv/bin/uvicorn web_interface:app --reload --host 127.0.0.1 --port 8000
-
-# Clean cache files and build artifacts
+# Clean up generated files and virtual environment
 clean:
 	@echo "🧹 Cleaning up..."
-	rm -rf .venv/
-	rm -rf __pycache__/
-	rm -rf .pytest_cache/
-	rm -rf .mypy_cache/
-	rm -rf cache/
-	rm -rf custom_strains.json
-	rm -rf *.pyc
-	rm -rf *.pyo
-	rm -rf dist/
-	rm -rf build/
-	rm -rf *.egg-info/
-	find . -type d -name __pycache__ -exec rm -rf {} +
-	find . -type f -name "*.pyc" -delete
-	find . -type f -name "*.pyo" -delete
-
-# Run tests
-test:
-	@echo "🧪 Running tests..."
-	@if [ ! -d ".venv" ]; then \
-		echo "❌ Virtual environment not found. Run 'make install' first."; \
-		exit 1; \
-	fi
-	source .venv/bin/activate && \
-	pytest tests/ -v
-
-# Run linting
-lint:
-	@echo "🔍 Running linter..."
-	@if [ ! -d ".venv" ]; then \
-		echo "❌ Virtual environment not found. Run 'make install' first."; \
-		exit 1; \
-	fi
-	source .venv/bin/activate && \
-	flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics && \
-	flake8 . --count --exit-zero --max-complexity=10 --max-line-length=88 --statistics
-
-# Format code
-format:
-	@echo "🎨 Formatting code..."
-	@if [ ! -d ".venv" ]; then \
-		echo "❌ Virtual environment not found. Run 'make install' first."; \
-		exit 1; \
-	fi
-	source .venv/bin/activate && \
-	black . && \
-	isort .
-
-# Run all checks
-check: lint format
-	@echo "✅ All checks passed!"
-
-# Setup for development
-setup: clean install
-	@echo "🎯 Development environment ready!"
-	@echo "Run 'make run' to start the server"
-
-# Docker targets (optional)
-docker-build:
-	@echo "🐳 Building Docker image..."
-	docker build -t cannabis-recommendations .
-
-docker-run:
-	@echo "🐳 Running Docker container..."
-	docker run -p 8000:8000 cannabis-recommendations
-
-# Database management
-reset-db:
-	@echo "🔄 Resetting custom strains database..."
-	rm -f custom_strains.json
-	@echo "✅ Database reset complete"
-
-# Show status
-status:
-	@echo "📊 Project Status:"
-	@if [ -d ".venv" ]; then \
-		echo "✅ Virtual environment: .venv"; \
-	else \
-		echo "❌ Virtual environment: Not found"; \
-	fi
-	@if [ -f "custom_strains.json" ]; then \
-		strain_count=$$(python -c "import json; print(len(json.load(open('custom_strains.json'))))" 2>/dev/null || echo "0"); \
-		echo "✅ Custom strains: $$strain_count saved"; \
-	else \
-		echo "ℹ️  Custom strains: None saved yet"; \
-	fi
-	@if command -v uv >/dev/null 2>&1; then \
-		echo "✅ UV: Installed"; \
-	else \
-		echo "❌ UV: Not found"; \
-	fi
+	@rm -rf .venv
+	@rm -f user_profiles.json
+	@rm -f custom_strains.json
+	@rm -f *.db
+	@rm -f *.sqlite
+	@rm -f *.sqlite3
+	@rm -rf __pycache__
+	@rm -rf .pytest_cache
+	@find . -name "*.pyc" -delete
+	@find . -name "*.pyo" -delete
+	@find . -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
+	@echo "✅ Cleanup complete!"
