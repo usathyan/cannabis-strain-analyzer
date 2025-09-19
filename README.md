@@ -107,7 +107,7 @@ The application will be available at `http://localhost:8000`
 
 The Configuration tab provides a comprehensive interface for building and managing your personalized cannabis profile:
 
-![Configuration Tab](screenshots/configuration-tab.png)
+![Configuration Tab](screenshots/SCR-20250919-oouu-2.png)
 
 **Interface Features:**
 - **Clean Header**: Green banner with "Cannabis Strain Analysis & Comparison" title and User ID display
@@ -131,7 +131,7 @@ The Configuration tab provides a comprehensive interface for building and managi
 
 The Compare tab provides detailed strain analysis and similarity comparison with advanced z-score functionality:
 
-![Compare Tab](screenshots/compare-tab.png)
+![Compare Tab](screenshots/SCR-20250919-opao-2.png)
 
 **Analysis Interface:**
 - **Strain Input**: Clean text field for entering strain names (shown with "Sour zkittlez")
@@ -148,6 +148,18 @@ The Compare tab provides detailed strain analysis and similarity comparison with
   - Effects analysis and recommendations
   - Potential benefits and drawbacks
   - Detailed explanations of why the strain matches or differs from preferences
+
+### Additional Screenshots
+
+Here are additional views of the application interface:
+
+![Configuration Tab - Profile Details](screenshots/SCR-20250919-oppp-2.png)
+
+*Configuration tab showing detailed profile breakdown with all cannabinoids and terpenes*
+
+![Compare Tab - Analysis Results](screenshots/SCR-20250919-oukt-2.png)
+
+*Compare tab displaying comprehensive strain analysis and AI recommendations*
 
 ## 📖 Usage
 
