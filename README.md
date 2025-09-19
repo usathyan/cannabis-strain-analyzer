@@ -101,6 +101,34 @@ make run
 
 The application will be available at `http://localhost:8000`
 
+## 📸 Screenshots
+
+### Configuration Tab - Managing Your Ideal Cannabis Profile
+
+The Configuration tab allows you to build and manage your personalized cannabis profile:
+
+![Configuration Tab](screenshots/configuration-tab.png)
+
+**Key Features:**
+- **Current Profile Summary**: View your aggregated cannabis profile with all cannabinoids and terpenes
+- **Strain Selection**: Choose from available strains or add custom strains to your database
+- **Real-time Updates**: See your profile update as you add or remove strains
+- **Comprehensive Display**: View all 5 major cannabinoids and 11 major terpenes with their percentages
+- **Profile Management**: Update, clear, or modify your ideal profile anytime
+
+### Compare Tab - Advanced Strain Analysis
+
+The Compare tab provides detailed strain analysis and similarity comparison:
+
+![Compare Tab](screenshots/compare-tab.png)
+
+**Key Features:**
+- **Z-Score Comparison**: Advanced similarity analysis using your ranked favorite strains
+- **Comprehensive Analysis**: Detailed terpene and cannabinoid breakdown
+- **AI-Powered Recommendations**: Intelligent analysis of strain compatibility
+- **Similarity Scoring**: Multi-metric similarity calculation with detailed explanations
+- **Individual Comparisons**: See how the strain matches each of your favorite strains
+
 ## 📖 Usage
 
 ### Web Interface
