@@ -101,44 +101,53 @@ make run
 
 The application will be available at `http://localhost:8000`
 
-## 📸 Application Interface
+## 📸 Screenshots
 
 ### Configuration Tab - Managing Your Ideal Cannabis Profile
 
 The Configuration tab provides a comprehensive interface for building and managing your personalized cannabis profile:
 
-**Interface Overview:**
-- **Header**: Clean navigation with "Cannabis Strain Analysis & Comparison" title and User ID display
-- **Tab Navigation**: Easy switching between Configuration and Compare tabs
-- **Current Profile Summary**: Large display showing your aggregated cannabis profile with all cannabinoids and terpenes
-- **Strain Selection Grid**: Interactive buttons for selecting from available strains
-- **Custom Strain Addition**: Input field and button to add new strains to the database
-- **Profile Management**: Real-time updates and comprehensive profile controls
+![Configuration Tab](screenshots/configuration-tab.png)
 
-**Key Features:**
-- **Current Profile Summary**: View your aggregated cannabis profile with all cannabinoids and terpenes
-- **Strain Selection**: Choose from available strains or add custom strains to your database
-- **Real-time Updates**: See your profile update as you add or remove strains
-- **Comprehensive Display**: View all 5 major cannabinoids and 11 major terpenes with their percentages
-- **Profile Management**: Update, clear, or modify your ideal profile anytime
+**Interface Features:**
+- **Clean Header**: Green banner with "Cannabis Strain Analysis & Comparison" title and User ID display
+- **Tab Navigation**: Easy switching between Configuration and Compare tabs with visual indicators
+- **Current Profile Summary**: Large blue/purple display showing aggregated cannabis profile with:
+  - **Strains (2)**: "blue dream, Blueberry Thai"
+  - **Major Cannabinoids (5)**: THC: 24.3%, CBD: 11.4%, CBG: 1.6%, CBN: 0.4%, THCV: 0.4%
+  - **Major Terpenes (11)**: Complete breakdown with percentages (myrcene: 66.8%, pinene: 70.0%, etc.)
+  - **Top Effects**: happy, uplifted, creative, relaxed, focused
+  - **Medical Effects**: pain relief, depression, stress, anxiety
+  - **Flavors & Aromas**: sweet, berry, earthy profiles
+
+**Interactive Elements:**
+- **Strain Selection Grid**: Clickable buttons for available strains with visual selection indicators
+- **Custom Strain Addition**: Input field and "Add Strain" button for new strains
+- **Profile Management**: "Update Cannabis Profile" and "Clear All Strains" buttons
+- **Real-time Updates**: Profile updates immediately as you add/remove strains
+- **Status Messages**: Success notifications when profiles are created
 
 ### Compare Tab - Advanced Strain Analysis
 
-The Compare tab provides detailed strain analysis and similarity comparison with advanced features:
+The Compare tab provides detailed strain analysis and similarity comparison with advanced z-score functionality:
 
-**Interface Overview:**
-- **Strain Input**: Clean text field for entering strain names to analyze
-- **Z-Score Toggle**: Checkbox for enabling advanced z-score comparison
-- **Status Indicators**: Real-time status showing availability of ranked favorites
-- **Analysis Results**: Comprehensive display of similarity scores and detailed breakdowns
-- **AI Recommendations**: Intelligent analysis with benefits and drawbacks
+![Compare Tab](screenshots/compare-tab.png)
 
-**Key Features:**
-- **Z-Score Comparison**: Advanced similarity analysis using your ranked favorite strains
-- **Comprehensive Analysis**: Detailed terpene and cannabinoid breakdown
-- **AI-Powered Recommendations**: Intelligent analysis of strain compatibility
-- **Similarity Scoring**: Multi-metric similarity calculation with detailed explanations
-- **Individual Comparisons**: See how the strain matches each of your favorite strains
+**Analysis Interface:**
+- **Strain Input**: Clean text field for entering strain names (shown with "Sour zkittlez")
+- **Z-Score Toggle**: Checkbox for advanced z-score comparison with help text
+- **Status Indicators**: Real-time status showing "✅ Available (2 ranked favorites)"
+- **Analysis Button**: Green "🌿 Analyze & Compare" button to start analysis
+
+**Results Display:**
+- **Strain Analysis**: Complete strain information (Type: sativa, THC: 27.5-31.5%, CBD: 8.7-9.7%)
+- **Similarity Results**: Large purple box showing "-49.1% Similarity" with "Very Different" rating
+- **AI Recommendations**: Comprehensive analysis including:
+  - Overall assessment of strain compatibility
+  - Individual comparisons with ranked favorites (Blue Dream: -47.5%, Blueberry Thai: -50.8%)
+  - Effects analysis and recommendations
+  - Potential benefits and drawbacks
+  - Detailed explanations of why the strain matches or differs from preferences
 
 ## 📖 Usage
 
