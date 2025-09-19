@@ -132,6 +132,7 @@ def get_user_profile(user_id: int) -> dict[str, Any]:
         "address": "Default Location",
         "radius": 25,
         "favorite_strains": [],
+        "ranked_favorites": [],  # New: ranked list of favorite strains with their data
         "ideal_profile": None
     })
 
@@ -349,9 +350,10 @@ async def get_user_profile_endpoint():
 
 @app.post("/api/compare-strain")
 async def compare_strain(request: Request):
-    """Compare a strain against the user's ideal profile"""
+    """Compare a strain against the user's ideal profile or ranked favorites"""
     body = await request.json()
     strain_name = body.get("strain_name", "")
+    use_zscore = body.get("use_zscore", False)  # New: z-score comparison option
     if not current_user_id:
         raise HTTPException(status_code=401, detail="No user ID set")
 
@@ -378,18 +380,32 @@ async def compare_strain(request: Request):
                     detail=f"Error generating strain data: {str(e)}"
                 )
 
-        # Get ideal profile
+        # Get user profile
         user_profile = get_user_profile(current_user_id)
         ideal_profile = user_profile.get("ideal_profile")
+        ranked_favorites = user_profile.get("ranked_favorites", [])
 
-        if not ideal_profile:
-            raise HTTPException(status_code=404, detail="No ideal profile found. Please create one first.")
-
-        # Compare strain against ideal profile
-        comparison = compare_against_ideal_profile(strain_data, ideal_profile)
+        # Choose comparison method
+        if use_zscore and ranked_favorites:
+            # Use ranked favorites with z-scoring
+            comparison = compare_against_ranked_favorites(strain_data, ranked_favorites, use_zscore=True)
+            comparison_type = "ranked_favorites_zscore"
+        elif ranked_favorites:
+            # Use ranked favorites without z-scoring
+            comparison = compare_against_ranked_favorites(strain_data, ranked_favorites, use_zscore=False)
+            comparison_type = "ranked_favorites_individual"
+        elif ideal_profile:
+            # Fall back to ideal profile comparison
+            comparison = compare_against_ideal_profile(strain_data, ideal_profile)
+            comparison_type = "ideal_profile"
+        else:
+            raise HTTPException(status_code=404, detail="No ideal profile or ranked favorites found. Please create one first.")
 
         # Generate LLM-based analysis
-        llm_analysis = await generate_llm_analysis(strain_data, ideal_profile, comparison)
+        if comparison_type.startswith("ranked_favorites"):
+            llm_analysis = await generate_llm_analysis_ranked(strain_data, ranked_favorites, comparison)
+        else:
+            llm_analysis = await generate_llm_analysis(strain_data, ideal_profile, comparison)
 
         # Build terpene analysis
         terpene_analysis = build_terpene_analysis(strain_data.get("terpenes", {}))
@@ -406,7 +422,9 @@ async def compare_strain(request: Request):
                 "terpenes": terpene_analysis
             },
             "ideal_profile": ideal_profile,
+            "ranked_favorites": ranked_favorites if comparison_type.startswith("ranked_favorites") else None,
             "comparison": comparison,
+            "comparison_type": comparison_type,
             "llm_analysis": llm_analysis
         }
 
@@ -581,6 +599,143 @@ def calculate_aggregate_terpene_profile(strain_data_list: list[dict[str, Any]]) 
         "cannabinoid_diversity": len(aggregate_cannabinoids)
     }
 
+def compare_against_ranked_favorites(strain_data: dict[str, Any], ranked_favorites: list[dict[str, Any]], use_zscore: bool = False) -> dict[str, Any]:
+    """Compare a strain against ranked favorites using z-scoring when enabled"""
+    if not ranked_favorites:
+        return {"error": "No ranked favorites available for comparison"}
+
+    # Normalize strain data to fixed schema
+    normalized_strain = normalize_to_fixed_schema(strain_data)
+
+    # Get normalized strain vector
+    strain_terpenes = normalized_strain.get("terpenes", {})
+    strain_cannabinoids = normalized_strain.get("cannabinoids", {})
+
+    # Create strain vector in fixed order
+    terpene_order = list(TERPENE_SCHEMA.keys())
+    cannabinoid_order = list(CANNABINOID_SCHEMA.keys())
+    strain_terpene_vector = [strain_terpenes.get(terpene, 0.0) for terpene in terpene_order]
+    strain_cannabinoid_vector = [strain_cannabinoids.get(cannabinoid, 0.0) for cannabinoid in cannabinoid_order]
+    strain_vector = strain_terpene_vector + strain_cannabinoid_vector
+
+    # Get top 2-3 ranked favorites for comparison
+    top_favorites = ranked_favorites[:3] if len(ranked_favorites) >= 3 else ranked_favorites
+
+    if use_zscore and len(top_favorites) >= 2:
+        # Use z-scoring approach with multiple profiles
+        return compare_with_zscoring(strain_vector, strain_data, top_favorites)
+    else:
+        # Use individual comparisons against each favorite
+        return compare_against_individual_favorites(strain_vector, strain_data, top_favorites)
+
+def compare_with_zscoring(strain_vector: list[float], strain_data: dict[str, Any], ranked_favorites: list[dict[str, Any]]) -> dict[str, Any]:
+    """Compare using z-scoring with multiple ranked profiles"""
+    import numpy as np
+    from sklearn.metrics.pairwise import cosine_similarity
+    from sklearn.preprocessing import StandardScaler
+
+    # Prepare all vectors for z-scoring
+    all_vectors = [strain_vector]
+    favorite_names = [strain_data.get("name", "Unknown")]
+
+    for favorite in ranked_favorites:
+        # Normalize each favorite to fixed schema
+        normalized_favorite = normalize_to_fixed_schema(favorite)
+        favorite_terpenes = normalized_favorite.get("terpenes", {})
+        favorite_cannabinoids = normalized_favorite.get("cannabinoids", {})
+
+        # Create favorite vector in fixed order
+        terpene_order = list(TERPENE_SCHEMA.keys())
+        cannabinoid_order = list(CANNABINOID_SCHEMA.keys())
+        favorite_terpene_vector = [favorite_terpenes.get(terpene, 0.0) for terpene in terpene_order]
+        favorite_cannabinoid_vector = [favorite_cannabinoids.get(cannabinoid, 0.0) for cannabinoid in cannabinoid_order]
+        favorite_vector = favorite_terpene_vector + favorite_cannabinoid_vector
+
+        all_vectors.append(favorite_vector)
+        favorite_names.append(favorite.get("name", "Unknown"))
+
+    # Convert to numpy arrays
+    all_vectors_array = np.array(all_vectors)
+
+    # Z-score standardization
+    scaler = StandardScaler()
+    scaled_vectors = scaler.fit_transform(all_vectors_array)
+
+    # Calculate similarities between strain and each favorite
+    strain_scaled = scaled_vectors[0].reshape(1, -1)
+    similarities = []
+
+    for i in range(1, len(scaled_vectors)):
+        favorite_scaled = scaled_vectors[i].reshape(1, -1)
+        similarity = cosine_similarity(strain_scaled, favorite_scaled)[0][0]
+        similarities.append({
+            "strain_name": favorite_names[i],
+            "similarity": float(similarity),
+            "similarity_percentage": float(similarity * 100),
+            "rank": i
+        })
+
+    # Sort by similarity (highest first)
+    similarities.sort(key=lambda x: x["similarity"], reverse=True)
+
+    # Calculate overall similarity (average of top similarities)
+    overall_similarity = sum(s["similarity"] for s in similarities) / len(similarities)
+
+    return {
+        "overall_similarity": float(overall_similarity),
+        "similarity_percentage": float(overall_similarity * 100),
+        "match_rating": get_match_rating(overall_similarity),
+        "individual_similarities": similarities,
+        "method": "z_scored_multi_profile",
+        "profiles_used": len(ranked_favorites)
+    }
+
+def compare_against_individual_favorites(strain_vector: list[float], strain_data: dict[str, Any], ranked_favorites: list[dict[str, Any]]) -> dict[str, Any]:
+    """Compare against individual favorites using original cosine similarity"""
+    import numpy as np
+    from sklearn.metrics.pairwise import cosine_similarity
+
+    strain_array = np.array(strain_vector).reshape(1, -1)
+    similarities = []
+
+    for i, favorite in enumerate(ranked_favorites):
+        # Normalize each favorite to fixed schema
+        normalized_favorite = normalize_to_fixed_schema(favorite)
+        favorite_terpenes = normalized_favorite.get("terpenes", {})
+        favorite_cannabinoids = normalized_favorite.get("cannabinoids", {})
+
+        # Create favorite vector in fixed order
+        terpene_order = list(TERPENE_SCHEMA.keys())
+        cannabinoid_order = list(CANNABINOID_SCHEMA.keys())
+        favorite_terpene_vector = [favorite_terpenes.get(terpene, 0.0) for terpene in terpene_order]
+        favorite_cannabinoid_vector = [favorite_cannabinoids.get(cannabinoid, 0.0) for cannabinoid in cannabinoid_order]
+        favorite_vector = favorite_terpene_vector + favorite_cannabinoid_vector
+        favorite_array = np.array(favorite_vector).reshape(1, -1)
+
+        # Calculate cosine similarity
+        similarity = cosine_similarity(strain_array, favorite_array)[0][0]
+        similarities.append({
+            "strain_name": favorite.get("name", "Unknown"),
+            "similarity": float(similarity),
+            "similarity_percentage": float(similarity * 100),
+            "rank": i + 1
+        })
+
+    # Sort by similarity (highest first)
+    similarities.sort(key=lambda x: x["similarity"], reverse=True)
+
+    # Calculate overall similarity (average of top similarities)
+    overall_similarity = sum(s["similarity"] for s in similarities) / len(similarities)
+
+    return {
+        "overall_similarity": float(overall_similarity),
+        "similarity_percentage": float(overall_similarity * 100),
+        "match_rating": get_match_rating(overall_similarity),
+        "individual_similarities": similarities,
+        "method": "individual_cosine",
+        "profiles_used": len(ranked_favorites)
+    }
+
 def compare_against_ideal_profile(strain_data: dict[str, Any], ideal_profile: dict[str, Any]) -> dict[str, Any]:
     """Compare a strain against the ideal profile using fixed schema and z-scored similarity"""
     # Normalize strain data to fixed schema
@@ -734,6 +889,64 @@ def get_match_rating(similarity: float) -> str:
         return "Poor Match"
     else:
         return "Very Different"
+
+async def generate_llm_analysis_ranked(strain_data: dict[str, Any], ranked_favorites: list[dict[str, Any]], comparison: dict[str, Any]) -> str:
+    """Generate LLM analysis for ranked favorites comparison"""
+    try:
+        from langchain_ollama import OllamaLLM
+
+        llm = OllamaLLM(model="llama3.2")
+
+        # Prepare ranked favorites summary
+        favorites_summary = []
+        for i, favorite in enumerate(ranked_favorites[:3]):  # Top 3
+            favorites_summary.append(f"{i+1}. {favorite.get('name', 'Unknown')} - {favorite.get('type', 'Unknown')} with {favorite.get('thc_range', 'Unknown')} THC")
+
+        # Prepare individual similarities
+        individual_sims = comparison.get("individual_similarities", [])
+        similarity_details = []
+        for sim in individual_sims:
+            similarity_details.append(f"- {sim['strain_name']}: {sim['similarity_percentage']:.1f}% similarity")
+
+        prompt = f"""
+        Analyze this cannabis strain comparison against the user's ranked favorite strains:
+
+        **Strain Being Analyzed:**
+        - Name: {strain_data.get('name', 'Unknown')}
+        - Type: {strain_data.get('type', 'Unknown')}
+        - THC Range: {strain_data.get('thc_range', 'Unknown')}
+        - CBD Range: {strain_data.get('cbd_range', 'Unknown')}
+        - Effects: {', '.join(strain_data.get('effects', []))}
+        - Flavors: {', '.join(strain_data.get('flavors', []))}
+
+        **User's Ranked Favorites:**
+        {chr(10).join(favorites_summary)}
+
+        **Similarity Results:**
+        - Overall Similarity: {comparison.get('similarity_percentage', 0):.1f}%
+        - Match Rating: {comparison.get('match_rating', 'Unknown')}
+        - Method: {comparison.get('method', 'Unknown')}
+        - Individual Similarities:
+        {chr(10).join(similarity_details)}
+
+        **Analysis Request:**
+        Provide a comprehensive analysis including:
+        1. **Overall Assessment**: How well does this strain match the user's preferences?
+        2. **Individual Comparisons**: How does it compare to each favorite strain?
+        3. **Effects Analysis**: What effects can the user expect compared to their favorites?
+        4. **Recommendation**: Should the user try this strain? Why or why not?
+        5. **Potential Benefits**: What new experiences might this strain offer?
+        6. **Potential Drawbacks**: What might be different or less appealing?
+
+        Format your response with clear sections and be specific about the similarities and differences.
+        """
+
+        response = await llm.ainvoke(prompt)
+        return response.content if hasattr(response, 'content') else str(response)
+
+    except Exception as e:
+        print(f"❌ Error generating LLM analysis: {e}")
+        return f"**Analysis of {strain_data.get('name', 'Unknown')} vs Your Ranked Favorites**\n\nOverall Similarity: {comparison.get('similarity_percentage', 0):.1f}%\nMatch Rating: {comparison.get('match_rating', 'Unknown')}\n\nThis strain shows {comparison.get('similarity_percentage', 0):.1f}% similarity to your ranked favorites. The comparison method used was: {comparison.get('method', 'Unknown')}."
 
 async def generate_llm_analysis(strain_data: dict[str, Any], ideal_profile: dict[str, Any], comparison: dict[str, Any]) -> str:
     """Generate LLM-based analysis and recommendations"""

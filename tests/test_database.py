@@ -1,5 +1,9 @@
 """Tests for the strain database."""
 
+import os
+import tempfile
+from pathlib import Path
+
 import pytest
 
 from enhanced_strain_database import EnhancedStrainDatabase
@@ -7,8 +11,24 @@ from enhanced_strain_database import EnhancedStrainDatabase
 
 @pytest.fixture
 def db():
-    """Create a test database instance."""
-    return EnhancedStrainDatabase()
+    """Create a test database instance with temporary custom strains file."""
+    # Create a temporary file for custom strains
+    temp_file = tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False)
+    temp_file.write('{}')
+    temp_file.close()
+
+    # Create database instance with temporary file
+    db_instance = EnhancedStrainDatabase()
+    db_instance.custom_strains_file = Path(temp_file.name)
+    db_instance._load_custom_strains()  # Load empty custom strains
+
+    yield db_instance
+
+    # Clean up temporary file
+    try:
+        os.unlink(temp_file.name)
+    except OSError:
+        pass
 
 
 def test_database_initialization(db):

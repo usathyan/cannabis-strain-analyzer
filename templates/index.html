@@ -292,6 +292,85 @@
             border-radius: 4px;
             line-height: 1.4;
         }
+        
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+        
+        .checkbox-label input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+        
+        .ranked-favorites {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .ranked-favorites h4 {
+            margin-top: 0;
+            color: white;
+        }
+        
+        .ranked-favorites .help-text {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-left: 3px solid #ffd700;
+            color: white;
+        }
+        
+        .ranked-item {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .rank-number {
+            background: #ffd700;
+            color: #333;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+        
+        .rank-strain-name {
+            flex: 1;
+            font-weight: 500;
+        }
+        
+        .rank-controls {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .rank-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8em;
+        }
+        
+        .rank-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
         .current-profile {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -451,7 +530,7 @@
             <div class="tab-container">
                 <div class="tab-header">
                     <button class="tab-button active" onclick="switchTab('configuration')">⚙️ Configuration</button>
-                    <button class="tab-button" onclick="switchTab('compare')">🔍 Compare</button>
+                    <button class="tab-button" onclick="switchToCompareTab()">🔍 Compare</button>
                 </div>
 
                 <!-- Configuration Tab -->
@@ -496,17 +575,47 @@
                         </button>
                     </div>
                     
+                    <!-- Ranked Favorites Management -->
+                    <div id="rankedFavorites" class="ranked-favorites" style="display: none;">
+                        <h4>🏆 Rank Your Favorite Strains</h4>
+                        <p class="help-text">Rank your favorite strains from most preferred (1) to least preferred. This enables advanced z-score similarity comparisons.</p>
+                        <div id="rankedFavoritesList"></div>
+                        <div class="bulk-actions">
+                            <button onclick="saveRankedFavorites()" class="btn-submit" id="saveRankedBtn" disabled>
+                                💾 Save Ranked Favorites
+                            </button>
+                            <button onclick="clearRankedFavorites()" class="btn btn-danger" style="margin-left: 10px;">
+                                🗑️ Clear Rankings
+                            </button>
+                        </div>
+                    </div>
+                    
                     <div id="configurationResults"></div>
                 </div>
 
                 <!-- Compare Tab -->
                 <div id="compare" class="tab-content">
-                    <h2>Compare Strain Against Your Ideal Profile</h2>
-                    <p>Enter a strain name to compare it against your ideal terpene profile.</p>
+                    <h2>Compare Strain Against Your Profile</h2>
+                    <p>Enter a strain name to compare it against your ideal profile or ranked favorites.</p>
 
                     <div class="form-group">
                         <label for="compareStrainName">Strain Name</label>
                         <input type="text" id="compareStrainName" placeholder="e.g., Blue Dream, OG Kush, Sour Diesel" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="useZScore" onchange="toggleZScoreHelp()">
+                            <span class="checkmark"></span>
+                            🧮 Use Advanced Z-Score Comparison
+                        </label>
+                        <p class="help-text" id="zScoreHelp" style="display: none;">
+                            <strong>Z-Score Comparison:</strong> Uses your top 2-3 ranked favorite strains for more accurate similarity analysis. 
+                            Requires at least 2 ranked favorites. Provides better pattern recognition across your preferences.
+                        </p>
+                        <p class="help-text" id="zScoreStatus" style="display: none;">
+                            <strong>Status:</strong> <span id="zScoreStatusText"></span>
+                        </p>
                     </div>
 
                     <button onclick="compareStrain()" class="btn-submit">
@@ -866,6 +975,9 @@
 
                 const data = await response.json();
                 displayIdealProfile(data.ideal_profile);
+                
+                // Update z-score status after profile creation
+                setTimeout(updateZScoreStatus, 100);
 
             } catch (error) {
                 resultsDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
@@ -1004,6 +1116,72 @@
             }, 3000);
         }
 
+        function toggleZScoreHelp() {
+            const checkbox = document.getElementById('useZScore');
+            const helpDiv = document.getElementById('zScoreHelp');
+            const statusDiv = document.getElementById('zScoreStatus');
+            
+            if (checkbox.checked) {
+                helpDiv.style.display = 'block';
+                statusDiv.style.display = 'block';
+                updateZScoreStatus();
+            } else {
+                helpDiv.style.display = 'none';
+                statusDiv.style.display = 'none';
+            }
+        }
+
+        function updateZScoreStatus() {
+            const statusText = document.getElementById('zScoreStatusText');
+            const checkbox = document.getElementById('useZScore');
+            
+            // Check if we have ranked favorites
+            fetch('/api/user-profile')
+                .then(response => response.json())
+                .then(profile => {
+                    const rankedFavorites = profile.ranked_favorites || [];
+                    const favoriteStrains = profile.favorite_strains || [];
+                    
+                    if (rankedFavorites.length >= 2) {
+                        statusText.textContent = `✅ Available (${rankedFavorites.length} ranked favorites)`;
+                        statusText.style.color = '#4CAF50';
+                        // Auto-enable z-score if we have enough ranked favorites
+                        if (!checkbox.checked) {
+                            checkbox.checked = true;
+                            toggleZScoreHelp();
+                        }
+                    } else if (favoriteStrains.length >= 2) {
+                        statusText.textContent = `⚠️ Requires ranking (${favoriteStrains.length} favorites available to rank)`;
+                        statusText.style.color = '#ff9800';
+                        // Don't auto-enable if we don't have ranked favorites
+                        if (checkbox.checked) {
+                            checkbox.checked = false;
+                            toggleZScoreHelp();
+                        }
+                    } else {
+                        statusText.textContent = '❌ Not available (need at least 2 ranked favorites)';
+                        statusText.style.color = '#f44336';
+                        // Disable if not enough favorites
+                        if (checkbox.checked) {
+                            checkbox.checked = false;
+                            toggleZScoreHelp();
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking z-score status:', error);
+                    statusText.textContent = '❌ Error checking status';
+                    statusText.style.color = '#f44336';
+                });
+        }
+
+        // Auto-check z-score status when switching to compare tab
+        function switchToCompareTab() {
+            switchTab('compare');
+            // Small delay to ensure tab is visible
+            setTimeout(updateZScoreStatus, 100);
+        }
+
         async function compareStrain() {
             const strainName = document.getElementById('compareStrainName').value.trim();
             if (!strainName) {
@@ -1015,13 +1193,17 @@
             resultsDiv.innerHTML = '<div class="loading">Analyzing strain and comparing to your ideal profile...</div>';
             
             try {
-                console.log('Sending request for strain:', strainName);
+                const useZScore = document.getElementById('useZScore').checked;
+                console.log('Sending request for strain:', strainName, 'useZScore:', useZScore);
                 const response = await fetch('/api/compare-strain', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ strain_name: strainName })
+                    body: JSON.stringify({ 
+                        strain_name: strainName,
+                        use_zscore: useZScore
+                    })
                 });
                 
                 console.log('Response status:', response.status);

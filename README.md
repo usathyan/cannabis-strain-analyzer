@@ -5,7 +5,9 @@ An advanced cannabis strain analysis and recommendation system that uses compreh
 ## 🚀 Features
 
 - **Comprehensive Chemovar Analysis**: Analyzes both terpenes and cannabinoids using a fixed schema
-- **Z-Scored Similarity Matching**: Uses advanced mathematical similarity algorithms for robust strain comparison
+- **Advanced Z-Scored Similarity Matching**: Uses multiple ranked profiles for robust strain comparison
+- **Ranked Favorites System**: Rank your favorite strains for enhanced similarity analysis
+- **Dual Comparison Methods**: Choose between ideal profile or ranked favorites comparison
 - **Personalized Profiles**: Create ideal terpene/cannabinoid profiles from your favorite strains
 - **AI-Powered Generation**: Generates realistic strain data using LLM when strains aren't found
 - **Interactive Web Interface**: Clean, tabbed interface for configuration and comparison
@@ -51,6 +53,30 @@ The system combines multiple similarity metrics:
 2. **Z-Scored Euclidean Similarity (20%)**: Distance-based comparison
 3. **Z-Scored Correlation (20%)**: Profile pattern correlation
 4. **Original Cosine Similarity (10%)**: Reference metric
+
+## 🏆 Ranked Favorites System
+
+### Enhanced Similarity Analysis
+
+The system now supports two comparison approaches:
+
+#### **1. Ideal Profile Comparison (Traditional)**
+- Creates an aggregate profile using maximum values from all favorite strains
+- Uses fallback cosine similarity when z-scoring fails with 2 vectors
+- Provides consistent baseline comparisons
+
+#### **2. Ranked Favorites Comparison (Advanced)**
+- **Rank your favorite strains** from most preferred (1) to least preferred
+- **Z-scoring works properly** with 3+ vectors (strain + top 2-3 favorites)
+- **More accurate similarity** through pattern recognition across multiple profiles
+- **Individual comparisons** show how the strain matches each favorite
+
+### When Z-Scoring Works
+
+Z-scoring requires **3+ vectors** for stable standardization:
+- **2 vectors**: Strain vs Ideal Profile → Falls back to cosine similarity
+- **3+ vectors**: Strain vs Top 2-3 Ranked Favorites → Z-scoring enabled
+- **Better accuracy**: Multiple profiles provide meaningful standardization
 
 ## 🛠️ Installation
 
