@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Strain Analyzer</string>
+    <string name="home">Home</string>
+    <string name="configure">Configure</string>
+    <string name="compare">Compare</string>
+    <string name="profile">Profile</string>
+    <string name="your_profile">Your Profile</string>
+    <string name="strains">Strains</string>
+    <string name="avg_thc">Avg THC</string>
+    <string name="analyses">Analyses</string>
+    <string name="quick_actions">Quick Actions</string>
+    <string name="recent_analyses">Recent Analyses</string>
+    <string name="configure_profile">Configure Profile</string>
+    <string name="your_favorite_strains">Your Favorite Strains</string>
+    <string name="available_strains">Available Strains</string>
+    <string name="current_profile">Current Profile</string>
+    <string name="update_profile">Update Profile</string>
+    <string name="compare_strain">Compare Strain</string>
+    <string name="search_strain">Search Strain</string>
+    <string name="use_zscore">Use Z-Score Analysis</string>
+    <string name="analyze_strain">Analyze Strain</string>
+    <string name="recent_searches">Recent Searches</string>
+    <string name="strain_information">Strain Information</string>
+    <string name="terpene_profile">Terpene Profile</string>
+    <string name="ai_analysis">AI Analysis</string>
+    <string name="excellent_match">Excellent Match</string>
+    <string name="type">Type</string>
+    <string name="thc">THC</string>
+    <string name="cbd">CBD</string>
+</resources>
