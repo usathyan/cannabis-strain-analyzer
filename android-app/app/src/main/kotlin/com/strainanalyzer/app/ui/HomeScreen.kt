@@ -13,9 +13,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.strainanalyzer.app.analysis.LocalAnalysisEngine
+import com.strainanalyzer.app.llm.LlmService
 
 @Composable
 fun HomeScreen(
@@ -23,8 +26,14 @@ fun HomeScreen(
     onNavigateToConfig: () -> Unit,
     onNavigateToCompare: () -> Unit
 ) {
+    val context = LocalContext.current
     val userProfile by viewModel.userProfile.collectAsState()
-    
+    val analysisEngine = LocalAnalysisEngine.getInstance(context)
+    val llmService = LlmService.getInstance(context)
+
+    val totalStrains = analysisEngine.getAvailableStrains().size
+    val isLlmConfigured = llmService.isConfigured()
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -48,7 +57,7 @@ fun HomeScreen(
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
-                    
+
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -58,42 +67,54 @@ fun HomeScreen(
                                 ),
                                 shape = RoundedCornerShape(8.dp)
                             )
-                            .padding(12.dp)
+                            .padding(16.dp)
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceAround
                         ) {
                             ProfileStat(
-                                value = "${userProfile?.favoriteStrains?.size ?: 0}",
-                                label = "Strains"
+                                value = "${userProfile.favoriteStrains.size}",
+                                label = "In Profile"
                             )
                             ProfileStat(
-                                value = "${userProfile?.idealProfile?.aggregateCannabinoids?.get("thc")?.times(100)?.toInt() ?: 0}%",
-                                label = "Avg THC"
-                            )
-                            ProfileStat(
-                                value = "0",
-                                label = "Analyses"
+                                value = "$totalStrains",
+                                label = "Database"
                             )
                         }
                     }
-                    
-                    if (userProfile?.favoriteStrains?.isNotEmpty() == true) {
+
+                    if (userProfile.favoriteStrains.isNotEmpty()) {
                         Spacer(modifier = Modifier.height(12.dp))
+                        Text(
+                            text = "Your favorite strains:",
+                            fontSize = 14.sp,
+                            color = Color.Gray
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            userProfile?.favoriteStrains?.take(3)?.forEach { strain ->
+                            userProfile.favoriteStrains.take(3).forEach { strain ->
                                 StrainChip(strain)
                             }
+                            if (userProfile.favoriteStrains.size > 3) {
+                                StrainChip("+${userProfile.favoriteStrains.size - 3}")
+                            }
                         }
+                    } else {
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Text(
+                            text = "No favorite strains yet. Add strains to build your profile.",
+                            fontSize = 14.sp,
+                            color = Color.Gray
+                        )
                     }
                 }
             }
         }
-        
+
         item {
             // Quick Actions Card
             Card(
@@ -110,49 +131,80 @@ fun HomeScreen(
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
-                    
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        QuickActionButton(
-                            text = "Configure",
-                            icon = "⚙️",
-                            modifier = Modifier.weight(1f),
-                            onClick = onNavigateToConfig
-                        )
-                        QuickActionButton(
-                            text = "Compare",
-                            icon = "🔍",
-                            modifier = Modifier.weight(1f),
-                            onClick = onNavigateToCompare
-                        )
-                    }
+
+                    ActionButton(
+                        title = "Build Your Profile",
+                        description = "Add strains you enjoy",
+                        onClick = onNavigateToConfig
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    ActionButton(
+                        title = "Search Strains",
+                        description = "Find and analyze any strain",
+                        onClick = onNavigateToCompare
+                    )
                 }
             }
         }
-        
+
+        // API Status Card
         item {
-            // Recent Analyses Card
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                colors = CardDefaults.cardColors(
+                    containerColor = if (isLlmConfigured) Color(0xFFE8F5E9) else Color(0xFFFFF3E0)
+                )
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp)
                 ) {
                     Text(
-                        text = "Recent Analyses",
-                        fontSize = 18.sp,
+                        text = if (isLlmConfigured) "API Connected" else "API Not Configured",
+                        fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(bottom = 12.dp)
+                        color = if (isLlmConfigured) Color(0xFF2E7D32) else Color(0xFFE65100)
                     )
-                    
+                    Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "No recent analyses yet",
-                        color = Color.Gray,
-                        modifier = Modifier.padding(8.dp)
+                        text = if (isLlmConfigured)
+                            "You can search for any strain. Unknown strains will be fetched via API."
+                        else
+                            "Configure an API provider in Settings to search for strains not in the database.",
+                        fontSize = 13.sp,
+                        color = if (isLlmConfigured) Color(0xFF388E3C) else Color(0xFFF57C00)
+                    )
+                }
+            }
+        }
+
+        // How It Works Card
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFFE3F2FD))
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Text(
+                        text = "How It Works",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF1565C0),
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    Text(
+                        text = "1. Add strains you enjoy to your Profile\n" +
+                               "2. Search for any strain to analyze\n" +
+                               "3. See match % based on terpene similarity\n" +
+                               "4. All calculations run locally on-device",
+                        fontSize = 13.sp,
+                        lineHeight = 20.sp,
+                        color = Color(0xFF1976D2)
                     )
                 }
             }
@@ -174,8 +226,42 @@ fun ProfileStat(value: String, label: String) {
         Text(
             text = label,
             fontSize = 12.sp,
-            color = Color.White.copy(alpha = 0.9f)
+            color = Color.White.copy(alpha = 0.8f)
         )
+    }
+}
+
+@Composable
+fun ActionButton(
+    title: String,
+    description: String,
+    onClick: () -> Unit
+) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
+        shape = RoundedCornerShape(8.dp),
+        color = Color(0xFFF8F9FA)
+    ) {
+        Row(
+            modifier = Modifier.padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = title,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 15.sp
+                )
+                Text(
+                    text = description,
+                    color = Color.Gray,
+                    fontSize = 13.sp
+                )
+            }
+            Text(text = "→", fontSize = 20.sp, color = Color.Gray)
+        }
     }
 }
 
@@ -183,37 +269,15 @@ fun ProfileStat(value: String, label: String) {
 fun StrainChip(name: String) {
     Surface(
         shape = RoundedCornerShape(16.dp),
-        color = Color(0xFFe8f5e8)
+        color = Color(0xFFE8F5E9)
     ) {
         Text(
-            text = name,
-            color = Color(0xFF2e7d32),
-            fontSize = 14.sp,
+            text = name.split(" ").joinToString(" ") {
+                it.replaceFirstChar { c -> c.uppercase() }
+            },
+            fontSize = 12.sp,
+            color = Color(0xFF2E7D32),
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
         )
-    }
-}
-
-@Composable
-fun QuickActionButton(
-    text: String,
-    icon: String,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
-) {
-    Button(
-        onClick = onClick,
-        modifier = modifier.height(80.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0xFF4CAF50)
-        ),
-        shape = RoundedCornerShape(8.dp)
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(text = icon, fontSize = 24.sp)
-            Text(text = text, fontSize = 16.sp)
-        }
     }
 }

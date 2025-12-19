@@ -39,7 +39,7 @@ fun CompareScreen(
     var isEnhancing by remember { mutableStateOf(false) }
 
     val userProfile by viewModel.userProfile.collectAsState()
-    val favoriteStrains = userProfile?.favoriteStrains ?: emptyList()
+    val favoriteStrains = userProfile.favoriteStrains
 
     val isLlmConfigured = llmService.isConfigured()
     val totalStrains = analysisEngine.getAvailableStrains().size
@@ -525,7 +525,7 @@ fun CompareScreen(
                                 color = Color(0xFFF57C00)
                             )
                             Text(
-                                text = "Go to Configure tab and add your favorite strains for personalized matching.",
+                                text = "Go to Profile tab and add your favorite strains for personalized matching.",
                                 fontSize = 13.sp,
                                 color = Color(0xFFFF8F00)
                             )

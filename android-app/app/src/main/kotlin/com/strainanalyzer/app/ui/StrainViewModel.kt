@@ -1,9 +1,11 @@
 package com.strainanalyzer.app.ui
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import android.content.Context
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.strainanalyzer.app.data.*
-import com.strainanalyzer.app.network.ApiClient
+import com.strainanalyzer.app.analysis.LocalAnalysisEngine
+import com.strainanalyzer.app.data.StrainDataService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,58 +18,56 @@ sealed class UiState {
     object Idle : UiState()
 }
 
-class StrainViewModel : ViewModel() {
-    
-    private val apiService = ApiClient.apiService
-    
+/**
+ * Local user profile - stored in SharedPreferences
+ */
+data class LocalUserProfile(
+    val favoriteStrains: List<String> = emptyList()
+)
+
+class StrainViewModel(application: Application) : AndroidViewModel(application) {
+
+    private val context: Context = application.applicationContext
+    private val analysisEngine = LocalAnalysisEngine.getInstance(context)
+    private val strainDataService = StrainDataService.getInstance(context)
+    private val prefs = context.getSharedPreferences("user_profile", Context.MODE_PRIVATE)
+
     private val _uiState = MutableStateFlow<UiState>(UiState.Idle)
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
-    
-    private val _userProfile = MutableStateFlow<UserProfile?>(null)
-    val userProfile: StateFlow<UserProfile?> = _userProfile.asStateFlow()
-    
+
+    private val _userProfile = MutableStateFlow(loadProfile())
+    val userProfile: StateFlow<LocalUserProfile> = _userProfile.asStateFlow()
+
     private val _availableStrains = MutableStateFlow<List<String>>(emptyList())
     val availableStrains: StateFlow<List<String>> = _availableStrains.asStateFlow()
-    
+
     private val _selectedStrains = MutableStateFlow<Set<String>>(emptySet())
     val selectedStrains: StateFlow<Set<String>> = _selectedStrains.asStateFlow()
-    
-    private val _comparisonResult = MutableStateFlow<ComparisonResult?>(null)
-    val comparisonResult: StateFlow<ComparisonResult?> = _comparisonResult.asStateFlow()
-    
+
     private val _message = MutableStateFlow<String?>(null)
     val message: StateFlow<String?> = _message.asStateFlow()
-    
+
     init {
-        loadUserProfile()
         loadAvailableStrains()
+        _selectedStrains.value = _userProfile.value.favoriteStrains.toSet()
     }
-    
-    fun loadUserProfile() {
-        viewModelScope.launch {
-            try {
-                _uiState.value = UiState.Loading
-                val profile = apiService.getUserProfile()
-                _userProfile.value = profile
-                _selectedStrains.value = profile.favoriteStrains.toSet()
-                _uiState.value = UiState.Success
-            } catch (e: Exception) {
-                _uiState.value = UiState.Error(e.message ?: "Failed to load profile")
-            }
-        }
+
+    private fun loadProfile(): LocalUserProfile {
+        val favorites = prefs.getStringSet("favorites", emptySet())?.toList() ?: emptyList()
+        return LocalUserProfile(favoriteStrains = favorites)
     }
-    
+
+    private fun saveProfile(profile: LocalUserProfile) {
+        prefs.edit()
+            .putStringSet("favorites", profile.favoriteStrains.toSet())
+            .apply()
+        _userProfile.value = profile
+    }
+
     fun loadAvailableStrains() {
-        viewModelScope.launch {
-            try {
-                val response = apiService.getAvailableStrains()
-                _availableStrains.value = response.strains
-            } catch (e: Exception) {
-                _message.value = "Failed to load strains: ${e.message}"
-            }
-        }
+        _availableStrains.value = analysisEngine.getAvailableStrains()
     }
-    
+
     fun toggleStrainSelection(strain: String) {
         val current = _selectedStrains.value.toMutableSet()
         if (current.contains(strain)) {
@@ -77,78 +77,84 @@ class StrainViewModel : ViewModel() {
         }
         _selectedStrains.value = current
     }
-    
+
+    /**
+     * Add a strain to favorites
+     * If strain is not in database, fetch via LLM first
+     */
     fun addStrainToProfile(strainName: String) {
         viewModelScope.launch {
-            try {
-                _uiState.value = UiState.Loading
-                val response = apiService.addStrainToProfile(AddStrainRequest(strainName))
-                if (response.success) {
-                    loadUserProfile()
-                    _message.value = response.message
-                } else {
-                    _message.value = response.message
+            _uiState.value = UiState.Loading
+
+            // Check if strain exists or needs to be fetched
+            val result = strainDataService.getStrainData(strainName)
+
+            when (result.source) {
+                StrainDataService.StrainSource.NOT_FOUND -> {
+                    _uiState.value = UiState.Error(result.error ?: "Could not find strain")
+                    _message.value = result.error
                 }
-                _uiState.value = UiState.Success
-            } catch (e: Exception) {
-                _uiState.value = UiState.Error(e.message ?: "Failed to add strain")
+                else -> {
+                    // Strain found or generated - add to favorites
+                    val currentFavorites = _userProfile.value.favoriteStrains.toMutableList()
+                    val normalizedName = strainName.lowercase().trim()
+
+                    if (!currentFavorites.contains(normalizedName)) {
+                        currentFavorites.add(normalizedName)
+                        saveProfile(LocalUserProfile(favoriteStrains = currentFavorites))
+                        _selectedStrains.value = currentFavorites.toSet()
+
+                        val sourceMsg = when (result.source) {
+                            StrainDataService.StrainSource.LOCAL_DATABASE -> "from database"
+                            StrainDataService.StrainSource.LOCAL_CACHE -> "from cache"
+                            StrainDataService.StrainSource.LLM_GENERATED -> "generated via API"
+                            else -> ""
+                        }
+                        _message.value = "Added ${result.strain?.name ?: strainName} ($sourceMsg)"
+
+                        // Refresh available strains in case new one was added
+                        loadAvailableStrains()
+                    } else {
+                        _message.value = "${strainName} is already in your favorites"
+                    }
+                    _uiState.value = UiState.Success
+                }
             }
         }
     }
-    
+
     fun removeStrainFromProfile(strainName: String) {
-        viewModelScope.launch {
-            try {
-                _uiState.value = UiState.Loading
-                val response = apiService.removeStrainFromProfile(RemoveStrainRequest(strainName))
-                if (response.success) {
-                    loadUserProfile()
-                    _message.value = response.message
-                } else {
-                    _message.value = response.message
-                }
-                _uiState.value = UiState.Success
-            } catch (e: Exception) {
-                _uiState.value = UiState.Error(e.message ?: "Failed to remove strain")
-            }
+        val currentFavorites = _userProfile.value.favoriteStrains.toMutableList()
+        val normalizedName = strainName.lowercase().trim()
+
+        if (currentFavorites.remove(normalizedName)) {
+            saveProfile(LocalUserProfile(favoriteStrains = currentFavorites))
+            _selectedStrains.value = currentFavorites.toSet()
+            _message.value = "Removed $strainName from favorites"
         }
     }
-    
-    fun createIdealProfile() {
-        viewModelScope.launch {
-            try {
-                _uiState.value = UiState.Loading
-                val strains = _selectedStrains.value.toList()
-                val response = apiService.createIdealProfile(strains)
-                loadUserProfile()
-                _message.value = response.message
-                _uiState.value = UiState.Success
-            } catch (e: Exception) {
-                _uiState.value = UiState.Error(e.message ?: "Failed to create profile")
-            }
-        }
+
+    /**
+     * Update profile with selected strains
+     */
+    fun updateProfile() {
+        val selected = _selectedStrains.value.toList()
+        saveProfile(LocalUserProfile(favoriteStrains = selected))
+        _message.value = "Profile updated with ${selected.size} strains"
     }
-    
-    fun compareStrain(strainName: String, useZScore: Boolean = false) {
-        viewModelScope.launch {
-            try {
-                _uiState.value = UiState.Loading
-                val result = apiService.compareStrain(
-                    CompareStrainRequest(strainName, useZScore)
-                )
-                _comparisonResult.value = result
-                _uiState.value = UiState.Success
-            } catch (e: Exception) {
-                _uiState.value = UiState.Error(e.message ?: "Failed to compare strain")
-            }
-        }
+
+    /**
+     * Select a strain from the available list (toggle for favorites)
+     */
+    fun selectStrain(strain: String) {
+        toggleStrainSelection(strain)
     }
-    
+
     fun clearMessage() {
         _message.value = null
     }
-    
-    fun clearComparisonResult() {
-        _comparisonResult.value = null
+
+    fun setMessage(msg: String) {
+        _message.value = msg
     }
 }
