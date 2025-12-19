@@ -8,14 +8,44 @@ import kotlinx.coroutines.flow.StateFlow
 
 /**
  * LLM Service - manages provider configuration and strain analysis
+ * Prefers on-device Gemini Nano when available, falls back to cloud APIs
  */
 class LlmService(context: Context) {
 
     private val prefs: SharedPreferences = context.getSharedPreferences("llm_settings", Context.MODE_PRIVATE)
     private val provider = UnifiedLlmProvider()
+    private val geminiNano = GeminiNanoService.getInstance(context)
 
     private val _config = MutableStateFlow(loadConfig())
     val config: StateFlow<LlmConfig> = _config
+
+    // Expose Gemini Nano status
+    val geminiNanoStatus: StateFlow<GeminiNanoService.NanoStatus> = geminiNano.status
+    val geminiNanoDownloadProgress: StateFlow<Float> = geminiNano.downloadProgress
+
+    /**
+     * Initialize Gemini Nano (call on app startup)
+     */
+    suspend fun initializeGeminiNano() {
+        geminiNano.initialize()
+    }
+
+    /**
+     * Download Gemini Nano if available
+     */
+    suspend fun downloadGeminiNano() {
+        geminiNano.download()
+    }
+
+    /**
+     * Check if Gemini Nano is available on this device
+     */
+    fun isGeminiNanoAvailable(): Boolean = geminiNano.isAvailable()
+
+    /**
+     * Check if Gemini Nano can be downloaded
+     */
+    fun isGeminiNanoDownloadable(): Boolean = geminiNano.isDownloadable()
 
     private fun loadConfig(): LlmConfig {
         val providerName = prefs.getString("provider", "NONE") ?: "NONE"
@@ -48,7 +78,22 @@ class LlmService(context: Context) {
         _config.value = config
     }
 
+    /**
+     * Check if any AI provider is configured (Gemini Nano or cloud API)
+     */
     fun isConfigured(): Boolean {
+        // Gemini Nano takes priority
+        if (geminiNano.isAvailable()) return true
+
+        // Fall back to cloud API
+        val cfg = _config.value
+        return cfg.provider != LlmProviderType.NONE && cfg.apiKey.isNotBlank()
+    }
+
+    /**
+     * Check if only cloud API is configured (not using Gemini Nano)
+     */
+    fun isCloudApiConfigured(): Boolean {
         val cfg = _config.value
         return cfg.provider != LlmProviderType.NONE && cfg.apiKey.isNotBlank()
     }
@@ -95,9 +140,17 @@ class LlmService(context: Context) {
 
     /**
      * Generate strain data for unknown strains
+     * Uses Gemini Nano if available, otherwise falls back to cloud API
      */
     suspend fun generateStrainData(strainName: String): String? {
-        if (!isConfigured()) {
+        // Try Gemini Nano first (on-device)
+        if (geminiNano.isAvailable()) {
+            val result = geminiNano.generateStrainData(strainName)
+            if (result != null) return result
+        }
+
+        // Fall back to cloud API
+        if (!isCloudApiConfigured()) {
             return null
         }
 

@@ -1,16 +1,17 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 android {
     namespace = "com.strainanalyzer.app"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.strainanalyzer.app"
-        minSdk = 24
-        targetSdk = 34
+        minSdk = 26  // Required for ML Kit GenAI Prompt API
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -31,20 +32,16 @@ android {
     }
     
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
-    
+
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     
     buildFeatures {
         compose = true
-    }
-    
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.4"
     }
     
     packaging {
@@ -86,6 +83,9 @@ dependencies {
     
     // JSON
     implementation("com.google.code.gson:gson:2.10.1")
+
+    // ML Kit GenAI (Gemini Nano on-device)
+    implementation("com.google.mlkit:genai-prompt:1.0.0-alpha1")
     
     // Testing
     testImplementation("junit:junit:4.13.2")
