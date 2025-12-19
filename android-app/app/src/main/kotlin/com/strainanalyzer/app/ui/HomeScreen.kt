@@ -2,6 +2,7 @@ package com.strainanalyzer.app.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -51,10 +52,15 @@ fun HomeScreen(
     val isGeminiNanoDownloadable = llmService.isGeminiNanoDownloadable()
     val isCloudApiConfigured = llmService.isCloudApiConfigured()
 
+    val backgroundColor = MaterialTheme.colorScheme.background
+    val surfaceColor = MaterialTheme.colorScheme.surface
+    val onSurfaceColor = MaterialTheme.colorScheme.onSurface
+    val onSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF5F5F5))
+            .background(backgroundColor)
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
@@ -63,7 +69,8 @@ fun HomeScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                colors = CardDefaults.cardColors(containerColor = surfaceColor)
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp)
@@ -72,6 +79,7 @@ fun HomeScreen(
                         text = "Your Profile",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
+                        color = onSurfaceColor,
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
 
@@ -106,7 +114,7 @@ fun HomeScreen(
                         Text(
                             text = "Your favorite strains:",
                             fontSize = 14.sp,
-                            color = Color.Gray
+                            color = onSurfaceVariant
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Row(
@@ -125,7 +133,7 @@ fun HomeScreen(
                         Text(
                             text = "No favorite strains yet. Add strains to build your profile.",
                             fontSize = 14.sp,
-                            color = Color.Gray
+                            color = onSurfaceVariant
                         )
                     }
                 }
@@ -137,7 +145,8 @@ fun HomeScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                colors = CardDefaults.cardColors(containerColor = surfaceColor)
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp)
@@ -146,6 +155,7 @@ fun HomeScreen(
                         text = "Quick Actions",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
+                        color = onSurfaceColor,
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
 
@@ -386,12 +396,16 @@ fun ActionButton(
     description: String,
     onClick: () -> Unit
 ) {
+    val surfaceVariant = MaterialTheme.colorScheme.surfaceVariant
+    val onSurface = MaterialTheme.colorScheme.onSurface
+    val onSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
+
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(8.dp),
-        color = Color(0xFFF8F9FA)
+        color = surfaceVariant
     ) {
         Row(
             modifier = Modifier.padding(12.dp),
@@ -401,31 +415,36 @@ fun ActionButton(
                 Text(
                     text = title,
                     fontWeight = FontWeight.Medium,
-                    fontSize = 15.sp
+                    fontSize = 15.sp,
+                    color = onSurface
                 )
                 Text(
                     text = description,
-                    color = Color.Gray,
+                    color = onSurfaceVariant,
                     fontSize = 13.sp
                 )
             }
-            Text(text = "→", fontSize = 20.sp, color = Color.Gray)
+            Text(text = "→", fontSize = 20.sp, color = onSurfaceVariant)
         }
     }
 }
 
 @Composable
 fun StrainChip(name: String) {
+    val isDark = isSystemInDarkTheme()
+    val chipColor = if (isDark) Color(0xFF1B5E20) else Color(0xFFE8F5E9)
+    val textColor = if (isDark) Color(0xFFA5D6A7) else Color(0xFF2E7D32)
+
     Surface(
         shape = RoundedCornerShape(16.dp),
-        color = Color(0xFFE8F5E9)
+        color = chipColor
     ) {
         Text(
             text = name.split(" ").joinToString(" ") {
                 it.replaceFirstChar { c -> c.uppercase() }
             },
             fontSize = 12.sp,
-            color = Color(0xFF2E7D32),
+            color = textColor,
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
         )
     }

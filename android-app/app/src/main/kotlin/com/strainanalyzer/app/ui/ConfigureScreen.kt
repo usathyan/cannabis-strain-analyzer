@@ -3,6 +3,7 @@ package com.strainanalyzer.app.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -39,20 +40,30 @@ fun ConfigureScreen(
     var isAddingStrain by remember { mutableStateOf(false) }
 
     val isLlmConfigured = llmService.isConfigured()
+    val isDark = isSystemInDarkTheme()
+
+    val backgroundColor = MaterialTheme.colorScheme.background
+    val surfaceColor = MaterialTheme.colorScheme.surface
+    val onSurfaceColor = MaterialTheme.colorScheme.onSurface
+    val onSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
 
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF5F5F5))
+            .background(backgroundColor)
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         // Add New Strain Card
         item {
+            val cardColor = if (isDark) Color(0xFF0D47A1) else Color(0xFFE3F2FD)
+            val titleColor = if (isDark) Color(0xFF90CAF9) else Color(0xFF1565C0)
+            val subtitleColor = if (isDark) Color(0xFF64B5F6) else Color(0xFF1976D2)
+
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFE3F2FD))
+                colors = CardDefaults.cardColors(containerColor = cardColor)
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp)
@@ -61,7 +72,7 @@ fun ConfigureScreen(
                         text = "Add Strain to Profile",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1565C0),
+                        color = titleColor,
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
 
@@ -79,14 +90,14 @@ fun ConfigureScreen(
                         Text(
                             text = "Unknown strains will be fetched via API",
                             fontSize = 12.sp,
-                            color = Color(0xFF1976D2),
+                            color = subtitleColor,
                             modifier = Modifier.padding(top = 4.dp)
                         )
                     } else {
                         Text(
                             text = "Configure API in Settings to add unknown strains",
                             fontSize = 12.sp,
-                            color = Color.Gray,
+                            color = onSurfaceVariant,
                             modifier = Modifier.padding(top = 4.dp)
                         )
                     }
@@ -130,7 +141,8 @@ fun ConfigureScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                colors = CardDefaults.cardColors(containerColor = surfaceColor)
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp)
@@ -143,21 +155,25 @@ fun ConfigureScreen(
                         Text(
                             text = "Your Profile",
                             fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            color = onSurfaceColor
                         )
                         Text(
                             text = "${userProfile.favoriteStrains.size} strains",
                             fontSize = 14.sp,
-                            color = Color.Gray
+                            color = onSurfaceVariant
                         )
                     }
 
                     Spacer(modifier = Modifier.height(12.dp))
 
+                    val strainRowBg = if (isDark) Color(0xFF1B5E20) else Color(0xFFE8F5E9)
+                    val strainTextColor = if (isDark) Color(0xFFA5D6A7) else Color(0xFF2E7D32)
+
                     if (userProfile.favoriteStrains.isEmpty()) {
                         Text(
                             text = "No favorite strains yet. Add strains above or select from the database below.",
-                            color = Color.Gray,
+                            color = onSurfaceVariant,
                             fontSize = 14.sp
                         )
                     } else {
@@ -167,7 +183,7 @@ fun ConfigureScreen(
                                     .fillMaxWidth()
                                     .padding(vertical = 4.dp)
                                     .background(
-                                        Color(0xFFE8F5E9),
+                                        strainRowBg,
                                         shape = RoundedCornerShape(8.dp)
                                     )
                                     .padding(12.dp),
@@ -178,7 +194,8 @@ fun ConfigureScreen(
                                     text = strain.split(" ").joinToString(" ") {
                                         it.replaceFirstChar { c -> c.uppercase() }
                                     },
-                                    fontWeight = FontWeight.Medium
+                                    fontWeight = FontWeight.Medium,
+                                    color = strainTextColor
                                 )
                                 IconButton(
                                     onClick = { viewModel.removeStrainFromProfile(strain) },
@@ -202,7 +219,8 @@ fun ConfigureScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                colors = CardDefaults.cardColors(containerColor = surfaceColor)
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp)
@@ -215,19 +233,20 @@ fun ConfigureScreen(
                         Text(
                             text = "Quick Add from Database",
                             fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            color = onSurfaceColor
                         )
                         Text(
                             text = "${availableStrains.size} available",
                             fontSize = 14.sp,
-                            color = Color.Gray
+                            color = onSurfaceVariant
                         )
                     }
 
                     Text(
                         text = "Tap to add/remove from your profile",
                         fontSize = 12.sp,
-                        color = Color.Gray,
+                        color = onSurfaceVariant,
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
 
@@ -264,16 +283,38 @@ fun QuickAddStrainCard(
     isInProfile: Boolean,
     onClick: () -> Unit
 ) {
+    val isDark = isSystemInDarkTheme()
+    val surfaceColor = MaterialTheme.colorScheme.surface
+    val onSurface = MaterialTheme.colorScheme.onSurface
+
+    val borderColor = if (isInProfile) {
+        if (isDark) Color(0xFF4CAF50) else Color(0xFF4CAF50)
+    } else {
+        if (isDark) Color(0xFF424242) else Color(0xFFe9ecef)
+    }
+
+    val bgColor = if (isInProfile) {
+        if (isDark) Color(0xFF1B5E20) else Color(0xFFE8F5E9)
+    } else {
+        surfaceColor
+    }
+
+    val textColor = if (isInProfile) {
+        if (isDark) Color(0xFFA5D6A7) else Color(0xFF2E7D32)
+    } else {
+        onSurface
+    }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .border(
                 width = 2.dp,
-                color = if (isInProfile) Color(0xFF4CAF50) else Color(0xFFe9ecef),
+                color = borderColor,
                 shape = RoundedCornerShape(8.dp)
             )
             .background(
-                color = if (isInProfile) Color(0xFFE8F5E9) else Color.White,
+                color = bgColor,
                 shape = RoundedCornerShape(8.dp)
             )
             .clickable(onClick = onClick)
@@ -285,7 +326,7 @@ fun QuickAddStrainCard(
             horizontalArrangement = Arrangement.Center
         ) {
             if (isInProfile) {
-                Text(text = "✓ ", color = Color(0xFF4CAF50))
+                Text(text = "✓ ", color = if (isDark) Color(0xFF4CAF50) else Color(0xFF4CAF50))
             }
             Text(
                 text = name.split(" ").joinToString(" ") {
@@ -293,7 +334,7 @@ fun QuickAddStrainCard(
                 },
                 fontWeight = if (isInProfile) FontWeight.Bold else FontWeight.Normal,
                 fontSize = 13.sp,
-                color = if (isInProfile) Color(0xFF2E7D32) else Color.Black
+                color = textColor
             )
         }
     }
@@ -301,6 +342,9 @@ fun QuickAddStrainCard(
 
 @Composable
 fun InfoRow(label: String, value: String) {
+    val onSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
+    val onSurface = MaterialTheme.colorScheme.onSurface
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -309,13 +353,14 @@ fun InfoRow(label: String, value: String) {
     ) {
         Text(
             text = label,
-            color = Color.Gray,
+            color = onSurfaceVariant,
             fontSize = 14.sp
         )
         Text(
             text = value,
             fontWeight = FontWeight.Medium,
-            fontSize = 14.sp
+            fontSize = 14.sp,
+            color = onSurface
         )
     }
 }
