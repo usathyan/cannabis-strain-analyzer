@@ -36,6 +36,37 @@ Your preference for "relaxing indicas" or "energizing sativas" is really a prefe
 
 ## How It Works
 
+```mermaid
+flowchart LR
+    subgraph Step1["1️⃣ Build Profile"]
+        A["Add your<br/>favorite strains"]
+    end
+
+    subgraph Step2["2️⃣ Extract"]
+        B["Analyze terpene<br/>fingerprints"]
+    end
+
+    subgraph Step3["3️⃣ Create Ideal"]
+        C["MAX pooling<br/>→ Your ideal profile"]
+    end
+
+    subgraph Step4["4️⃣ Search"]
+        D["Enter any<br/>strain name"]
+    end
+
+    subgraph Step5["5️⃣ Match"]
+        E["Get similarity<br/>score & insights"]
+    end
+
+    A --> B --> C --> D --> E
+
+    style Step1 fill:#e3f2fd,stroke:#1976d2
+    style Step2 fill:#e8f5e9,stroke:#388e3c
+    style Step3 fill:#fff8e1,stroke:#f9a825
+    style Step4 fill:#fce4ec,stroke:#c2185b
+    style Step5 fill:#f3e5f5,stroke:#7b1fa2
+```
+
 ### 1. Build Your Profile
 
 Add strains you know and love. Each strain you add contributes its terpene fingerprint to your ideal profile. We use **MAX pooling**—taking the highest value of each terpene across all your favorites—to capture what you're drawn to.
@@ -107,8 +138,40 @@ Measures how terpenes move together. If your favorites all have high myrcene whe
 
 ### Combined Score Formula
 
-```
-Overall Score = (0.5 × Cosine) + (0.25 × Euclidean) + (0.25 × Correlation)
+```mermaid
+flowchart LR
+    subgraph Input["📊 Terpene Profiles"]
+        UP["Your Profile"]
+        SP["Strain Profile"]
+    end
+
+    subgraph Normalize["🔄 Z-Score Normalization"]
+        ZN["Normalize to<br/>standard deviations"]
+    end
+
+    subgraph Metrics["📐 Similarity Metrics"]
+        COS["Cosine Similarity<br/>━━━━━━━━━━━━<br/>Measures angle between<br/>terpene vectors<br/><b>50% weight</b>"]
+        EUC["Euclidean Distance<br/>━━━━━━━━━━━━<br/>Straight-line distance<br/>in terpene space<br/><b>25% weight</b>"]
+        COR["Pearson Correlation<br/>━━━━━━━━━━━━<br/>Pattern matching<br/>between profiles<br/><b>25% weight</b>"]
+    end
+
+    subgraph Output["🎯 Final Score"]
+        SCORE["Match %<br/>0-100"]
+    end
+
+    UP --> ZN
+    SP --> ZN
+    ZN --> COS
+    ZN --> EUC
+    ZN --> COR
+    COS --> SCORE
+    EUC --> SCORE
+    COR --> SCORE
+
+    style COS fill:#bbdefb,stroke:#1976d2
+    style EUC fill:#c8e6c9,stroke:#2e7d32
+    style COR fill:#fff9c4,stroke:#f9a825
+    style SCORE fill:#ffcdd2,stroke:#c62828
 ```
 
 This weighted ensemble reduces the blind spots of any single metric.
@@ -179,35 +242,39 @@ Full dark theme support with carefully selected colors for readability in low-li
 
 ## Technical Architecture
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                      UI Layer (Compose)                      │
-├─────────────────────────────────────────────────────────────┤
-│  HomeScreen │ ConfigureScreen │ CompareScreen │ Settings    │
-│             │   TerpeneChart  │               │             │
-└──────┬──────┴────────┬────────┴───────┬───────┴─────────────┘
-       │               │                │
-       ▼               ▼                ▼
-┌─────────────────────────────────────────────────────────────┐
-│                    StrainViewModel                           │
-│            (StateFlow, Coroutines, MVVM)                    │
-└──────┬──────────────┬─────────────────┬─────────────────────┘
-       │              │                 │
-       ▼              ▼                 ▼
-┌──────────────┐ ┌─────────────┐ ┌─────────────────────────────┐
-│ LocalAnalysis │ │StrainData   │ │      LlmService             │
-│   Engine      │ │  Service    │ │  ┌─────────────────────────┐│
-│               │ │             │ │  │    GeminiNanoService    ││
-│ • Z-Score     │ │ • Local DB  │ │  │    (On-Device NPU)      ││
-│ • Cosine      │ │ • Caching   │ │  └─────────────────────────┘│
-│ • Euclidean   │ │ • LLM Gen   │ │  ┌─────────────────────────┐│
-│ • Correlation │ │             │ │  │  UnifiedLlmProvider     ││
-└───────────────┘ └─────────────┘ │  │  • Gemini (Cloud)       ││
-                                   │  │  • OpenAI               ││
-                                   │  │  • Anthropic            ││
-                                   │  │  • Ollama               ││
-                                   │  └─────────────────────────┘│
-                                   └─────────────────────────────┘
+```mermaid
+graph TB
+    subgraph UI["🎨 UI Layer (Jetpack Compose)"]
+        Home[Home Screen]
+        Profile[Profile Builder]
+        Search[Strain Analyzer]
+        Settings[Settings]
+    end
+
+    subgraph VM["📊 ViewModel Layer"]
+        SVM[StrainViewModel<br/>StateFlow • Coroutines • MVVM]
+    end
+
+    subgraph Services["⚙️ Service Layer"]
+        LAE["🧮 LocalAnalysisEngine<br/>━━━━━━━━━━━━━━━<br/>• Z-Score Normalization<br/>• Cosine Similarity<br/>• Euclidean Distance<br/>• Pearson Correlation"]
+
+        SDS["💾 StrainDataService<br/>━━━━━━━━━━━━━━━<br/>• Embedded DB<br/>• Local Cache<br/>• API Fetching"]
+
+        subgraph LLM["🤖 LlmService"]
+            Nano["📱 Gemini Nano<br/>(On-Device NPU)"]
+            Cloud["☁️ Cloud Providers<br/>Gemini • OpenAI<br/>Anthropic • Ollama"]
+        end
+    end
+
+    UI --> VM
+    VM --> LAE
+    VM --> SDS
+    VM --> LLM
+
+    style UI fill:#e1f5fe,stroke:#01579b
+    style VM fill:#fff3e0,stroke:#e65100
+    style Services fill:#f3e5f5,stroke:#7b1fa2
+    style LLM fill:#e8f5e9,stroke:#2e7d32
 ```
 
 ### Tech Stack
@@ -289,6 +356,37 @@ Unknown strains can be generated via AI and automatically saved to your local da
 The app uses a multi-tier approach to fetch strain data, prioritizing reliability and accuracy:
 
 ### Data Source Hierarchy
+
+```mermaid
+flowchart LR
+    Search["🔍 Search Strain"] --> DB
+
+    subgraph Sources["Data Source Cascade"]
+        direction TB
+        DB["1️⃣ Embedded DB<br/>30+ curated strains"]
+        Cache["2️⃣ Local Cache<br/>Previously fetched"]
+        API["3️⃣ Cannlytics API<br/>External database"]
+        Fallback["4️⃣ Fallback Config<br/>22+ backup strains"]
+        LLM["5️⃣ LLM Generation<br/>AI-generated profiles"]
+
+        DB -->|not found| Cache
+        Cache -->|not found| API
+        API -->|not found| Fallback
+        Fallback -->|not found| LLM
+    end
+
+    LLM --> Result["✅ Strain Profile"]
+    DB -->|found| Result
+    Cache -->|found| Result
+    API -->|found| Result
+    Fallback -->|found| Result
+
+    style DB fill:#c8e6c9,stroke:#2e7d32
+    style Cache fill:#bbdefb,stroke:#1976d2
+    style API fill:#fff9c4,stroke:#f9a825
+    style Fallback fill:#ffe0b2,stroke:#ef6c00
+    style LLM fill:#e1bee7,stroke:#7b1fa2
+```
 
 | Priority | Source | Description |
 |----------|--------|-------------|
