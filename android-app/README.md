@@ -370,6 +370,53 @@ MAX pooling says: "You've shown you can enjoy high myrcene. Keep that ceiling." 
 
 ---
 
+## CI/CD with GitHub Actions
+
+The project includes GitHub Actions workflows for automated builds.
+
+### Workflows
+
+| Workflow | Trigger | Output |
+|----------|---------|--------|
+| **CI Build** | Push to `main`, PRs | Debug APK + Lint report |
+| **Release Build** | Git tags (`v*`), Manual | Signed AAB for Google Play |
+
+### Setting Up Release Builds
+
+To enable signed release builds, add these secrets to your GitHub repository:
+
+1. **Generate a keystore** (if you don't have one):
+   ```bash
+   keytool -genkey -v -keystore release-keystore.jks -keyalg RSA \
+     -keysize 2048 -validity 10000 -alias release
+   ```
+
+2. **Encode keystore to base64**:
+   ```bash
+   base64 -i release-keystore.jks | pbcopy  # macOS
+   base64 -w 0 release-keystore.jks         # Linux
+   ```
+
+3. **Add GitHub Secrets** (Settings → Secrets → Actions):
+   | Secret | Description |
+   |--------|-------------|
+   | `KEYSTORE_BASE64` | Base64-encoded keystore file |
+   | `KEYSTORE_PASSWORD` | Keystore password |
+   | `KEY_ALIAS` | Key alias (e.g., `release`) |
+   | `KEY_PASSWORD` | Key password |
+
+### Creating a Release
+
+```bash
+# Tag and push to trigger release build
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+Or use **Actions → Build Release AAB → Run workflow** for manual builds.
+
+---
+
 ## Roadmap
 
 - [ ] Strain journal (log your experiences with ratings)
