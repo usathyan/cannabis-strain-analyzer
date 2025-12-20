@@ -1,0 +1,359 @@
+{
+  "description": "Strain database configuration. Add strain names here and run build_strain_database.py to fetch from API.",
+  "api_base": "https://cannlytics.com/api/data/strains",
+  "strains": [
+    "24K Gold",
+    "Apple Fritter",
+    "Blue Dream",
+    "Blueberry",
+    "Blueberry Thai",
+    "Bubba Kush",
+    "Charlotte's Web",
+    "Cherry Pie",
+    "Durban Poison",
+    "Gelato",
+    "Girl Scout Cookies",
+    "Gorilla Glue",
+    "Granddaddy Purple",
+    "Green Crack",
+    "Harlequin",
+    "Jack Herer",
+    "Lemon Haze",
+    "Northern Lights",
+    "OG Kush",
+    "Pineapple Express",
+    "Purple Haze",
+    "Purple Punch",
+    "Runtz",
+    "Skywalker OG",
+    "Sour Diesel",
+    "Super Lemon Haze",
+    "Tangie",
+    "Wedding Cake",
+    "White Widow",
+    "Zkittlez"
+  ],
+  "fallback_strains": {
+    "description": "Strain data for strains not found in API (manually curated)",
+    "apple fritter": {
+      "type": "hybrid",
+      "thc_range": "22-28%",
+      "cbd_range": "<1%",
+      "description": "A potent hybrid known for its sweet apple and vanilla flavors",
+      "effects": ["relaxed", "happy", "euphoric", "uplifted", "creative"],
+      "medical_effects": ["stress relief", "anxiety", "depression", "pain relief"],
+      "flavors": ["apple", "vanilla", "sweet", "earthy"],
+      "terpenes": {
+        "myrcene": 0.35,
+        "limonene": 0.28,
+        "caryophyllene": 0.22,
+        "pinene": 0.12,
+        "linalool": 0.08
+      }
+    },
+    "charlotte's web": {
+      "type": "sativa",
+      "thc_range": "<1%",
+      "cbd_range": "13-20%",
+      "description": "High-CBD strain famous for its therapeutic properties with minimal psychoactive effects",
+      "effects": ["calm", "focused", "clear-headed", "relaxed"],
+      "medical_effects": ["seizures", "anxiety", "inflammation", "pain relief"],
+      "flavors": ["pine", "earthy", "woody", "sage"],
+      "terpenes": {
+        "myrcene": 0.45,
+        "pinene": 0.25,
+        "caryophyllene": 0.18,
+        "limonene": 0.08,
+        "linalool": 0.04
+      }
+    },
+    "gelato": {
+      "type": "hybrid",
+      "thc_range": "20-25%",
+      "cbd_range": "<1%",
+      "description": "Sweet dessert strain with a balanced high and beautiful purple hues",
+      "effects": ["relaxed", "happy", "euphoric", "uplifted", "creative"],
+      "medical_effects": ["stress relief", "pain relief", "depression", "insomnia"],
+      "flavors": ["sweet", "citrus", "berry", "lavender"],
+      "terpenes": {
+        "limonene": 0.32,
+        "caryophyllene": 0.28,
+        "myrcene": 0.22,
+        "linalool": 0.15,
+        "humulene": 0.08
+      }
+    },
+    "granddaddy purple": {
+      "type": "indica",
+      "thc_range": "17-24%",
+      "cbd_range": "<1%",
+      "description": "Classic indica with grape and berry flavors, known for deep relaxation",
+      "effects": ["relaxed", "sleepy", "happy", "euphoric", "hungry"],
+      "medical_effects": ["pain relief", "insomnia", "stress relief", "anxiety"],
+      "flavors": ["grape", "berry", "earthy", "sweet"],
+      "terpenes": {
+        "myrcene": 0.42,
+        "caryophyllene": 0.28,
+        "pinene": 0.18,
+        "limonene": 0.12,
+        "linalool": 0.08
+      }
+    },
+    "og kush": {
+      "type": "hybrid",
+      "thc_range": "19-26%",
+      "cbd_range": "<1%",
+      "description": "Legendary strain with complex earthy, pine, and citrus flavors",
+      "effects": ["relaxed", "happy", "euphoric", "uplifted", "hungry"],
+      "medical_effects": ["stress relief", "depression", "pain relief", "insomnia"],
+      "flavors": ["earthy", "pine", "woody", "citrus"],
+      "terpenes": {
+        "myrcene": 0.38,
+        "limonene": 0.28,
+        "caryophyllene": 0.22,
+        "pinene": 0.15,
+        "linalool": 0.08
+      }
+    },
+    "wedding cake": {
+      "type": "hybrid",
+      "thc_range": "22-27%",
+      "cbd_range": "<1%",
+      "description": "Sweet and tangy strain with relaxing effects and beautiful trichome coverage",
+      "effects": ["relaxed", "happy", "euphoric", "uplifted", "hungry"],
+      "medical_effects": ["pain relief", "insomnia", "anxiety", "depression"],
+      "flavors": ["sweet", "vanilla", "earthy", "peppery"],
+      "terpenes": {
+        "limonene": 0.35,
+        "caryophyllene": 0.30,
+        "myrcene": 0.22,
+        "linalool": 0.10,
+        "humulene": 0.08
+      }
+    },
+    "jack herer": {
+      "type": "sativa",
+      "thc_range": "18-24%",
+      "cbd_range": "<1%",
+      "description": "Legendary sativa named after the cannabis activist, known for creative and energetic effects",
+      "effects": ["energetic", "creative", "focused", "happy", "uplifted"],
+      "medical_effects": ["depression", "fatigue", "stress relief", "ADD/ADHD"],
+      "flavors": ["pine", "earthy", "woody", "spicy"],
+      "terpenes": {
+        "terpinolene": 0.35,
+        "pinene": 0.25,
+        "caryophyllene": 0.18,
+        "myrcene": 0.12,
+        "limonene": 0.10
+      }
+    },
+    "green crack": {
+      "type": "sativa",
+      "thc_range": "15-24%",
+      "cbd_range": "<1%",
+      "description": "Intense sativa with sharp energy and focus, featuring mango and citrus notes",
+      "effects": ["energetic", "focused", "happy", "uplifted", "creative"],
+      "medical_effects": ["fatigue", "depression", "stress relief", "ADD/ADHD"],
+      "flavors": ["mango", "citrus", "sweet", "earthy"],
+      "terpenes": {
+        "myrcene": 0.40,
+        "limonene": 0.25,
+        "caryophyllene": 0.15,
+        "pinene": 0.12,
+        "ocimene": 0.08
+      }
+    },
+    "purple punch": {
+      "type": "indica",
+      "thc_range": "18-25%",
+      "cbd_range": "<1%",
+      "description": "Sweet and sedating indica with grape candy flavors",
+      "effects": ["relaxed", "sleepy", "happy", "euphoric", "hungry"],
+      "medical_effects": ["insomnia", "pain relief", "stress relief", "depression"],
+      "flavors": ["grape", "berry", "sweet", "vanilla"],
+      "terpenes": {
+        "myrcene": 0.38,
+        "caryophyllene": 0.25,
+        "limonene": 0.18,
+        "pinene": 0.12,
+        "linalool": 0.10
+      }
+    },
+    "gorilla glue": {
+      "type": "hybrid",
+      "thc_range": "25-30%",
+      "cbd_range": "<1%",
+      "description": "Extremely potent hybrid known for heavy relaxation and earthy, diesel flavors",
+      "effects": ["relaxed", "euphoric", "happy", "uplifted", "sleepy"],
+      "medical_effects": ["pain relief", "stress relief", "insomnia", "depression"],
+      "flavors": ["earthy", "pine", "diesel", "pungent"],
+      "terpenes": {
+        "caryophyllene": 0.42,
+        "myrcene": 0.30,
+        "limonene": 0.18,
+        "pinene": 0.10,
+        "humulene": 0.08
+      }
+    },
+    "harlequin": {
+      "type": "sativa",
+      "thc_range": "4-10%",
+      "cbd_range": "8-16%",
+      "description": "High-CBD sativa providing clear-headed relief without heavy psychoactive effects",
+      "effects": ["relaxed", "focused", "happy", "uplifted", "clear-headed"],
+      "medical_effects": ["pain relief", "anxiety", "inflammation", "depression"],
+      "flavors": ["earthy", "mango", "sweet", "woody"],
+      "terpenes": {
+        "myrcene": 0.48,
+        "pinene": 0.22,
+        "caryophyllene": 0.15,
+        "limonene": 0.10,
+        "humulene": 0.05
+      }
+    },
+    "bubba kush": {
+      "type": "indica",
+      "thc_range": "14-22%",
+      "cbd_range": "<1%",
+      "description": "Classic indica with coffee and chocolate flavors, known for heavy sedation",
+      "effects": ["relaxed", "sleepy", "happy", "euphoric", "hungry"],
+      "medical_effects": ["insomnia", "pain relief", "stress relief", "anxiety"],
+      "flavors": ["coffee", "chocolate", "earthy", "sweet"],
+      "terpenes": {
+        "myrcene": 0.45,
+        "caryophyllene": 0.28,
+        "limonene": 0.15,
+        "pinene": 0.08,
+        "linalool": 0.06
+      }
+    },
+    "durban poison": {
+      "type": "sativa",
+      "thc_range": "15-25%",
+      "cbd_range": "<1%",
+      "description": "Pure African sativa known for its sweet smell and energetic, uplifting effects",
+      "effects": ["energetic", "uplifted", "happy", "creative", "focused"],
+      "medical_effects": ["depression", "fatigue", "stress relief", "ADD/ADHD"],
+      "flavors": ["sweet", "earthy", "pine", "anise"],
+      "terpenes": {
+        "terpinolene": 0.40,
+        "myrcene": 0.22,
+        "pinene": 0.15,
+        "limonene": 0.12,
+        "ocimene": 0.08
+      }
+    },
+    "girl scout cookies": {
+      "type": "hybrid",
+      "thc_range": "19-28%",
+      "cbd_range": "<1%",
+      "description": "Famous hybrid with sweet and earthy flavors, known for full-body relaxation and euphoria",
+      "effects": ["relaxed", "happy", "euphoric", "uplifted", "creative"],
+      "medical_effects": ["stress relief", "depression", "pain relief", "appetite loss"],
+      "flavors": ["sweet", "earthy", "mint", "chocolate"],
+      "terpenes": {
+        "caryophyllene": 0.35,
+        "limonene": 0.28,
+        "myrcene": 0.22,
+        "humulene": 0.12,
+        "linalool": 0.08
+      }
+    },
+    "northern lights": {
+      "type": "indica",
+      "thc_range": "16-21%",
+      "cbd_range": "<1%",
+      "description": "Legendary indica known for its resinous buds and fast flowering, provides blissful relaxation",
+      "effects": ["relaxed", "sleepy", "happy", "euphoric", "hungry"],
+      "medical_effects": ["insomnia", "pain relief", "stress relief", "depression"],
+      "flavors": ["sweet", "earthy", "pine", "spicy"],
+      "terpenes": {
+        "myrcene": 0.50,
+        "caryophyllene": 0.22,
+        "pinene": 0.15,
+        "limonene": 0.10,
+        "linalool": 0.08
+      }
+    },
+    "pineapple express": {
+      "type": "hybrid",
+      "thc_range": "17-24%",
+      "cbd_range": "<1%",
+      "description": "Tropical hybrid with pineapple and mango flavors, provides energetic and creative buzz",
+      "effects": ["happy", "uplifted", "euphoric", "energetic", "creative"],
+      "medical_effects": ["depression", "stress relief", "fatigue", "pain relief"],
+      "flavors": ["pineapple", "mango", "tropical", "citrus"],
+      "terpenes": {
+        "myrcene": 0.35,
+        "limonene": 0.30,
+        "caryophyllene": 0.18,
+        "pinene": 0.12,
+        "ocimene": 0.08
+      }
+    },
+    "runtz": {
+      "type": "hybrid",
+      "thc_range": "19-29%",
+      "cbd_range": "<1%",
+      "description": "Trendy hybrid with candy-like sweetness and colorful buds, known for balanced effects",
+      "effects": ["relaxed", "happy", "euphoric", "uplifted", "giggly"],
+      "medical_effects": ["stress relief", "anxiety", "depression", "pain relief"],
+      "flavors": ["sweet", "candy", "tropical", "fruity"],
+      "terpenes": {
+        "limonene": 0.32,
+        "caryophyllene": 0.28,
+        "myrcene": 0.22,
+        "linalool": 0.12,
+        "pinene": 0.08
+      }
+    },
+    "skywalker og": {
+      "type": "indica",
+      "thc_range": "20-26%",
+      "cbd_range": "<1%",
+      "description": "Powerful indica cross of Skywalker and OG Kush, known for heavy relaxation and euphoria",
+      "effects": ["relaxed", "sleepy", "happy", "euphoric", "hungry"],
+      "medical_effects": ["insomnia", "pain relief", "stress relief", "depression"],
+      "flavors": ["earthy", "spicy", "sweet", "diesel"],
+      "terpenes": {
+        "myrcene": 0.42,
+        "caryophyllene": 0.28,
+        "limonene": 0.18,
+        "pinene": 0.10,
+        "linalool": 0.08
+      }
+    },
+    "white widow": {
+      "type": "hybrid",
+      "thc_range": "18-25%",
+      "cbd_range": "<1%",
+      "description": "Dutch classic covered in white crystals, known for balanced euphoria and energy",
+      "effects": ["relaxed", "happy", "euphoric", "uplifted", "creative"],
+      "medical_effects": ["stress relief", "depression", "pain relief", "fatigue"],
+      "flavors": ["earthy", "woody", "pungent", "spicy"],
+      "terpenes": {
+        "myrcene": 0.35,
+        "caryophyllene": 0.25,
+        "pinene": 0.18,
+        "limonene": 0.15,
+        "humulene": 0.08
+      }
+    },
+    "zkittlez": {
+      "type": "indica",
+      "thc_range": "15-23%",
+      "cbd_range": "<1%",
+      "description": "Award-winning indica with candy-like fruit flavors and calming effects",
+      "effects": ["relaxed", "happy", "euphoric", "sleepy", "focused"],
+      "medical_effects": ["stress relief", "anxiety", "depression", "pain relief"],
+      "flavors": ["sweet", "berry", "grape", "tropical"],
+      "terpenes": {
+        "caryophyllene": 0.32,
+        "limonene": 0.25,
+        "myrcene": 0.20,
+        "linalool": 0.12,
+        "humulene": 0.08
+      }
+    }
+  }
+}

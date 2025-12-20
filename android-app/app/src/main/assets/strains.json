@@ -1,13 +1,482 @@
 {
+  "24k gold": {
+    "terpenes": {
+      "myrcene": 0.5486,
+      "limonene": 0.2543,
+      "caryophyllene": 0.2214,
+      "pinene": 0.18,
+      "linalool": 0.1529,
+      "humulene": 0.1275,
+      "bisabolol": 0.0243,
+      "camphene": 0.0071
+    },
+    "effects": [
+      "relaxed"
+    ],
+    "medical_effects": [
+      "stress relief",
+      "anxiety",
+      "pain relief",
+      "insomnia"
+    ],
+    "type": "indica",
+    "thc_range": "21-24%",
+    "cbd_range": "<1%",
+    "description": "24K Gold is a potent hybrid cannabis strain, renowned for its unique blend of flavors. It combines the fruity tangie strain with the earthy indica Kosher Kush, resulting in a rich, citrusy aroma with undertones of spice. Its a popular choice for recreational use.",
+    "flavors": [
+      "earthy",
+      "pine"
+    ],
+    "aromas": [
+      "earthy",
+      "pine"
+    ],
+    "best_time": "evening",
+    "activity": "relaxation"
+  },
+  "apple fritter": {
+    "terpenes": {
+      "myrcene": 0.35,
+      "limonene": 0.28,
+      "caryophyllene": 0.22,
+      "pinene": 0.12,
+      "linalool": 0.08
+    },
+    "effects": [
+      "relaxed",
+      "happy",
+      "euphoric",
+      "uplifted",
+      "creative"
+    ],
+    "medical_effects": [
+      "stress relief",
+      "anxiety",
+      "depression",
+      "pain relief"
+    ],
+    "type": "hybrid",
+    "thc_range": "22-28%",
+    "cbd_range": "<1%",
+    "description": "A potent hybrid known for its sweet apple and vanilla flavors",
+    "flavors": [
+      "apple",
+      "vanilla",
+      "sweet",
+      "earthy"
+    ],
+    "aromas": [
+      "apple",
+      "vanilla",
+      "sweet",
+      "earthy"
+    ],
+    "best_time": "daytime",
+    "activity": "focus"
+  },
+  "blue dream": {
+    "terpenes": {
+      "myrcene": 0.26,
+      "limonene": 0.5,
+      "caryophyllene": 0.22,
+      "pinene": 0.09,
+      "linalool": 0.36,
+      "humulene": 0.03,
+      "terpinolene": 0.03,
+      "bisabolol": 0.1,
+      "camphene": 0.06
+    },
+    "effects": [
+      "relaxed",
+      "happy"
+    ],
+    "medical_effects": [
+      "depression",
+      "fatigue"
+    ],
+    "type": "sativa",
+    "thc_range": "0-3%",
+    "cbd_range": "<1%",
+    "description": "Blue Dream is a popular cannabis strain, renowned for its balanced and full-bodied effects. This sativa-dominant hybrid boasts a sweet, berry aroma, inherited from its Blueberry parent. Its high is smooth, starting with a cerebral rush, leading to motivated energy, before mellowing into a calm euphoria. Ideal for daytime use, Blue Dream is perfect for managing pain, depression, and nausea.",
+    "flavors": [
+      "earthy"
+    ],
+    "aromas": [
+      "earthy"
+    ],
+    "best_time": "daytime",
+    "activity": "focus"
+  },
+  "blueberry": {
+    "terpenes": {
+      "myrcene": 0.564,
+      "limonene": 0.07,
+      "caryophyllene": 0.128,
+      "pinene": 0.024,
+      "linalool": 0.038,
+      "humulene": 0.0322,
+      "terpinolene": 0.172,
+      "ocimene": 0.059,
+      "nerolidol": 0.003,
+      "bisabolol": 0.018,
+      "camphene": 0.002
+    },
+    "effects": [
+      "happy",
+      "uplifted"
+    ],
+    "medical_effects": [
+      "depression",
+      "fatigue",
+      "pain relief",
+      "insomnia"
+    ],
+    "type": "indica",
+    "thc_range": "13-16%",
+    "cbd_range": "<1%",
+    "description": "Blueberry is a renowned cannabis strain known for its distinctive sweet and fruity aroma reminiscent of fresh blueberries. This indica-dominant hybrid typically features dense, colorful buds with hues of purple and blue, making it visually appealing to consumers. The flavor profile of Blueberry often includes notes of berries and earth, providing a smooth and enjoyable smoking experience. With moderate levels of THC, Blueberry is favored by many for its calming and relaxing effects that may help promote a sense of tranquility and ease. Overall, Blueberry is a classic strain beloved for its delicious taste and soothing qualities.",
+    "flavors": [
+      "lemon",
+      "blueberry"
+    ],
+    "aromas": [
+      "lemon",
+      "blueberry"
+    ],
+    "best_time": "evening",
+    "activity": "relaxation"
+  },
+  "blueberry thai": {
+    "terpenes": {
+      "myrcene": 0.564,
+      "limonene": 0.07,
+      "caryophyllene": 0.128,
+      "pinene": 0.024,
+      "linalool": 0.038,
+      "humulene": 0.0322,
+      "terpinolene": 0.172,
+      "ocimene": 0.059,
+      "nerolidol": 0.003,
+      "bisabolol": 0.018,
+      "camphene": 0.002
+    },
+    "effects": [
+      "happy",
+      "uplifted"
+    ],
+    "medical_effects": [
+      "depression",
+      "fatigue",
+      "pain relief",
+      "insomnia"
+    ],
+    "type": "indica",
+    "thc_range": "13-16%",
+    "cbd_range": "<1%",
+    "description": "Blueberry is a renowned cannabis strain known for its distinctive sweet and fruity aroma reminiscent of fresh blueberries. This indica-dominant hybrid typically features dense, colorful buds with hues of purple and blue, making it visually appealing to consumers. The flavor profile of Blueberry often includes notes of berries and earth, providing a smooth and enjoyable smoking experience. With moderate levels of THC, Blueberry is favored by many for its calming and relaxing effects that may help promote a sense of tranquility and ease. Overall, Blueberry is a classic strain beloved for its delicious taste and soothing qualities.",
+    "flavors": [
+      "lemon",
+      "blueberry"
+    ],
+    "aromas": [
+      "lemon",
+      "blueberry"
+    ],
+    "best_time": "evening",
+    "activity": "relaxation"
+  },
+  "bubba kush": {
+    "terpenes": {
+      "myrcene": 0.45,
+      "caryophyllene": 0.28,
+      "limonene": 0.15,
+      "pinene": 0.08,
+      "linalool": 0.06
+    },
+    "effects": [
+      "relaxed",
+      "sleepy",
+      "happy",
+      "euphoric",
+      "hungry"
+    ],
+    "medical_effects": [
+      "insomnia",
+      "pain relief",
+      "stress relief",
+      "anxiety"
+    ],
+    "type": "indica",
+    "thc_range": "14-22%",
+    "cbd_range": "<1%",
+    "description": "Classic indica with coffee and chocolate flavors, known for heavy sedation",
+    "flavors": [
+      "coffee",
+      "chocolate",
+      "earthy",
+      "sweet"
+    ],
+    "aromas": [
+      "coffee",
+      "chocolate",
+      "earthy",
+      "sweet"
+    ],
+    "best_time": "evening",
+    "activity": "relaxation"
+  },
+  "charlotte's web": {
+    "terpenes": {
+      "myrcene": 0.45,
+      "pinene": 0.25,
+      "caryophyllene": 0.18,
+      "limonene": 0.08,
+      "linalool": 0.04
+    },
+    "effects": [
+      "calm",
+      "focused",
+      "clear-headed",
+      "relaxed"
+    ],
+    "medical_effects": [
+      "seizures",
+      "anxiety",
+      "inflammation",
+      "pain relief"
+    ],
+    "type": "sativa",
+    "thc_range": "<1%",
+    "cbd_range": "13-20%",
+    "description": "High-CBD strain famous for its therapeutic properties with minimal psychoactive effects",
+    "flavors": [
+      "pine",
+      "earthy",
+      "woody",
+      "sage"
+    ],
+    "aromas": [
+      "pine",
+      "earthy",
+      "woody",
+      "sage"
+    ],
+    "best_time": "daytime",
+    "activity": "focus"
+  },
+  "cherry pie": {
+    "terpenes": {
+      "myrcene": 0.691,
+      "limonene": 0.072,
+      "caryophyllene": 0.315,
+      "pinene": 0.134,
+      "linalool": 0.073,
+      "humulene": 0.0978,
+      "terpinolene": 0.004,
+      "ocimene": 0.13,
+      "nerolidol": 0.008,
+      "bisabolol": 0.016,
+      "camphene": 0.005
+    },
+    "effects": [
+      "happy",
+      "euphoric",
+      "dry_eyes"
+    ],
+    "medical_effects": [
+      "depression",
+      "mood enhancement"
+    ],
+    "type": "hybrid",
+    "thc_range": "8-11%",
+    "cbd_range": "<1%",
+    "description": "Cherry Pie is a popular cannabis strain known for its enticing aroma and flavor reminiscent of sweet cherries. This hybrid strain is a cross between the flavorful Granddaddy Purple and the potent Durban Poison. The buds of Cherry Pie are dense and coated in a layer of frosty trichomes, giving them a visually appealing appearance. The aroma is a delightful blend of sweet cherries, earthiness, and a hint of spice. When consumed, Cherry Pie offers a smooth smoke or vapor, delivering a balanced combination of relaxation and mild euphoria. Its well-rounded characteristics make it a favorite among cannabis enthusiasts.",
+    "flavors": [
+      "sweet",
+      "tree"
+    ],
+    "aromas": [
+      "sweet",
+      "tree"
+    ],
+    "best_time": "any",
+    "activity": "mixed"
+  },
+  "durban poison": {
+    "terpenes": {
+      "terpinolene": 0.4,
+      "myrcene": 0.22,
+      "pinene": 0.15,
+      "limonene": 0.12,
+      "ocimene": 0.08
+    },
+    "effects": [
+      "energetic",
+      "uplifted",
+      "happy",
+      "creative",
+      "focused"
+    ],
+    "medical_effects": [
+      "depression",
+      "fatigue",
+      "stress relief",
+      "ADD/ADHD"
+    ],
+    "type": "sativa",
+    "thc_range": "15-25%",
+    "cbd_range": "<1%",
+    "description": "Pure African sativa known for its sweet smell and energetic, uplifting effects",
+    "flavors": [
+      "sweet",
+      "earthy",
+      "pine",
+      "anise"
+    ],
+    "aromas": [
+      "sweet",
+      "earthy",
+      "pine",
+      "anise"
+    ],
+    "best_time": "daytime",
+    "activity": "focus"
+  },
+  "gelato": {
+    "terpenes": {
+      "myrcene": 0.1067,
+      "limonene": 0.4033,
+      "caryophyllene": 0.5167,
+      "pinene": 0.09000000000000001,
+      "linalool": 0.1667,
+      "humulene": 0.1567,
+      "terpinolene": 0.0067,
+      "ocimene": 0.0433,
+      "nerolidol": 0.0267,
+      "bisabolol": 0.0067,
+      "geraniol": 0.0167,
+      "camphene": 0.0167
+    },
+    "effects": [
+      "happy",
+      "relaxed",
+      "uplifted",
+      "creative",
+      "euphoric",
+      "tingly",
+      "hungry",
+      "dry_mouth",
+      "giggly",
+      "aroused"
+    ],
+    "medical_effects": [
+      "depression",
+      "stress relief",
+      "anxiety",
+      "fatigue"
+    ],
+    "type": "hybrid",
+    "thc_range": "0-3%",
+    "cbd_range": "<1%",
+    "description": "Gelato is a popular cannabis strain known for its enticing aroma and flavorful profile. It is a hybrid strain that combines the genetics of Sunset Sherbet and Thin Mint Girl Scout Cookies. The buds of Gelato are dense and colorful, often displaying shades of purple and green. This strain is characterized by its sweet and fruity scent, reminiscent of dessert. Gelato offers a smooth smoke and a well-balanced high, providing a sense of relaxation and euphoria. With its delightful aroma and enjoyable effects, Gelato is a favorite among cannabis enthusiasts seeking a flavorful and uplifting experience.",
+    "flavors": [
+      "sweet",
+      "flowery"
+    ],
+    "aromas": [
+      "sweet",
+      "flowery"
+    ],
+    "best_time": "any",
+    "activity": "mixed"
+  },
+  "girl scout cookies": {
+    "terpenes": {
+      "caryophyllene": 0.35,
+      "limonene": 0.28,
+      "myrcene": 0.22,
+      "humulene": 0.12,
+      "linalool": 0.08
+    },
+    "effects": [
+      "relaxed",
+      "happy",
+      "euphoric",
+      "uplifted",
+      "creative"
+    ],
+    "medical_effects": [
+      "stress relief",
+      "depression",
+      "pain relief",
+      "appetite loss"
+    ],
+    "type": "hybrid",
+    "thc_range": "19-28%",
+    "cbd_range": "<1%",
+    "description": "Famous hybrid with sweet and earthy flavors, known for full-body relaxation and euphoria",
+    "flavors": [
+      "sweet",
+      "earthy",
+      "mint",
+      "chocolate"
+    ],
+    "aromas": [
+      "sweet",
+      "earthy",
+      "mint",
+      "chocolate"
+    ],
+    "best_time": "daytime",
+    "activity": "focus"
+  },
+  "gorilla glue": {
+    "terpenes": {
+      "caryophyllene": 0.42,
+      "myrcene": 0.3,
+      "limonene": 0.18,
+      "pinene": 0.1,
+      "humulene": 0.08
+    },
+    "effects": [
+      "relaxed",
+      "euphoric",
+      "happy",
+      "uplifted",
+      "sleepy"
+    ],
+    "medical_effects": [
+      "pain relief",
+      "stress relief",
+      "insomnia",
+      "depression"
+    ],
+    "type": "hybrid",
+    "thc_range": "25-30%",
+    "cbd_range": "<1%",
+    "description": "Extremely potent hybrid known for heavy relaxation and earthy, diesel flavors",
+    "flavors": [
+      "earthy",
+      "pine",
+      "diesel",
+      "pungent"
+    ],
+    "aromas": [
+      "earthy",
+      "pine",
+      "diesel",
+      "pungent"
+    ],
+    "best_time": "daytime",
+    "activity": "focus"
+  },
   "granddaddy purple": {
     "terpenes": {
-      "myrcene": 0.85,
-      "caryophyllene": 0.65,
-      "pinene": 0.45,
-      "limonene": 0.35,
-      "linalool": 0.25,
-      "humulene": 0.2,
-      "terpinolene": 0.1
+      "myrcene": 0.42,
+      "caryophyllene": 0.28,
+      "pinene": 0.18,
+      "limonene": 0.12,
+      "linalool": 0.08
     },
     "effects": [
       "relaxed",
@@ -19,13 +488,13 @@
     "medical_effects": [
       "pain relief",
       "insomnia",
-      "stress",
+      "stress relief",
       "anxiety"
     ],
     "type": "indica",
     "thc_range": "17-24%",
-    "cbd_range": "0.1-0.5%",
-    "description": "A classic indica with grape and berry flavors, known for deep relaxation",
+    "cbd_range": "<1%",
+    "description": "Classic indica with grape and berry flavors, known for deep relaxation",
     "flavors": [
       "grape",
       "berry",
@@ -33,359 +502,615 @@
       "sweet"
     ],
     "aromas": [
-      "fruity",
-      "sweet",
       "grape",
-      "berry"
+      "berry",
+      "earthy",
+      "sweet"
+    ],
+    "best_time": "evening",
+    "activity": "relaxation"
+  },
+  "green crack": {
+    "terpenes": {
+      "myrcene": 0.4,
+      "limonene": 0.25,
+      "caryophyllene": 0.15,
+      "pinene": 0.12,
+      "ocimene": 0.08
+    },
+    "effects": [
+      "energetic",
+      "focused",
+      "happy",
+      "uplifted",
+      "creative"
+    ],
+    "medical_effects": [
+      "fatigue",
+      "depression",
+      "stress relief",
+      "ADD/ADHD"
+    ],
+    "type": "sativa",
+    "thc_range": "15-24%",
+    "cbd_range": "<1%",
+    "description": "Intense sativa with sharp energy and focus, featuring mango and citrus notes",
+    "flavors": [
+      "mango",
+      "citrus",
+      "sweet",
+      "earthy"
+    ],
+    "aromas": [
+      "mango",
+      "citrus",
+      "sweet",
+      "earthy"
+    ],
+    "best_time": "daytime",
+    "activity": "focus"
+  },
+  "harlequin": {
+    "terpenes": {
+      "myrcene": 0.48,
+      "pinene": 0.22,
+      "caryophyllene": 0.15,
+      "limonene": 0.1,
+      "humulene": 0.05
+    },
+    "effects": [
+      "relaxed",
+      "focused",
+      "happy",
+      "uplifted",
+      "clear-headed"
+    ],
+    "medical_effects": [
+      "pain relief",
+      "anxiety",
+      "inflammation",
+      "depression"
+    ],
+    "type": "sativa",
+    "thc_range": "4-10%",
+    "cbd_range": "8-16%",
+    "description": "High-CBD sativa providing clear-headed relief without heavy psychoactive effects",
+    "flavors": [
+      "earthy",
+      "mango",
+      "sweet",
+      "woody"
+    ],
+    "aromas": [
+      "earthy",
+      "mango",
+      "sweet",
+      "woody"
+    ],
+    "best_time": "daytime",
+    "activity": "focus"
+  },
+  "jack herer": {
+    "terpenes": {
+      "terpinolene": 0.35,
+      "pinene": 0.25,
+      "caryophyllene": 0.18,
+      "myrcene": 0.12,
+      "limonene": 0.1
+    },
+    "effects": [
+      "energetic",
+      "creative",
+      "focused",
+      "happy",
+      "uplifted"
+    ],
+    "medical_effects": [
+      "depression",
+      "fatigue",
+      "stress relief",
+      "ADD/ADHD"
+    ],
+    "type": "sativa",
+    "thc_range": "18-24%",
+    "cbd_range": "<1%",
+    "description": "Legendary sativa named after the cannabis activist, known for creative and energetic effects",
+    "flavors": [
+      "pine",
+      "earthy",
+      "woody",
+      "spicy"
+    ],
+    "aromas": [
+      "pine",
+      "earthy",
+      "woody",
+      "spicy"
+    ],
+    "best_time": "daytime",
+    "activity": "focus"
+  },
+  "lemon haze": {
+    "terpenes": {
+      "myrcene": 0.19,
+      "limonene": 0.07,
+      "caryophyllene": 0.08,
+      "pinene": 0.08,
+      "humulene": 0.03,
+      "terpinolene": 0.6,
+      "ocimene": 0.09,
+      "nerolidol": 0.01,
+      "eucalyptol": 0.01
+    },
+    "effects": [
+      "happy",
+      "talkative",
+      "uplifted",
+      "creative",
+      "dry_mouth",
+      "energetic",
+      "giggly",
+      "dizzy",
+      "aroused",
+      "paranoid"
+    ],
+    "medical_effects": [
+      "depression",
+      "fatigue",
+      "focus"
+    ],
+    "type": "sativa",
+    "thc_range": "14-17%",
+    "cbd_range": "<1%",
+    "description": "Haze is a popular cannabis strain known for its strong sativa effects. It typically has a high THC content and is characterized by its earthy, citrusy, and sweet aroma. Haze plants are tall and thin with long, narrow leaves, and they are often grown indoors due to their long flowering time. The effects of Haze strains are typically uplifting, energizing, and cerebral, making it a favorite among those seeking a creative boost or a mood lift. Overall, Haze is a classic strain that has influenced many modern hybrids and continues to be a favorite among cannabis enthusiasts.",
+    "flavors": [
+      "spicytoherbal"
+    ],
+    "aromas": [
+      "spicytoherbal"
+    ],
+    "best_time": "daytime",
+    "activity": "focus"
+  },
+  "northern lights": {
+    "terpenes": {
+      "myrcene": 0.5,
+      "caryophyllene": 0.22,
+      "pinene": 0.15,
+      "limonene": 0.1,
+      "linalool": 0.08
+    },
+    "effects": [
+      "relaxed",
+      "sleepy",
+      "happy",
+      "euphoric",
+      "hungry"
+    ],
+    "medical_effects": [
+      "insomnia",
+      "pain relief",
+      "stress relief",
+      "depression"
+    ],
+    "type": "indica",
+    "thc_range": "16-21%",
+    "cbd_range": "<1%",
+    "description": "Legendary indica known for its resinous buds and fast flowering, provides blissful relaxation",
+    "flavors": [
+      "sweet",
+      "earthy",
+      "pine",
+      "spicy"
+    ],
+    "aromas": [
+      "sweet",
+      "earthy",
+      "pine",
+      "spicy"
     ],
     "best_time": "evening",
     "activity": "relaxation"
   },
   "og kush": {
     "terpenes": {
-      "myrcene": 0.75,
-      "caryophyllene": 0.6,
-      "limonene": 0.45,
-      "pinene": 0.35,
-      "linalool": 0.3,
-      "humulene": 0.25,
-      "terpinolene": 0.15
+      "myrcene": 0.38,
+      "limonene": 0.28,
+      "caryophyllene": 0.22,
+      "pinene": 0.15,
+      "linalool": 0.08
     },
     "effects": [
       "relaxed",
       "happy",
       "euphoric",
-      "sleepy",
-      "uplifted"
+      "uplifted",
+      "hungry"
     ],
     "medical_effects": [
-      "pain relief",
-      "stress",
+      "stress relief",
       "depression",
+      "pain relief",
       "insomnia"
     ],
-    "type": "indica",
-    "thc_range": "18-26%",
-    "cbd_range": "0.1-0.8%",
-    "description": "Classic indica with earthy pine flavors and strong relaxation effects",
+    "type": "hybrid",
+    "thc_range": "19-26%",
+    "cbd_range": "<1%",
+    "description": "Legendary strain with complex earthy, pine, and citrus flavors",
     "flavors": [
       "earthy",
       "pine",
       "woody",
-      "spicy"
+      "citrus"
     ],
     "aromas": [
-      "pine",
       "earthy",
+      "pine",
       "woody",
-      "spicy"
+      "citrus"
     ],
-    "best_time": "evening",
-    "activity": "relaxation"
+    "best_time": "daytime",
+    "activity": "focus"
+  },
+  "pineapple express": {
+    "terpenes": {
+      "myrcene": 0.35,
+      "limonene": 0.3,
+      "caryophyllene": 0.18,
+      "pinene": 0.12,
+      "ocimene": 0.08
+    },
+    "effects": [
+      "happy",
+      "uplifted",
+      "euphoric",
+      "energetic",
+      "creative"
+    ],
+    "medical_effects": [
+      "depression",
+      "stress relief",
+      "fatigue",
+      "pain relief"
+    ],
+    "type": "hybrid",
+    "thc_range": "17-24%",
+    "cbd_range": "<1%",
+    "description": "Tropical hybrid with pineapple and mango flavors, provides energetic and creative buzz",
+    "flavors": [
+      "pineapple",
+      "mango",
+      "tropical",
+      "citrus"
+    ],
+    "aromas": [
+      "pineapple",
+      "mango",
+      "tropical",
+      "citrus"
+    ],
+    "best_time": "daytime",
+    "activity": "focus"
+  },
+  "purple haze": {
+    "terpenes": {
+      "myrcene": 0.19,
+      "limonene": 0.07,
+      "caryophyllene": 0.08,
+      "pinene": 0.08,
+      "humulene": 0.03,
+      "terpinolene": 0.6,
+      "ocimene": 0.09,
+      "nerolidol": 0.01,
+      "eucalyptol": 0.01
+    },
+    "effects": [
+      "happy",
+      "talkative",
+      "uplifted",
+      "creative",
+      "dry_mouth",
+      "energetic",
+      "giggly",
+      "dizzy",
+      "aroused",
+      "paranoid"
+    ],
+    "medical_effects": [
+      "depression",
+      "fatigue",
+      "focus"
+    ],
+    "type": "sativa",
+    "thc_range": "14-17%",
+    "cbd_range": "<1%",
+    "description": "Haze is a popular cannabis strain known for its strong sativa effects. It typically has a high THC content and is characterized by its earthy, citrusy, and sweet aroma. Haze plants are tall and thin with long, narrow leaves, and they are often grown indoors due to their long flowering time. The effects of Haze strains are typically uplifting, energizing, and cerebral, making it a favorite among those seeking a creative boost or a mood lift. Overall, Haze is a classic strain that has influenced many modern hybrids and continues to be a favorite among cannabis enthusiasts.",
+    "flavors": [
+      "spicytoherbal"
+    ],
+    "aromas": [
+      "spicytoherbal"
+    ],
+    "best_time": "daytime",
+    "activity": "focus"
   },
   "purple punch": {
     "terpenes": {
-      "myrcene": 0.8,
-      "limonene": 0.5,
-      "caryophyllene": 0.45,
-      "pinene": 0.3,
-      "linalool": 0.35,
-      "humulene": 0.2,
-      "terpinolene": 0.15
+      "myrcene": 0.38,
+      "caryophyllene": 0.25,
+      "limonene": 0.18,
+      "pinene": 0.12,
+      "linalool": 0.1
     },
     "effects": [
       "relaxed",
-      "happy",
       "sleepy",
+      "happy",
       "euphoric",
       "hungry"
     ],
     "medical_effects": [
-      "pain relief",
       "insomnia",
-      "stress",
-      "appetite"
+      "pain relief",
+      "stress relief",
+      "depression"
     ],
     "type": "indica",
-    "thc_range": "15-20%",
-    "cbd_range": "0.1-0.3%",
-    "description": "Sweet indica with grape and berry flavors, perfect for evening relaxation",
+    "thc_range": "18-25%",
+    "cbd_range": "<1%",
+    "description": "Sweet and sedating indica with grape candy flavors",
     "flavors": [
       "grape",
       "berry",
       "sweet",
-      "fruity"
+      "vanilla"
     ],
     "aromas": [
-      "sweet",
-      "fruity",
       "grape",
-      "berry"
+      "berry",
+      "sweet",
+      "vanilla"
     ],
     "best_time": "evening",
     "activity": "relaxation"
   },
-  "blueberry": {
+  "runtz": {
     "terpenes": {
-      "myrcene": 0.75,
-      "limonene": 0.55,
-      "caryophyllene": 0.5,
-      "pinene": 0.35,
-      "linalool": 0.3,
-      "humulene": 0.25,
-      "terpinolene": 0.2
+      "limonene": 0.32,
+      "caryophyllene": 0.28,
+      "myrcene": 0.22,
+      "linalool": 0.12,
+      "pinene": 0.08
     },
     "effects": [
       "relaxed",
       "happy",
       "euphoric",
-      "creative",
-      "hungry"
+      "uplifted",
+      "giggly"
     ],
     "medical_effects": [
-      "pain relief",
-      "stress",
+      "stress relief",
+      "anxiety",
       "depression",
-      "insomnia"
+      "pain relief"
     ],
-    "type": "indica",
-    "thc_range": "16-22%",
-    "cbd_range": "0.1-0.5%",
-    "description": "Sweet blueberry-flavored indica with relaxing effects, perfect for evening use",
+    "type": "hybrid",
+    "thc_range": "19-29%",
+    "cbd_range": "<1%",
+    "description": "Trendy hybrid with candy-like sweetness and colorful buds, known for balanced effects",
     "flavors": [
-      "blueberry",
       "sweet",
-      "berry",
+      "candy",
+      "tropical",
       "fruity"
     ],
     "aromas": [
-      "blueberry",
       "sweet",
-      "fruity",
-      "berry"
+      "candy",
+      "tropical",
+      "fruity"
+    ],
+    "best_time": "daytime",
+    "activity": "focus"
+  },
+  "skywalker og": {
+    "terpenes": {
+      "myrcene": 0.42,
+      "caryophyllene": 0.28,
+      "limonene": 0.18,
+      "pinene": 0.1,
+      "linalool": 0.08
+    },
+    "effects": [
+      "relaxed",
+      "sleepy",
+      "happy",
+      "euphoric",
+      "hungry"
+    ],
+    "medical_effects": [
+      "insomnia",
+      "pain relief",
+      "stress relief",
+      "depression"
+    ],
+    "type": "indica",
+    "thc_range": "20-26%",
+    "cbd_range": "<1%",
+    "description": "Powerful indica cross of Skywalker and OG Kush, known for heavy relaxation and euphoria",
+    "flavors": [
+      "earthy",
+      "spicy",
+      "sweet",
+      "diesel"
+    ],
+    "aromas": [
+      "earthy",
+      "spicy",
+      "sweet",
+      "diesel"
     ],
     "best_time": "evening",
     "activity": "relaxation"
   },
   "sour diesel": {
     "terpenes": {
-      "limonene": 0.8,
-      "caryophyllene": 0.55,
-      "pinene": 0.45,
-      "myrcene": 0.35,
-      "terpinolene": 0.4,
-      "linalool": 0.2,
-      "humulene": 0.25
+      "myrcene": 0.39,
+      "limonene": 0.05,
+      "caryophyllene": 0.09,
+      "pinene": 0.34,
+      "linalool": 0.02,
+      "humulene": 0.01,
+      "bisabolol": 0.02
     },
     "effects": [
-      "energetic",
-      "uplifted",
-      "creative",
-      "focused",
-      "happy"
-    ],
-    "medical_effects": [
-      "depression",
-      "fatigue",
-      "stress",
-      "pain relief"
-    ],
-    "type": "sativa",
-    "thc_range": "20-25%",
-    "cbd_range": "0.1-0.5%",
-    "description": "Energizing sativa with diesel and citrus notes, great for daytime use",
-    "flavors": [
-      "diesel",
-      "citrus",
-      "sour",
-      "earthy"
-    ],
-    "aromas": [
-      "diesel",
-      "citrus",
-      "sour",
-      "pungent"
-    ],
-    "best_time": "morning",
-    "activity": "creative"
-  },
-  "jack herer": {
-    "terpenes": {
-      "pinene": 0.85,
-      "limonene": 0.65,
-      "caryophyllene": 0.45,
-      "myrcene": 0.35,
-      "terpinolene": 0.3,
-      "linalool": 0.25,
-      "humulene": 0.2
-    },
-    "effects": [
-      "energetic",
-      "uplifted",
-      "creative",
-      "focused",
-      "happy"
-    ],
-    "medical_effects": [
-      "depression",
-      "fatigue",
-      "stress",
-      "pain relief"
-    ],
-    "type": "sativa",
-    "thc_range": "15-24%",
-    "cbd_range": "0.1-0.8%",
-    "description": "Uplifting sativa with pine and citrus notes, legendary for creativity",
-    "flavors": [
-      "pine",
-      "citrus",
-      "earthy",
-      "spicy"
-    ],
-    "aromas": [
-      "pine",
-      "citrus",
-      "earthy",
-      "spicy"
-    ],
-    "best_time": "morning",
-    "activity": "creative"
-  },
-  "green crack": {
-    "terpenes": {
-      "limonene": 0.75,
-      "pinene": 0.7,
-      "caryophyllene": 0.4,
-      "myrcene": 0.3,
-      "terpinolene": 0.35,
-      "linalool": 0.2,
-      "humulene": 0.25
-    },
-    "effects": [
-      "energetic",
-      "uplifted",
-      "focused",
-      "happy",
-      "creative"
-    ],
-    "medical_effects": [
-      "depression",
-      "fatigue",
-      "stress",
-      "ADHD"
-    ],
-    "type": "sativa",
-    "thc_range": "13-21%",
-    "cbd_range": "0.1-0.4%",
-    "description": "High-energy sativa with sweet tropical flavors, perfect for productivity",
-    "flavors": [
-      "tropical",
-      "sweet",
-      "citrus",
-      "mango"
-    ],
-    "aromas": [
-      "sweet",
-      "tropical",
-      "citrus",
-      "fruity"
-    ],
-    "best_time": "morning",
-    "activity": "work"
-  },
-  "blue dream": {
-    "terpenes": {
-      "myrcene": 0.55,
-      "pinene": 0.7,
-      "caryophyllene": 0.45,
-      "limonene": 0.6,
-      "linalool": 0.3,
-      "humulene": 0.25,
-      "terpinolene": 0.2
-    },
-    "effects": [
-      "happy",
-      "uplifted",
-      "creative",
       "relaxed",
-      "focused"
+      "creative",
+      "euphoric",
+      "dry_mouth"
     ],
     "medical_effects": [
-      "pain relief",
-      "depression",
-      "stress",
-      "anxiety"
+      "stress relief",
+      "anxiety",
+      "focus",
+      "mood enhancement"
     ],
     "type": "hybrid",
-    "thc_range": "17-24%",
+    "thc_range": "0-3%",
     "cbd_range": "0.1-0.6%",
-    "description": "Balanced hybrid with sweet berry aroma, perfect for any time of day",
+    "description": "Chemdawg Sour Diesel is a hybrid cannabis strain that combines the genetics of Chemdawg and Sour Diesel. This strain is known for its pungent aroma and potent effects. Chemdawg Sour Diesel typically produces dense, resinous buds with a mixture of green and purple hues. The flavor profile is often described as earthy, diesel-like, and slightly citrusy. With a high THC content, this strain is popular among consumers seeking a strong and long-lasting experience. Overall, Chemdawg Sour Diesel is a well-balanced hybrid that offers a unique combination of flavors and effects.",
     "flavors": [
-      "berry",
-      "sweet",
-      "earthy",
-      "blueberry"
+      "pine",
+      "pungent"
     ],
     "aromas": [
-      "sweet",
-      "berry",
-      "earthy",
-      "fruity"
+      "pine",
+      "pungent"
     ],
     "best_time": "any",
-    "activity": "balanced"
+    "activity": "mixed"
+  },
+  "super lemon haze": {
+    "terpenes": {
+      "myrcene": 0.19,
+      "limonene": 0.07,
+      "caryophyllene": 0.08,
+      "pinene": 0.08,
+      "humulene": 0.03,
+      "terpinolene": 0.6,
+      "ocimene": 0.09,
+      "nerolidol": 0.01,
+      "eucalyptol": 0.01
+    },
+    "effects": [
+      "happy",
+      "talkative",
+      "uplifted",
+      "creative",
+      "dry_mouth",
+      "energetic",
+      "giggly",
+      "dizzy",
+      "aroused",
+      "paranoid"
+    ],
+    "medical_effects": [
+      "depression",
+      "fatigue",
+      "focus"
+    ],
+    "type": "sativa",
+    "thc_range": "14-17%",
+    "cbd_range": "<1%",
+    "description": "Haze is a popular cannabis strain known for its strong sativa effects. It typically has a high THC content and is characterized by its earthy, citrusy, and sweet aroma. Haze plants are tall and thin with long, narrow leaves, and they are often grown indoors due to their long flowering time. The effects of Haze strains are typically uplifting, energizing, and cerebral, making it a favorite among those seeking a creative boost or a mood lift. Overall, Haze is a classic strain that has influenced many modern hybrids and continues to be a favorite among cannabis enthusiasts.",
+    "flavors": [
+      "spicytoherbal"
+    ],
+    "aromas": [
+      "spicytoherbal"
+    ],
+    "best_time": "daytime",
+    "activity": "focus"
+  },
+  "tangie": {
+    "terpenes": {
+      "myrcene": 0.71,
+      "limonene": 0.03,
+      "caryophyllene": 0.04,
+      "pinene": 0.14,
+      "linalool": 0.06,
+      "terpinolene": 0.01,
+      "bisabolol": 0.03,
+      "camphene": 0.02
+    },
+    "effects": [
+      "relaxed",
+      "happy"
+    ],
+    "medical_effects": [],
+    "type": "hybrid",
+    "thc_range": "0-3%",
+    "cbd_range": "<1%",
+    "description": "Double Tangie Banana is a unique cannabis strain known for its vibrant flavors and aromas. This hybrid cultivar combines the citrusy and sweet notes of Tangie with the tropical and fruity essence of Banana Kush. The result is a tantalizing blend that offers a delightful sensory experience. Double Tangie Banana typically produces dense, resinous buds with a combination of orange and green hues. This strain is cherished by cannabis enthusiasts for its complex terpene profile and balanced effects. Whether enjoyed for its flavor profile or potential effects, Double Tangie Banana is a popular choice among connoisseurs.",
+    "flavors": [
+      "citrus",
+      "orange"
+    ],
+    "aromas": [
+      "citrus",
+      "orange"
+    ],
+    "best_time": "any",
+    "activity": "mixed"
   },
   "wedding cake": {
     "terpenes": {
-      "limonene": 0.7,
-      "caryophyllene": 0.6,
-      "myrcene": 0.5,
-      "pinene": 0.4,
-      "linalool": 0.35,
-      "humulene": 0.3,
-      "terpinolene": 0.25
+      "limonene": 0.35,
+      "caryophyllene": 0.3,
+      "myrcene": 0.22,
+      "linalool": 0.1,
+      "humulene": 0.08
     },
     "effects": [
       "relaxed",
       "happy",
       "euphoric",
       "uplifted",
-      "creative"
+      "hungry"
     ],
     "medical_effects": [
       "pain relief",
-      "stress",
-      "depression",
-      "anxiety"
+      "insomnia",
+      "anxiety",
+      "depression"
     ],
     "type": "hybrid",
-    "thc_range": "20-28%",
-    "cbd_range": "0.1-0.5%",
-    "description": "Potent hybrid with sweet vanilla flavors and balanced effects",
+    "thc_range": "22-27%",
+    "cbd_range": "<1%",
+    "description": "Sweet and tangy strain with relaxing effects and beautiful trichome coverage",
     "flavors": [
       "sweet",
       "vanilla",
       "earthy",
-      "spicy"
+      "peppery"
     ],
     "aromas": [
       "sweet",
       "vanilla",
       "earthy",
-      "spicy"
+      "peppery"
     ],
-    "best_time": "afternoon",
-    "activity": "social"
+    "best_time": "daytime",
+    "activity": "focus"
   },
-  "gelato": {
+  "white widow": {
     "terpenes": {
-      "limonene": 0.65,
-      "caryophyllene": 0.55,
-      "myrcene": 0.45,
-      "pinene": 0.35,
-      "linalool": 0.4,
-      "humulene": 0.25,
-      "terpinolene": 0.2
+      "myrcene": 0.35,
+      "caryophyllene": 0.25,
+      "pinene": 0.18,
+      "limonene": 0.15,
+      "humulene": 0.08
     },
     "effects": [
       "relaxed",
@@ -395,443 +1120,68 @@
       "creative"
     ],
     "medical_effects": [
-      "pain relief",
-      "stress",
+      "stress relief",
       "depression",
-      "anxiety"
+      "pain relief",
+      "fatigue"
     ],
     "type": "hybrid",
     "thc_range": "18-25%",
-    "cbd_range": "0.1-0.4%",
-    "description": "Sweet hybrid with dessert-like flavors and euphoric effects",
+    "cbd_range": "<1%",
+    "description": "Dutch classic covered in white crystals, known for balanced euphoria and energy",
     "flavors": [
-      "sweet",
-      "dessert",
-      "vanilla",
-      "berry"
+      "earthy",
+      "woody",
+      "pungent",
+      "spicy"
     ],
     "aromas": [
-      "sweet",
-      "dessert",
-      "vanilla",
-      "fruity"
+      "earthy",
+      "woody",
+      "pungent",
+      "spicy"
     ],
-    "best_time": "evening",
-    "activity": "social"
+    "best_time": "daytime",
+    "activity": "focus"
   },
-  "charlotte's web": {
+  "zkittlez": {
     "terpenes": {
-      "myrcene": 0.4,
-      "pinene": 0.35,
-      "caryophyllene": 0.3,
+      "caryophyllene": 0.32,
       "limonene": 0.25,
-      "linalool": 0.2,
-      "humulene": 0.15,
-      "terpinolene": 0.1
-    },
-    "effects": [
-      "relaxed",
-      "focused",
-      "clear-headed",
-      "uplifted"
-    ],
-    "medical_effects": [
-      "epilepsy",
-      "anxiety",
-      "pain relief",
-      "inflammation"
-    ],
-    "type": "sativa",
-    "thc_range": "0.3-0.5%",
-    "cbd_range": "17-20%",
-    "description": "High-CBD strain developed for epilepsy treatment, minimal psychoactive effects",
-    "flavors": [
-      "earthy",
-      "woody",
-      "spicy",
-      "pine"
-    ],
-    "aromas": [
-      "earthy",
-      "woody",
-      "spicy",
-      "pine"
-    ],
-    "best_time": "any",
-    "activity": "medical"
-  },
-  "harlequin": {
-    "terpenes": {
-      "myrcene": 0.35,
-      "pinene": 0.4,
-      "caryophyllene": 0.3,
-      "limonene": 0.25,
-      "linalool": 0.2,
-      "humulene": 0.15,
-      "terpinolene": 0.1
-    },
-    "effects": [
-      "relaxed",
-      "focused",
-      "clear-headed",
-      "uplifted"
-    ],
-    "medical_effects": [
-      "pain relief",
-      "anxiety",
-      "inflammation",
-      "stress"
-    ],
-    "type": "sativa",
-    "thc_range": "4-7%",
-    "cbd_range": "8-12%",
-    "description": "Balanced CBD:THC ratio for therapeutic use without strong psychoactive effects",
-    "flavors": [
-      "earthy",
-      "woody",
-      "spicy",
-      "mango"
-    ],
-    "aromas": [
-      "earthy",
-      "woody",
-      "spicy",
-      "fruity"
-    ],
-    "best_time": "any",
-    "activity": "medical"
-  },
-  "blueberry thai": {
-    "name": "Blueberry Thai",
-    "terpenes": {
-      "myrcene": 0.3739026773190829,
-      "limonene": 0.42574241970502497,
-      "caryophyllene": 0.12010249274749858,
-      "pinene": 0.16010784994225047,
-      "linalool": 0.22358886523230093,
-      "humulene": 0.1713057459659238,
-      "terpinolene": 0.13022380508641468,
-      "ocimene": 0.08864145930206219,
-      "nerolidol": 0.035991048927475344,
-      "bisabolol": 0.04777888575408973,
-      "eucalyptol": 0.003096941273428553
-    },
-    "cannabinoids": {
-      "thc": 0.19147745977095934,
-      "cbd": 0.038200359566618755,
-      "cbg": 0.0170547563130345,
-      "cbn": 0.005407944877837985,
-      "thcv": 0.0021750416847353205
-    },
-    "effects": [
-      "euphoric",
-      "creative",
-      "energetic"
-    ],
-    "type": "hybrid",
-    "thc_range": "17.1-21.1%",
-    "cbd_range": "3.3-4.3%",
-    "description": "A hybrid strain with citrus, lemon flavors and euphoric, creative effects.",
-    "flavors": [
-      "citrus",
-      "lemon",
-      "sweet"
-    ]
-  },
-  "pineapple bang": {
-    "name": "Pineapple Bang",
-    "terpenes": {
-      "myrcene": 0.14415415168754048,
-      "limonene": 0.4408720763627744,
-      "caryophyllene": 0.31828897869152006,
-      "pinene": 0.09178075398794616,
-      "linalool": 0.11017083580457539,
-      "humulene": 0.02722332896929194,
-      "terpinolene": 0.08491531259900532,
-      "ocimene": 0.09694078242114525,
-      "nerolidol": 0.005890891959603911,
-      "bisabolol": 0.030992603304215088,
-      "eucalyptol": 0.00428021345135975
-    },
-    "cannabinoids": {
-      "thc": 0.2183082929683933,
-      "cbd": 0.009216942383349993,
-      "cbg": 0.012959674040846785,
-      "cbn": 0.00859826400345294,
-      "thcv": 0.004882772112832478
-    },
-    "effects": [
-      "focused",
-      "alert",
-      "uplifted"
-    ],
-    "type": "sativa",
-    "thc_range": "19.8-23.8%",
-    "cbd_range": "0.4-1.4%",
-    "description": "A sativa strain with earthy, herbal flavors and focused, alert effects.",
-    "flavors": [
-      "earthy",
-      "herbal",
-      "spicy"
-    ]
-  },
-  "pie hoe": {
-    "name": "Pie Hoe",
-    "terpenes": {
-      "myrcene": 0.3175979180569483,
-      "limonene": 0.42635001119468735,
-      "caryophyllene": 0.4509495796773261,
-      "pinene": 0.32026608274311497,
-      "linalool": 0.02476129405373695,
-      "humulene": 0.05418569508288697,
-      "terpinolene": 0.101559659541684,
-      "ocimene": 0.04481913615533195,
-      "nerolidol": 0.008522882045711692,
-      "bisabolol": 0.018982964898530852,
-      "eucalyptol": 0.010091615030014264
-    },
-    "cannabinoids": {
-      "thc": 0.27815396556269656,
-      "cbd": 0.07494529276382496,
-      "cbg": 0.016582514236860475,
-      "cbn": 0.007437303660883441,
-      "thcv": 0.004597694830906088
-    },
-    "effects": [
-      "calm",
-      "sleepy",
-      "pain relief"
-    ],
-    "type": "indica",
-    "thc_range": "25.8-29.8%",
-    "cbd_range": "7.0-8.0%",
-    "description": "A indica strain with pine, woody flavors and calm, sleepy effects.",
-    "flavors": [
-      "pine",
-      "woody",
-      "spicy"
-    ]
-  },
-  "cherimoya": {
-    "name": "cherimoya",
-    "terpenes": {
-      "myrcene": 0.36340037279894266,
-      "limonene": 0.195020650116483,
-      "caryophyllene": 0.18909315878622457,
-      "pinene": 0.3131530914402966,
-      "linalool": 0.27594508724009353,
-      "humulene": 0.13564891265622228,
-      "terpinolene": 0.09616602826170426,
-      "ocimene": 0.06976930090295903,
-      "nerolidol": 0.03828799558717681,
-      "bisabolol": 0.03032326396794466,
-      "eucalyptol": 0.002068795784511541
-    },
-    "cannabinoids": {
-      "thc": 0.255264234803806,
-      "cbd": 0.026136737749422316,
-      "cbg": 0.014806659722552778,
-      "cbn": 0.009527863864786313,
-      "thcv": 0.00367613150591565
-    },
-    "effects": [
-      "focused",
-      "alert",
-      "uplifted"
-    ],
-    "type": "hybrid",
-    "thc_range": "23.5-27.5%",
-    "cbd_range": "2.1-3.1%",
-    "description": "A hybrid strain with fruity, sweet flavors and focused, alert effects.",
-    "flavors": [
-      "fruity",
-      "sweet",
-      "tropical"
-    ]
-  },
-  "tropicana cherry": {
-    "name": "tropicana cherry",
-    "terpenes": {
-      "myrcene": 0.6797742491175163,
-      "limonene": 0.5591483037698142,
-      "caryophyllene": 0.39327446659525117,
-      "pinene": 0.39173861650025193,
-      "linalool": 0.1383571814499563,
-      "humulene": 0.10940980008726044,
-      "terpinolene": 0.14678561279271782,
-      "ocimene": 0.08530682458314051,
-      "nerolidol": 0.026509796877510153,
-      "bisabolol": 0.008879580819757298,
-      "eucalyptol": 0.019512736972485373
-    },
-    "cannabinoids": {
-      "thc": 0.26932357249574396,
-      "cbd": 0.09566462075434642,
-      "cbg": 0.010472499324073079,
-      "cbn": 0.00895770002394309,
-      "thcv": 0.003144452310765727
-    },
-    "effects": [
-      "focused",
-      "alert",
-      "uplifted"
-    ],
-    "type": "sativa",
-    "thc_range": "24.9-28.9%",
-    "cbd_range": "9.1-10.1%",
-    "description": "A sativa strain with fruity, sweet flavors and focused, alert effects.",
-    "flavors": [
-      "fruity",
-      "sweet",
-      "tropical"
-    ]
-  },
-  "permanent marker": {
-    "name": "permanent marker",
-    "terpenes": {
-      "myrcene": 0.20780037399883894,
-      "limonene": 0.21274731547396653,
-      "caryophyllene": 0.13756429627221878,
-      "pinene": 0.28248635861011023,
-      "linalool": 0.27080294254189613,
-      "humulene": 0.059217341729077305,
-      "terpinolene": 0.03598473963072636,
-      "ocimene": 0.018123620027437254,
-      "nerolidol": 0.03597679894511839,
-      "bisabolol": 0.02865777111565846,
-      "eucalyptol": 0.018855014633211462
-    },
-    "cannabinoids": {
-      "thc": 0.21164820801496653,
-      "cbd": 0.021323709278367152,
-      "cbg": 0.011058664661065507,
-      "cbn": 0.005368248293405849,
-      "thcv": 0.0043310007581857345
-    },
-    "effects": [
-      "focused",
-      "alert",
-      "uplifted"
-    ],
-    "type": "sativa",
-    "thc_range": "19.2-23.2%",
-    "cbd_range": "1.6-2.6%",
-    "description": "A sativa strain with fruity, sweet flavors and focused, alert effects.",
-    "flavors": [
-      "fruity",
-      "sweet",
-      "tropical"
-    ]
-  },
-  "marshmallow og": {
-    "name": "marshmallow og",
-    "terpenes": {
-      "myrcene": 0.7090082083474598,
-      "limonene": 0.22704886970114085,
-      "caryophyllene": 0.11227180512764263,
-      "pinene": 0.3309572118642651,
-      "linalool": 0.1741291976445044,
-      "humulene": 0.006818854529791523,
-      "terpinolene": 0.02049878595178466,
-      "ocimene": 0.08986889171660307,
-      "nerolidol": 0.028994293879270577,
-      "bisabolol": 0.028390475351224936,
-      "eucalyptol": 0.01876817589420863
-    },
-    "cannabinoids": {
-      "thc": 0.27783076928711614,
-      "cbd": 0.1134390662864879,
-      "cbg": 0.006710771900611203,
-      "cbn": 0.00793080664089017,
-      "thcv": 0.000675504950517173
-    },
-    "effects": [
-      "euphoric",
-      "creative",
-      "energetic"
-    ],
-    "type": "hybrid",
-    "thc_range": "25.8-29.8%",
-    "cbd_range": "10.8-11.8%",
-    "description": "A hybrid strain with earthy, herbal flavors and euphoric, creative effects.",
-    "flavors": [
-      "earthy",
-      "herbal",
-      "spicy"
-    ]
-  },
-  "apple fritter": {
-    "name": "apple fritter",
-    "terpenes": {
-      "myrcene": 0.4692467827203207,
-      "limonene": 0.23286829718576096,
-      "caryophyllene": 0.2977490350262382,
-      "pinene": 0.22878891603299328,
-      "linalool": 0.1045411822911023,
-      "humulene": 0.09122069088317684,
-      "terpinolene": 0.07931699724995965,
-      "ocimene": 0.04104769516936628,
-      "nerolidol": 0.031687448287934294,
-      "bisabolol": 0.04824863712036405,
-      "eucalyptol": 0.010324246346064556
-    },
-    "cannabinoids": {
-      "thc": 0.197211778136245,
-      "cbd": 0.0779742377914382,
-      "cbg": 0.0180616082547569,
-      "cbn": 0.0038536209821922675,
-      "thcv": 0.0029861900496532595
+      "myrcene": 0.2,
+      "linalool": 0.12,
+      "humulene": 0.08
     },
     "effects": [
       "relaxed",
       "happy",
-      "uplifted"
-    ],
-    "type": "hybrid",
-    "thc_range": "17.7-21.7%",
-    "cbd_range": "7.3-8.3%",
-    "description": "A hybrid strain with pine, woody flavors and relaxed, happy effects.",
-    "flavors": [
-      "pine",
-      "woody",
-      "spicy"
-    ]
-  },
-  "gorilla glue ": {
-    "name": "gorilla glue ",
-    "terpenes": {
-      "myrcene": 0.736177372871158,
-      "limonene": 0.0708290974711237,
-      "caryophyllene": 0.47533068668794204,
-      "pinene": 0.19369262168921159,
-      "linalool": 0.1391149580291154,
-      "humulene": 0.00941516774417301,
-      "terpinolene": 0.14634179968301997,
-      "ocimene": 0.09835648947931759,
-      "nerolidol": 0.004124174229506165,
-      "bisabolol": 0.02044149443851189,
-      "eucalyptol": 0.011609684883544177
-    },
-    "cannabinoids": {
-      "thc": 0.26464952968878225,
-      "cbd": 0.0657760961117067,
-      "cbg": 0.011962775178780838,
-      "cbn": 0.004633246587941474,
-      "thcv": 0.0036307312203954665
-    },
-    "effects": [
-      "calm",
+      "euphoric",
       "sleepy",
+      "focused"
+    ],
+    "medical_effects": [
+      "stress relief",
+      "anxiety",
+      "depression",
       "pain relief"
     ],
     "type": "indica",
-    "thc_range": "24.5-28.5%",
-    "cbd_range": "6.1-7.1%",
-    "description": "A indica strain with citrus, lemon flavors and calm, sleepy effects.",
+    "thc_range": "15-23%",
+    "cbd_range": "<1%",
+    "description": "Award-winning indica with candy-like fruit flavors and calming effects",
     "flavors": [
-      "citrus",
-      "lemon",
-      "sweet"
-    ]
+      "sweet",
+      "berry",
+      "grape",
+      "tropical"
+    ],
+    "aromas": [
+      "sweet",
+      "berry",
+      "grape",
+      "tropical"
+    ],
+    "best_time": "evening",
+    "activity": "relaxation"
   }
 }

@@ -1,5 +1,11 @@
 package com.strainanalyzer.app.ui
 
+import android.graphics.Typeface
+import android.os.Build
+import android.text.Html
+import android.text.method.LinkMovementMethod
+import android.util.Log
+import android.widget.TextView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
@@ -11,10 +17,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import com.strainanalyzer.app.analysis.LocalAnalysisEngine
 import com.strainanalyzer.app.data.StrainDataService
 import com.strainanalyzer.app.llm.LlmService
@@ -174,43 +182,63 @@ fun CompareScreen(
 
                     Button(
                         onClick = {
-                            if (strainName.isNotBlank()) {
+                            val trimmedStrainName = strainName.trim()
+                            Log.d("CompareScreen", "Analyze button clicked, strainName='$trimmedStrainName'")
+                            if (trimmedStrainName.isNotBlank()) {
+                                Log.d("CompareScreen", "Starting analysis for: $trimmedStrainName")
                                 scope.launch {
-                                    isAnalyzing = true
-                                    statusMessage = "Checking local database..."
-                                    enhancedAnalysis = null
-                                    strainSource = null
+                                    try {
+                                        isAnalyzing = true
+                                        statusMessage = "Checking local database..."
+                                        Log.d("CompareScreen", "Set isAnalyzing=true")
+                                        enhancedAnalysis = null
+                                        strainSource = null
+                                        analysisResult = null
 
-                                    // Fetch strain data (local or via API)
-                                    val fetchResult = strainDataService.getStrainData(strainName)
-                                    strainSource = fetchResult.source
+                                        // Fetch strain data (local or via API)
+                                        Log.d("CompareScreen", "Fetching strain data...")
+                                        val fetchResult = strainDataService.getStrainData(trimmedStrainName)
+                                        Log.d("CompareScreen", "Fetch result: source=${fetchResult.source}, strain=${fetchResult.strain?.name}")
+                                        strainSource = fetchResult.source
 
-                                    when (fetchResult.source) {
-                                        StrainDataService.StrainSource.LOCAL_DATABASE -> {
-                                            statusMessage = "Found in local database"
+                                        when (fetchResult.source) {
+                                            StrainDataService.StrainSource.LOCAL_DATABASE -> {
+                                                statusMessage = "Found in local database"
+                                            }
+                                            StrainDataService.StrainSource.LOCAL_CACHE -> {
+                                                statusMessage = "Found in cache"
+                                            }
+                                            StrainDataService.StrainSource.API_FETCHED -> {
+                                                statusMessage = "Fetched from Cannlytics API"
+                                            }
+                                            StrainDataService.StrainSource.LLM_GENERATED -> {
+                                                statusMessage = "Generated via ${llmConfig.provider.name} and saved"
+                                            }
+                                            StrainDataService.StrainSource.NOT_FOUND -> {
+                                                statusMessage = fetchResult.error
+                                                analysisResult = null
+                                                isAnalyzing = false
+                                                return@launch
+                                            }
                                         }
-                                        StrainDataService.StrainSource.LOCAL_CACHE -> {
-                                            statusMessage = "Found in cache (previously generated)"
-                                        }
-                                        StrainDataService.StrainSource.LLM_GENERATED -> {
-                                            statusMessage = "Generated via ${llmConfig.provider.name} and saved"
-                                        }
-                                        StrainDataService.StrainSource.NOT_FOUND -> {
-                                            statusMessage = fetchResult.error
-                                            analysisResult = null
-                                            isAnalyzing = false
-                                            return@launch
-                                        }
+
+                                        // Run local analysis
+                                        Log.d("CompareScreen", "Running analyzeStrain with favorites: $favoriteStrains")
+                                        statusMessage = "Calculating similarity..."
+                                        analysisResult = analysisEngine.analyzeStrain(
+                                            trimmedStrainName,
+                                            favoriteStrains
+                                        )
+                                        Log.d("CompareScreen", "Analysis complete: ${analysisResult?.strain?.name}, score=${analysisResult?.similarity?.overallScore}")
+                                        statusMessage = null
+                                    } catch (e: Exception) {
+                                        Log.e("CompareScreen", "Exception during analysis", e)
+                                        statusMessage = "Error: ${e.message ?: "Unknown error occurred"}"
+                                        strainSource = StrainDataService.StrainSource.NOT_FOUND
+                                        analysisResult = null
+                                    } finally {
+                                        isAnalyzing = false
                                     }
-
-                                    // Run local analysis
-                                    statusMessage = "Calculating similarity..."
-                                    analysisResult = analysisEngine.analyzeStrain(
-                                        strainName,
-                                        favoriteStrains
-                                    )
-                                    statusMessage = null
-                                    isAnalyzing = false
                                 }
                             }
                         },
@@ -277,8 +305,9 @@ fun CompareScreen(
                     strainSource?.let { source ->
                         val (sourceText, sourceColor) = when (source) {
                             StrainDataService.StrainSource.LOCAL_DATABASE -> "From local database" to Color(0xFF4CAF50)
-                            StrainDataService.StrainSource.LOCAL_CACHE -> "Previously generated" to Color(0xFF2196F3)
-                            StrainDataService.StrainSource.LLM_GENERATED -> "Just generated via API (saved)" to Color(0xFF9C27B0)
+                            StrainDataService.StrainSource.LOCAL_CACHE -> "Previously fetched" to Color(0xFF2196F3)
+                            StrainDataService.StrainSource.API_FETCHED -> "Fetched from Cannlytics API" to Color(0xFF00BCD4)
+                            StrainDataService.StrainSource.LLM_GENERATED -> "AI-generated (saved)" to Color(0xFF9C27B0)
                             else -> "" to Color.Gray
                         }
                         if (sourceText.isNotEmpty()) {
@@ -495,11 +524,13 @@ fun CompareScreen(
                                     Spacer(modifier = Modifier.height(12.dp))
                                     Divider(color = aiTextColor.copy(alpha = 0.3f))
                                     Spacer(modifier = Modifier.height(12.dp))
-                                    Text(
-                                        text = enhancedAnalysis!!,
-                                        fontSize = 14.sp,
-                                        lineHeight = 20.sp,
-                                        color = if (isDark) Color.White else onSurfaceColor
+
+                                    // Render HTML formatted analysis
+                                    val textColor = if (isDark) Color.White else onSurfaceColor
+                                    HtmlText(
+                                        html = enhancedAnalysis!!,
+                                        textColor = textColor,
+                                        modifier = Modifier.fillMaxWidth()
                                     )
                                 } else {
                                     Spacer(modifier = Modifier.height(12.dp))
@@ -507,16 +538,62 @@ fun CompareScreen(
                                         onClick = {
                                             scope.launch {
                                                 isEnhancing = true
-                                                enhancedAnalysis = llmService.analyzeStrain(
-                                                    strain.name,
-                                                    mapOf(
-                                                        "thc_range" to strain.thcRange,
-                                                        "cbd_range" to strain.cbdRange,
-                                                        "type" to strain.type,
-                                                        "effects" to strain.effects.joinToString(", ")
-                                                    ),
-                                                    mapOf("favorite_strains" to favoriteStrains.joinToString(", ")),
-                                                    result.similarity.overallScore.toFloat() / 100f
+
+                                                // Build comprehensive strain data
+                                                val strainData = mapOf(
+                                                    "name" to strain.name,
+                                                    "thc_range" to strain.thcRange,
+                                                    "cbd_range" to strain.cbdRange,
+                                                    "type" to strain.type,
+                                                    "effects" to strain.effects.joinToString(", "),
+                                                    "medical_effects" to strain.medicalEffects.joinToString(", "),
+                                                    "flavors" to strain.flavors.joinToString(", "),
+                                                    "terpene_profile" to strain.terpenes.entries
+                                                        .sortedByDescending { it.value }
+                                                        .joinToString(", ") { "${it.key}: ${String.format("%.1f", it.value * 100)}%" }
+                                                )
+
+                                                // Build comprehensive user profile with all favorites' details
+                                                val favoriteProfiles = analysisEngine.getFavoriteProfiles(favoriteStrains)
+                                                val idealProfile = analysisEngine.getIdealProfile(favoriteStrains)
+
+                                                val favoriteDetails = favoriteStrains.mapNotNull { name ->
+                                                    analysisEngine.getStrain(name)?.let { fav ->
+                                                        "$name (${fav.type}): ${fav.effects.take(3).joinToString(", ")}"
+                                                    }
+                                                }
+
+                                                val userProfileData = mapOf(
+                                                    "favorite_strains" to favoriteStrains.joinToString(", "),
+                                                    "favorite_details" to favoriteDetails.joinToString("; "),
+                                                    "ideal_terpene_profile" to idealProfile.entries
+                                                        .sortedByDescending { it.value }
+                                                        .filter { it.value > 0.05 }
+                                                        .joinToString(", ") { "${it.key}: ${String.format("%.1f", it.value * 100)}%" }
+                                                )
+
+                                                // Build comprehensive similarity data
+                                                val similarityData = mapOf(
+                                                    "overall_score" to result.similarity.overallScore,
+                                                    "match_rating" to result.similarity.matchRating,
+                                                    "z_scored_cosine" to result.similarity.zScoredCosine,
+                                                    "euclidean_similarity" to result.similarity.euclideanSimilarity,
+                                                    "correlation" to result.similarity.correlationSimilarity,
+                                                    "terpene_comparison" to result.similarity.terpeneComparison.entries
+                                                        .filter { kotlin.math.abs(it.value.percentDiff) > 10 }
+                                                        .sortedByDescending { kotlin.math.abs(it.value.percentDiff) }
+                                                        .take(5)
+                                                        .joinToString("; ") {
+                                                            val diff = it.value.percentDiff
+                                                            val direction = if (diff > 0) "higher" else "lower"
+                                                            "${it.key}: ${String.format("%.0f", kotlin.math.abs(diff))}% $direction than your profile"
+                                                        }
+                                                )
+
+                                                enhancedAnalysis = llmService.analyzeStrainComprehensive(
+                                                    strainData,
+                                                    userProfileData,
+                                                    similarityData
                                                 )
                                                 isEnhancing = false
                                             }
@@ -612,4 +689,37 @@ private fun MetricRow(label: String, value: Double) {
             )
         }
     }
+}
+
+/**
+ * Composable that renders HTML-formatted text using Android's Html.fromHtml()
+ */
+@Composable
+private fun HtmlText(
+    html: String,
+    textColor: Color,
+    modifier: Modifier = Modifier
+) {
+    val textColorInt = textColor.toArgb()
+
+    AndroidView(
+        modifier = modifier,
+        factory = { context ->
+            TextView(context).apply {
+                setTextColor(textColorInt)
+                textSize = 14f
+                setLineSpacing(4f, 1.1f)
+            }
+        },
+        update = { textView ->
+            textView.setTextColor(textColorInt)
+            val spanned = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                Html.fromHtml(html, Html.FROM_HTML_MODE_COMPACT)
+            } else {
+                @Suppress("DEPRECATION")
+                Html.fromHtml(html)
+            }
+            textView.text = spanned
+        }
+    )
 }
