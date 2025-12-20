@@ -11,6 +11,19 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+/**
+ * State for the Compare/Search screen - persisted across tab switches
+ */
+data class CompareScreenState(
+    val strainName: String = "",
+    val analysisResult: LocalAnalysisEngine.AnalysisResult? = null,
+    val strainSource: StrainDataService.StrainSource? = null,
+    val isAnalyzing: Boolean = false,
+    val statusMessage: String? = null,
+    val enhancedAnalysis: String? = null,
+    val isEnhancing: Boolean = false
+)
+
 sealed class UiState {
     object Loading : UiState()
     object Success : UiState()
@@ -46,6 +59,10 @@ class StrainViewModel(application: Application) : AndroidViewModel(application) 
 
     private val _message = MutableStateFlow<String?>(null)
     val message: StateFlow<String?> = _message.asStateFlow()
+
+    // Compare screen state - persists across tab switches
+    private val _compareScreenState = MutableStateFlow(CompareScreenState())
+    val compareScreenState: StateFlow<CompareScreenState> = _compareScreenState.asStateFlow()
 
     init {
         loadAvailableStrains()
@@ -156,5 +173,38 @@ class StrainViewModel(application: Application) : AndroidViewModel(application) 
 
     fun setMessage(msg: String) {
         _message.value = msg
+    }
+
+    // Compare screen state management
+    fun updateCompareStrainName(name: String) {
+        _compareScreenState.value = _compareScreenState.value.copy(strainName = name)
+    }
+
+    fun updateCompareAnalysisResult(result: LocalAnalysisEngine.AnalysisResult?) {
+        _compareScreenState.value = _compareScreenState.value.copy(analysisResult = result)
+    }
+
+    fun updateCompareStrainSource(source: StrainDataService.StrainSource?) {
+        _compareScreenState.value = _compareScreenState.value.copy(strainSource = source)
+    }
+
+    fun updateCompareIsAnalyzing(isAnalyzing: Boolean) {
+        _compareScreenState.value = _compareScreenState.value.copy(isAnalyzing = isAnalyzing)
+    }
+
+    fun updateCompareStatusMessage(message: String?) {
+        _compareScreenState.value = _compareScreenState.value.copy(statusMessage = message)
+    }
+
+    fun updateCompareEnhancedAnalysis(analysis: String?) {
+        _compareScreenState.value = _compareScreenState.value.copy(enhancedAnalysis = analysis)
+    }
+
+    fun updateCompareIsEnhancing(isEnhancing: Boolean) {
+        _compareScreenState.value = _compareScreenState.value.copy(isEnhancing = isEnhancing)
+    }
+
+    fun updateCompareState(state: CompareScreenState) {
+        _compareScreenState.value = state
     }
 }

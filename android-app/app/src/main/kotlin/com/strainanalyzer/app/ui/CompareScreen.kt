@@ -39,13 +39,15 @@ fun CompareScreen(
     val llmService = remember { LlmService.getInstance(context) }
     val llmConfig by llmService.config.collectAsState()
 
-    var strainName by remember { mutableStateOf("") }
-    var analysisResult by remember { mutableStateOf<LocalAnalysisEngine.AnalysisResult?>(null) }
-    var strainSource by remember { mutableStateOf<StrainDataService.StrainSource?>(null) }
-    var isAnalyzing by remember { mutableStateOf(false) }
-    var statusMessage by remember { mutableStateOf<String?>(null) }
-    var enhancedAnalysis by remember { mutableStateOf<String?>(null) }
-    var isEnhancing by remember { mutableStateOf(false) }
+    // Use ViewModel state for persistence across tab switches
+    val compareState by viewModel.compareScreenState.collectAsState()
+    val strainName = compareState.strainName
+    val analysisResult = compareState.analysisResult
+    val strainSource = compareState.strainSource
+    val isAnalyzing = compareState.isAnalyzing
+    val statusMessage = compareState.statusMessage
+    val enhancedAnalysis = compareState.enhancedAnalysis
+    val isEnhancing = compareState.isEnhancing
 
     val userProfile by viewModel.userProfile.collectAsState()
     val favoriteStrains = userProfile.favoriteStrains
@@ -153,7 +155,7 @@ fun CompareScreen(
 
                     OutlinedTextField(
                         value = strainName,
-                        onValueChange = { strainName = it },
+                        onValueChange = { viewModel.updateCompareStrainName(it) },
                         placeholder = { Text("Enter any strain name...") },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(8.dp),
@@ -188,56 +190,57 @@ fun CompareScreen(
                                 Log.d("CompareScreen", "Starting analysis for: $trimmedStrainName")
                                 scope.launch {
                                     try {
-                                        isAnalyzing = true
-                                        statusMessage = "Checking local database..."
+                                        viewModel.updateCompareIsAnalyzing(true)
+                                        viewModel.updateCompareStatusMessage("Checking local database...")
                                         Log.d("CompareScreen", "Set isAnalyzing=true")
-                                        enhancedAnalysis = null
-                                        strainSource = null
-                                        analysisResult = null
+                                        viewModel.updateCompareEnhancedAnalysis(null)
+                                        viewModel.updateCompareStrainSource(null)
+                                        viewModel.updateCompareAnalysisResult(null)
 
                                         // Fetch strain data (local or via API)
                                         Log.d("CompareScreen", "Fetching strain data...")
                                         val fetchResult = strainDataService.getStrainData(trimmedStrainName)
                                         Log.d("CompareScreen", "Fetch result: source=${fetchResult.source}, strain=${fetchResult.strain?.name}")
-                                        strainSource = fetchResult.source
+                                        viewModel.updateCompareStrainSource(fetchResult.source)
 
                                         when (fetchResult.source) {
                                             StrainDataService.StrainSource.LOCAL_DATABASE -> {
-                                                statusMessage = "Found in local database"
+                                                viewModel.updateCompareStatusMessage("Found in local database")
                                             }
                                             StrainDataService.StrainSource.LOCAL_CACHE -> {
-                                                statusMessage = "Found in cache"
+                                                viewModel.updateCompareStatusMessage("Found in cache")
                                             }
                                             StrainDataService.StrainSource.API_FETCHED -> {
-                                                statusMessage = "Fetched from Cannlytics API"
+                                                viewModel.updateCompareStatusMessage("Fetched from Cannlytics API")
                                             }
                                             StrainDataService.StrainSource.LLM_GENERATED -> {
-                                                statusMessage = "Generated via ${llmConfig.provider.name} and saved"
+                                                viewModel.updateCompareStatusMessage("Generated via ${llmConfig.provider.name} and saved")
                                             }
                                             StrainDataService.StrainSource.NOT_FOUND -> {
-                                                statusMessage = fetchResult.error
-                                                analysisResult = null
-                                                isAnalyzing = false
+                                                viewModel.updateCompareStatusMessage(fetchResult.error)
+                                                viewModel.updateCompareAnalysisResult(null)
+                                                viewModel.updateCompareIsAnalyzing(false)
                                                 return@launch
                                             }
                                         }
 
                                         // Run local analysis
                                         Log.d("CompareScreen", "Running analyzeStrain with favorites: $favoriteStrains")
-                                        statusMessage = "Calculating similarity..."
-                                        analysisResult = analysisEngine.analyzeStrain(
+                                        viewModel.updateCompareStatusMessage("Calculating similarity...")
+                                        val result = analysisEngine.analyzeStrain(
                                             trimmedStrainName,
                                             favoriteStrains
                                         )
-                                        Log.d("CompareScreen", "Analysis complete: ${analysisResult?.strain?.name}, score=${analysisResult?.similarity?.overallScore}")
-                                        statusMessage = null
+                                        viewModel.updateCompareAnalysisResult(result)
+                                        Log.d("CompareScreen", "Analysis complete: ${result?.strain?.name}, score=${result?.similarity?.overallScore}")
+                                        viewModel.updateCompareStatusMessage(null)
                                     } catch (e: Exception) {
                                         Log.e("CompareScreen", "Exception during analysis", e)
-                                        statusMessage = "Error: ${e.message ?: "Unknown error occurred"}"
-                                        strainSource = StrainDataService.StrainSource.NOT_FOUND
-                                        analysisResult = null
+                                        viewModel.updateCompareStatusMessage("Error: ${e.message ?: "Unknown error occurred"}")
+                                        viewModel.updateCompareStrainSource(StrainDataService.StrainSource.NOT_FOUND)
+                                        viewModel.updateCompareAnalysisResult(null)
                                     } finally {
-                                        isAnalyzing = false
+                                        viewModel.updateCompareIsAnalyzing(false)
                                     }
                                 }
                             }
@@ -537,7 +540,7 @@ fun CompareScreen(
                                     Button(
                                         onClick = {
                                             scope.launch {
-                                                isEnhancing = true
+                                                viewModel.updateCompareIsEnhancing(true)
 
                                                 // Build comprehensive strain data
                                                 val strainData = mapOf(
@@ -590,12 +593,13 @@ fun CompareScreen(
                                                         }
                                                 )
 
-                                                enhancedAnalysis = llmService.analyzeStrainComprehensive(
+                                                val enhancedResult = llmService.analyzeStrainComprehensive(
                                                     strainData,
                                                     userProfileData,
                                                     similarityData
                                                 )
-                                                isEnhancing = false
+                                                viewModel.updateCompareEnhancedAnalysis(enhancedResult)
+                                                viewModel.updateCompareIsEnhancing(false)
                                             }
                                         },
                                         enabled = !isEnhancing,

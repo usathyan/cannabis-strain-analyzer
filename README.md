@@ -205,6 +205,53 @@ Or use the app with just the embedded database—no AI required for core functio
 
 ---
 
+## Screenshots
+
+<table>
+  <tr>
+    <td><img src="screenshots/01-home-profile-summary.png" width="200"/></td>
+    <td><img src="screenshots/02-home-how-it-works.png" width="200"/></td>
+    <td><img src="screenshots/03-profile-terpene-chart.png" width="200"/></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Home</b><br/>Profile summary & quick actions</td>
+    <td align="center"><b>How It Works</b><br/>Step-by-step guide</td>
+    <td align="center"><b>Profile</b><br/>Your terpene fingerprint</td>
+  </tr>
+  <tr>
+    <td><img src="screenshots/04-profile-quick-add.png" width="200"/></td>
+    <td><img src="screenshots/05-search-analysis-result.png" width="200"/></td>
+    <td><img src="screenshots/06-search-strain-details.png" width="200"/></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Quick Add</b><br/>34 strains in database</td>
+    <td align="center"><b>Analysis</b><br/>81% match score</td>
+    <td align="center"><b>Details</b><br/>Strain info & effects</td>
+  </tr>
+  <tr>
+    <td><img src="screenshots/07-search-similarity-breakdown.png" width="200"/></td>
+    <td><img src="screenshots/08-ai-enhancement-insights.png" width="200"/></td>
+    <td><img src="screenshots/09-ai-experience-prediction.png" width="200"/></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Breakdown</b><br/>Similarity metrics</td>
+    <td align="center"><b>AI Insights</b><br/>What you'll enjoy</td>
+    <td align="center"><b>Prediction</b><br/>Experience forecast</td>
+  </tr>
+  <tr>
+    <td><img src="screenshots/10-ai-recommendation.png" width="200"/></td>
+    <td><img src="screenshots/11-settings-provider-list.png" width="200"/></td>
+    <td><img src="screenshots/12-settings-api-config.png" width="200"/></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Recommendation</b><br/>Personalized advice</td>
+    <td align="center"><b>Settings</b><br/>7 AI providers</td>
+    <td align="center"><b>API Config</b><br/>Your own keys</td>
+  </tr>
+</table>
+
+---
+
 ## Features
 
 ### Home Dashboard
