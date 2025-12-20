@@ -81,14 +81,16 @@ Your "ideal profile" is created from your favorite strains using **MAX pooling**
 ## App Features
 
 ### Home Tab
-- Overview of your profile
-- Quick access to analysis
+- Overview of your profile stats
+- AI status indicator (on-device or cloud)
+- Quick navigation to Profile and Search
 
-### Configure Tab
-- Add/remove favorite strains
+### Profile Tab
+- Add/remove favorite strains from the 21-strain database
+- Add any strain by name (fetched via AI if not in database)
 - Your favorites define your ideal terpene profile
 
-### Compare Tab
+### Search Tab
 - Analyze any strain
 - See match score, breakdown, and recommendations
 - Option to enhance analysis with AI (if configured)
@@ -106,27 +108,34 @@ Your "ideal profile" is created from your favorite strains using **MAX pooling**
 
 ### If Strain is NOT in Database
 
-**With API configured (Settings → LLM Provider):**
+**On Pixel 9+ (Gemini Nano on-device):**
+1. App auto-detects on-device AI capability
+2. Enter strain name
+3. Gemini Nano generates strain data locally - no internet required!
+4. Strain is permanently saved to your local database
+
+**With Cloud API configured (Settings → LLM Provider):**
 1. Enter strain name
 2. App automatically fetches strain data via your configured LLM
 3. Strain is permanently saved to your local database
 4. Future lookups are instant (offline)
 
-**Without API:**
-- You'll see a message to configure an API provider
+**Without any AI:**
+- You'll see a message to configure an API provider or use a supported device
 - The app ships with 21 common strains built-in
 
-### Flow Example (Pixel phone with Gemini API):
+### Flow Example (Pixel 9 with on-device AI):
 
 ```
 1. User enters "Gelato 41"
 2. App checks local database → Not found
-3. App calls Gemini API → "Generate strain profile for Gelato 41"
-4. Gemini returns: type, THC/CBD range, terpene percentages, effects
+3. App uses Gemini Nano (on-device) → "Generate strain profile"
+4. Returns: type, THC/CBD range, terpene percentages, effects
 5. App saves this to local database permanently
 6. App runs similarity calculations locally
 7. User sees: 78% match, "Good Match"
 8. Next time: "Gelato 41" loads instantly from local storage
+9. Entire flow works offline!
 ```
 
 ## Privacy & Architecture
@@ -136,9 +145,10 @@ Your "ideal profile" is created from your favorite strains using **MAX pooling**
 - Strain database lookups
 - User profile storage
 - Recommendation generation (template-based)
+- **Gemini Nano strain generation (Pixel 9+ only)**
 
-### What Uses API (Optional)
-- Fetching unknown strain data (one-time, then cached forever)
+### What Uses Cloud API (Optional)
+- Fetching unknown strain data (one-time, then cached forever) - only if Gemini Nano unavailable
 - Enhanced AI recommendations (optional "Enhance with AI" button)
 
 ### Data Storage
@@ -149,9 +159,10 @@ Your "ideal profile" is created from your favorite strains using **MAX pooling**
 ## Building the App
 
 ### Requirements
-- Android Studio or command line with Gradle
+- Android Studio or command line with Gradle 8.9+
 - Java 17
-- Android SDK
+- Android SDK (compile SDK 35)
+- Kotlin 2.1.0
 
 ### Build
 ```bash
@@ -164,6 +175,10 @@ JAVA_HOME=/path/to/java17 ./gradlew assembleDebug
 adb install -r app/build/outputs/apk/debug/app-debug.apk
 ```
 
+### Minimum Device Requirements
+- Android API 26 (Android 8.0) or higher
+- **For on-device AI**: Pixel 9, Pixel 9 Pro, Pixel 9 Pro XL, or Pixel 9 Pro Fold
+
 ## Project Structure
 
 ```
@@ -173,10 +188,13 @@ strain-analyzer/
 │   │   ├── kotlin/       # Kotlin source code
 │   │   │   ├── analysis/ # LocalAnalysisEngine (similarity calculations)
 │   │   │   ├── data/     # StrainDataService (fetching/caching)
-│   │   │   ├── llm/      # LLM providers (OpenAI, Anthropic, etc.)
+│   │   │   ├── llm/      # LLM providers and on-device AI
+│   │   │   │   ├── GeminiNanoService.kt  # On-device Gemini Nano
+│   │   │   │   ├── LlmService.kt         # Unified AI service
+│   │   │   │   └── providers/            # Cloud API providers
 │   │   │   └── ui/       # Compose UI screens
 │   │   └── assets/
-│   │       └── strains.json  # Embedded strain database
+│   │       └── strains.json  # Embedded 21-strain database
 ├── legacy/               # Retired web backend (reference only)
 └── screenshots/          # App screenshots
 ```

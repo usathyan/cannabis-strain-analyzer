@@ -3,128 +3,317 @@ package com.strainanalyzer.app.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.strainanalyzer.app.analysis.LocalAnalysisEngine
+import com.strainanalyzer.app.llm.LlmService
 
 @Composable
 fun ConfigureScreen(
     viewModel: StrainViewModel
 ) {
+    val context = LocalContext.current
+    val llmService = remember { LlmService.getInstance(context) }
+
     val userProfile by viewModel.userProfile.collectAsState()
     val availableStrains by viewModel.availableStrains.collectAsState()
     val selectedStrains by viewModel.selectedStrains.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
-    
+
+    var newStrainName by remember { mutableStateOf("") }
+    var isAddingStrain by remember { mutableStateOf(false) }
+
+    val isLlmConfigured = llmService.isConfigured()
+    val isDark = isSystemInDarkTheme()
+
+    // Get analysis engine for terpene profiles
+    val analysisEngine = remember { LocalAnalysisEngine.getInstance(context) }
+    val terpeneOrder = remember { analysisEngine.getMajorTerpenes() }
+    val combinedProfile = remember(userProfile.favoriteStrains) {
+        analysisEngine.getIdealProfile(userProfile.favoriteStrains)
+    }
+    val individualProfiles = remember(userProfile.favoriteStrains) {
+        analysisEngine.getFavoriteProfiles(userProfile.favoriteStrains)
+    }
+
+    val backgroundColor = MaterialTheme.colorScheme.background
+    val surfaceColor = MaterialTheme.colorScheme.surface
+    val onSurfaceColor = MaterialTheme.colorScheme.onSurface
+    val onSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF5F5F5))
+            .background(backgroundColor)
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Your Favorite Strains
+        // Add New Strain Card
         item {
+            val cardColor = if (isDark) Color(0xFF0D47A1) else Color(0xFFE3F2FD)
+            val titleColor = if (isDark) Color(0xFF90CAF9) else Color(0xFF1565C0)
+            val subtitleColor = if (isDark) Color(0xFF64B5F6) else Color(0xFF1976D2)
+
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                colors = CardDefaults.cardColors(containerColor = cardColor)
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp)
                 ) {
                     Text(
-                        text = "Your Favorite Strains",
+                        text = "Add Strain to Profile",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
+                        color = titleColor,
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
-                    
-                    if (userProfile?.favoriteStrains?.isEmpty() != false) {
+
+                    OutlinedTextField(
+                        value = newStrainName,
+                        onValueChange = { newStrainName = it },
+                        placeholder = { Text("Enter any strain name...") },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(8.dp),
+                        singleLine = true,
+                        enabled = !isAddingStrain
+                    )
+
+                    if (isLlmConfigured) {
                         Text(
-                            text = "No favorite strains yet. Select from available strains below.",
-                            color = Color.Gray,
+                            text = "Unknown strains will be fetched via API",
+                            fontSize = 12.sp,
+                            color = subtitleColor,
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                    } else {
+                        Text(
+                            text = "Configure API in Settings to add unknown strains",
+                            fontSize = 12.sp,
+                            color = onSurfaceVariant,
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Button(
+                        onClick = {
+                            if (newStrainName.isNotBlank()) {
+                                isAddingStrain = true
+                                viewModel.addStrainToProfile(newStrainName)
+                                newStrainName = ""
+                                isAddingStrain = false
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = newStrainName.isNotBlank() && !isAddingStrain,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF1976D2)
+                        ),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        if (isAddingStrain) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(20.dp),
+                                color = Color.White,
+                                strokeWidth = 2.dp
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                        }
+                        Icon(Icons.Default.Add, contentDescription = null)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Add to Profile")
+                    }
+                }
+            }
+        }
+
+        // Your Favorite Strains
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                colors = CardDefaults.cardColors(containerColor = surfaceColor)
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Your Profile",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = onSurfaceColor
+                        )
+                        Text(
+                            text = "${userProfile.favoriteStrains.size} strains",
+                            fontSize = 14.sp,
+                            color = onSurfaceVariant
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    val strainRowBg = if (isDark) Color(0xFF1B5E20) else Color(0xFFE8F5E9)
+                    val strainTextColor = if (isDark) Color(0xFFA5D6A7) else Color(0xFF2E7D32)
+
+                    if (userProfile.favoriteStrains.isEmpty()) {
+                        Text(
+                            text = "No favorite strains yet. Add strains above or select from the database below.",
+                            color = onSurfaceVariant,
                             fontSize = 14.sp
                         )
                     } else {
-                        userProfile?.favoriteStrains?.forEach { strain ->
+                        userProfile.favoriteStrains.forEach { strain ->
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(vertical = 8.dp)
+                                    .padding(vertical = 4.dp)
                                     .background(
-                                        Color(0xFFF8F9FA),
-                                        shape = RoundedCornerShape(4.dp)
+                                        strainRowBg,
+                                        shape = RoundedCornerShape(8.dp)
                                     )
                                     .padding(12.dp),
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
-                                    text = strain,
-                                    fontWeight = FontWeight.Bold
+                                    text = strain.split(" ").joinToString(" ") {
+                                        it.replaceFirstChar { c -> c.uppercase() }
+                                    },
+                                    fontWeight = FontWeight.Medium,
+                                    color = strainTextColor
                                 )
-                                Icon(
-                                    imageVector = Icons.Default.Close,
-                                    contentDescription = "Remove",
-                                    tint = Color(0xFFe74c3c),
-                                    modifier = Modifier.clickable {
-                                        viewModel.removeStrainFromProfile(strain)
-                                    }
-                                )
+                                IconButton(
+                                    onClick = { viewModel.removeStrainFromProfile(strain) },
+                                    modifier = Modifier.size(32.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Close,
+                                        contentDescription = "Remove",
+                                        tint = Color(0xFFe74c3c)
+                                    )
+                                }
                             }
                         }
                     }
                 }
             }
         }
-        
-        // Available Strains
+
+        // Terpene Profile Visualization
+        if (userProfile.favoriteStrains.isNotEmpty() && combinedProfile.isNotEmpty()) {
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                    colors = CardDefaults.cardColors(containerColor = surfaceColor)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Text(
+                            text = "Your Terpene Profile",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = onSurfaceColor,
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        )
+                        Text(
+                            text = "Based on your favorite strains",
+                            fontSize = 12.sp,
+                            color = onSurfaceVariant,
+                            modifier = Modifier.padding(bottom = 12.dp)
+                        )
+
+                        CombinedProfileChart(
+                            combinedProfile = combinedProfile,
+                            individualProfiles = individualProfiles,
+                            terpeneOrder = terpeneOrder
+                        )
+                    }
+                }
+            }
+        }
+
+        // Quick Add from Database
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                colors = CardDefaults.cardColors(containerColor = surfaceColor)
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp)
                 ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Quick Add from Database",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = onSurfaceColor
+                        )
+                        Text(
+                            text = "${availableStrains.size} available",
+                            fontSize = 14.sp,
+                            color = onSurfaceVariant
+                        )
+                    }
+
                     Text(
-                        text = "Available Strains",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(bottom = 12.dp)
+                        text = "Tap to add/remove from your profile",
+                        fontSize = 12.sp,
+                        color = onSurfaceVariant,
+                        modifier = Modifier.padding(vertical = 8.dp)
                     )
-                    
+
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(2),
-                        modifier = Modifier.height(300.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                        modifier = Modifier.height(350.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        items(availableStrains.take(20)) { strain ->
-                            val isSelected = selectedStrains.contains(strain)
-                            StrainCard(
+                        items(availableStrains) { strain ->
+                            val isInProfile = userProfile.favoriteStrains.contains(strain)
+                            QuickAddStrainCard(
                                 name = strain,
-                                isSelected = isSelected,
+                                isInProfile = isInProfile,
                                 onClick = {
-                                    viewModel.toggleStrainSelection(strain)
+                                    if (isInProfile) {
+                                        viewModel.removeStrainFromProfile(strain)
+                                    } else {
+                                        viewModel.addStrainToProfile(strain)
+                                    }
                                 }
                             )
                         }
@@ -132,91 +321,67 @@ fun ConfigureScreen(
                 }
             }
         }
-        
-        // Current Profile Info
-        if (userProfile?.idealProfile != null) {
-            item {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        Text(
-                            text = "Current Profile",
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(bottom = 12.dp)
-                        )
-                        
-                        val profile = userProfile?.idealProfile
-                        InfoRow("THC", "${profile?.aggregateCannabinoids?.get("thc")?.times(100)?.toInt() ?: 0}%")
-                        InfoRow("CBD", "${profile?.aggregateCannabinoids?.get("cbd")?.times(100)?.toInt() ?: 0}%")
-                        InfoRow("Top Terpene", profile?.dominantTerpenes?.firstOrNull()?.capitalize() ?: "N/A")
-                    }
-                }
-            }
-        }
-        
-        // Update Profile Button
-        item {
-            Button(
-                onClick = { viewModel.createIdealProfile() },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                enabled = selectedStrains.isNotEmpty() && uiState !is UiState.Loading,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF4CAF50)
-                ),
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                if (uiState is UiState.Loading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(24.dp),
-                        color = Color.White
-                    )
-                } else {
-                    Text(text = "Update Profile", fontSize = 16.sp)
-                }
-            }
-        }
     }
 }
 
 @Composable
-fun StrainCard(
+fun QuickAddStrainCard(
     name: String,
-    isSelected: Boolean,
+    isInProfile: Boolean,
     onClick: () -> Unit
 ) {
+    val isDark = isSystemInDarkTheme()
+    val surfaceColor = MaterialTheme.colorScheme.surface
+    val onSurface = MaterialTheme.colorScheme.onSurface
+
+    val borderColor = if (isInProfile) {
+        if (isDark) Color(0xFF4CAF50) else Color(0xFF4CAF50)
+    } else {
+        if (isDark) Color(0xFF424242) else Color(0xFFe9ecef)
+    }
+
+    val bgColor = if (isInProfile) {
+        if (isDark) Color(0xFF1B5E20) else Color(0xFFE8F5E9)
+    } else {
+        surfaceColor
+    }
+
+    val textColor = if (isInProfile) {
+        if (isDark) Color(0xFFA5D6A7) else Color(0xFF2E7D32)
+    } else {
+        onSurface
+    }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .border(
                 width = 2.dp,
-                color = if (isSelected) Color(0xFF4CAF50) else Color(0xFFe9ecef),
+                color = borderColor,
                 shape = RoundedCornerShape(8.dp)
             )
             .background(
-                color = if (isSelected) Color(0xFFe8f5e8) else Color.White,
+                color = bgColor,
                 shape = RoundedCornerShape(8.dp)
             )
             .clickable(onClick = onClick)
-            .padding(16.dp),
+            .padding(12.dp),
         contentAlignment = Alignment.Center
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
         ) {
-            Text(text = "🌿", fontSize = 24.sp)
-            Spacer(modifier = Modifier.height(8.dp))
+            if (isInProfile) {
+                Text(text = "✓ ", color = if (isDark) Color(0xFF4CAF50) else Color(0xFF4CAF50))
+            }
             Text(
-                text = name,
-                fontWeight = FontWeight.Medium,
-                fontSize = 14.sp
+                text = name.split(" ").joinToString(" ") {
+                    it.replaceFirstChar { c -> c.uppercase() }
+                },
+                fontWeight = if (isInProfile) FontWeight.Bold else FontWeight.Normal,
+                fontSize = 13.sp,
+                color = textColor
             )
         }
     }
@@ -224,21 +389,25 @@ fun StrainCard(
 
 @Composable
 fun InfoRow(label: String, value: String) {
+    val onSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
+    val onSurface = MaterialTheme.colorScheme.onSurface
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .padding(vertical = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
             text = label,
-            color = Color.Gray,
+            color = onSurfaceVariant,
             fontSize = 14.sp
         )
         Text(
             text = value,
             fontWeight = FontWeight.Medium,
-            fontSize = 14.sp
+            fontSize = 14.sp,
+            color = onSurface
         )
     }
 }

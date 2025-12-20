@@ -67,6 +67,32 @@ class LocalAnalysisEngine(private val context: Context) {
         return strainDatabase[name.lowercase()]
     }
 
+    /**
+     * Get the combined ideal terpene profile from favorite strains
+     * Uses MAX pooling across all favorites
+     */
+    fun getIdealProfile(favoriteNames: List<String>): Map<String, Double> {
+        val favorites = favoriteNames.mapNotNull { getStrain(it) }
+        if (favorites.isEmpty()) return emptyMap()
+        return createIdealProfile(favorites)
+    }
+
+    /**
+     * Get list of major terpenes used in analysis
+     */
+    fun getMajorTerpenes(): List<String> = majorTerpenes
+
+    /**
+     * Get individual strain terpene profiles for favorites
+     */
+    fun getFavoriteProfiles(favoriteNames: List<String>): Map<String, Map<String, Double>> {
+        return favoriteNames.mapNotNull { name ->
+            getStrain(name)?.let { strain ->
+                strain.name to strain.terpenes.filterKeys { it in majorTerpenes }
+            }
+        }.toMap()
+    }
+
     fun isStrainKnown(name: String): Boolean {
         return strainDatabase.containsKey(name.lowercase())
     }
