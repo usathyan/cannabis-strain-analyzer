@@ -127,6 +127,97 @@ class LlmService(context: Context) {
     }
 
     /**
+     * Generate comprehensive strain analysis with detailed profile comparison
+     */
+    suspend fun analyzeStrainComprehensive(
+        strainData: Map<String, Any>,
+        userProfile: Map<String, Any>,
+        similarityData: Map<String, Any>
+    ): String {
+        val strainName = strainData["name"]?.toString() ?: "Unknown"
+        val overallScore = (similarityData["overall_score"] as? Double)?.toFloat() ?: 0f
+
+        if (!isConfigured()) {
+            return generateTemplateAnalysis(strainName, overallScore / 100f)
+        }
+
+        val prompt = buildComprehensiveAnalysisPrompt(strainData, userProfile, similarityData)
+        val messages = listOf(
+            LlmMessage("system", COMPREHENSIVE_SYSTEM_PROMPT),
+            LlmMessage("user", prompt)
+        )
+
+        val response = provider.complete(messages, _config.value)
+
+        return if (response.error != null) {
+            "Analysis unavailable: ${response.error}\n\n${generateTemplateAnalysis(strainName, overallScore / 100f)}"
+        } else {
+            response.content
+        }
+    }
+
+    private fun buildComprehensiveAnalysisPrompt(
+        strainData: Map<String, Any>,
+        userProfile: Map<String, Any>,
+        similarityData: Map<String, Any>
+    ): String {
+        return """
+            Provide a comprehensive analysis of this cannabis strain comparison.
+
+            === STRAIN BEING ANALYZED ===
+            Name: ${strainData["name"] ?: "Unknown"}
+            Type: ${strainData["type"] ?: "Unknown"}
+            THC: ${strainData["thc_range"] ?: "Unknown"}
+            CBD: ${strainData["cbd_range"] ?: "Unknown"}
+            Effects: ${strainData["effects"] ?: "Unknown"}
+            Medical Uses: ${strainData["medical_effects"] ?: "Unknown"}
+            Flavors: ${strainData["flavors"] ?: "Unknown"}
+            Terpene Profile: ${strainData["terpene_profile"] ?: "Unknown"}
+
+            === USER'S PREFERENCE PROFILE ===
+            Favorite Strains: ${userProfile["favorite_strains"] ?: "None"}
+            Favorite Details: ${userProfile["favorite_details"] ?: "None"}
+            Ideal Terpene Profile (from favorites): ${userProfile["ideal_terpene_profile"] ?: "Unknown"}
+
+            === SIMILARITY ANALYSIS (On-Device Calculated) ===
+            Overall Match: ${similarityData["overall_score"]}% (${similarityData["match_rating"]})
+            Z-Scored Cosine Similarity: ${String.format("%.1f", ((similarityData["z_scored_cosine"] as? Double) ?: 0.0) * 100)}%
+            Euclidean Similarity: ${String.format("%.1f", ((similarityData["euclidean_similarity"] as? Double) ?: 0.0) * 100)}%
+            Correlation: ${String.format("%.1f", ((similarityData["correlation"] as? Double) ?: 0.0) * 100)}%
+            Key Terpene Differences: ${similarityData["terpene_comparison"] ?: "None significant"}
+
+            === ANALYSIS REQUESTED ===
+            Based on the comprehensive data above, provide a detailed personalized analysis using HTML formatting (no markdown).
+
+            Structure your response with these sections (use <b>SECTION NAME</b> for headers):
+
+            <b>WHAT YOU'LL LIKELY ENJOY</b>
+            Based on terpene overlap and effect similarities with your favorites, what aspects of this strain will appeal to you? Be specific about which terpenes and effects align.
+
+            <b>POTENTIAL DIFFERENCES</b>
+            What might feel different compared to your usual favorites? Consider terpene levels that are higher or lower than your ideal profile.
+
+            <b>EXPERIENCE PREDICTION</b>
+            Given the strain type, THC/CBD levels, and dominant terpenes, describe what the experience might be like for someone with your preferences.
+
+            <b>BEST USE CASE</b>
+            When would this strain be ideal? Time of day, activities, or situations based on its profile.
+
+            <b>RECOMMENDATION</b>
+            A clear verdict on whether this strain is worth trying, and any tips for the best experience.
+
+            FORMATTING REMINDERS:
+            • Use <b>bold</b> for key terms and emphasis
+            • Use <i>italic</i> for strain names and terpene names
+            • Use <br><br> between paragraphs
+            • Use • for bullet points
+            • NO markdown (no **, no ##, no ---)
+
+            Keep the analysis conversational but informative. Use the data provided to give specific, personalized insights.
+        """.trimIndent()
+    }
+
+    /**
      * Simple completion - send prompt, get response
      */
     suspend fun complete(prompt: String): String? {
@@ -211,6 +302,27 @@ class LlmService(context: Context) {
 Provide brief, accurate, and responsible guidance about cannabis strains.
 Focus on terpene profiles, effects, and how strains compare to user preferences.
 Always encourage responsible use and consulting healthcare providers for medical questions."""
+
+        private const val COMPREHENSIVE_SYSTEM_PROMPT = """You are an expert cannabis strain analyst with deep knowledge of terpene science and cannabinoid effects.
+
+Your role is to provide personalized, data-driven analysis comparing cannabis strains to a user's established preference profile. You have access to:
+- The target strain's complete profile (terpenes, effects, THC/CBD)
+- The user's favorite strains and their combined terpene profile
+- Mathematical similarity scores calculated on-device
+
+IMPORTANT FORMATTING RULES:
+- Format your response using simple HTML tags for rich text display
+- Use <b>bold</b> for emphasis and key terms
+- Use <i>italic</i> for strain names and terpene names
+- Use <br><br> for paragraph breaks
+- Section headers should be bold: <b>SECTION NAME</b>
+- Keep paragraphs short and scannable
+- Do NOT use markdown (no **, no ##, no bullet points with -)
+- Use bullet points as: • item (unicode bullet)
+
+Provide specific, actionable insights based on the actual data - not generic advice.
+Be conversational but informative. Avoid medical claims; focus on experience and preferences.
+When discussing terpenes, explain what they contribute to the experience."""
 
         @Volatile
         private var instance: LlmService? = null

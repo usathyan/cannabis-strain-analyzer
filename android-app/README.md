@@ -158,12 +158,13 @@ Or use the app with just the embedded database—no AI required for core functio
 - Toggle between combined MAX profile and per-strain breakdown
 
 ### Strain Analyzer
-- Real-time search with source indication (local/cached/generated)
+- Real-time search with source indication (local/cached/API fetched/generated)
 - **Match percentage** with breakdown by algorithm
 - **Similarity metrics** with progress bars
 - **Strain details**: type, THC/CBD ranges, effects, flavors
 - **Local analysis summary** generated from templates
-- **Optional AI enhancement** for personalized insights
+- **AI-powered insights** with rich HTML formatting (bold, italic, structured sections)
+- Searched strains automatically saved to local database for future use
 
 ### Settings
 - Configure cloud API providers with your own keys
@@ -280,6 +281,67 @@ Each strain includes:
 - Suggested activities
 
 Unknown strains can be generated via AI and automatically saved to your local database for future searches.
+
+---
+
+## Strain Data Sources
+
+The app uses a multi-tier approach to fetch strain data, prioritizing reliability and accuracy:
+
+### Data Source Hierarchy
+
+| Priority | Source | Description |
+|----------|--------|-------------|
+| 1 | **Embedded Database** | 30+ strains with curated terpene profiles, ships with the app |
+| 2 | **Local Cache** | Previously fetched strains stored locally |
+| 3 | **Cannlytics API** | Primary external API for real strain data |
+| 4 | **Fallback Config** | 22+ curated strains for when API is unavailable |
+| 5 | **LLM Generation** | AI-generated profiles as last resort |
+
+### Cannlytics API
+
+The app integrates with the [Cannlytics](https://cannlytics.com) public strain database API:
+
+```
+GET https://cannlytics.com/api/data/strains/{strain-name}
+GET https://cannlytics.com/api/data/strains?limit=20
+```
+
+The API provides:
+- Terpene profiles (myrcene, limonene, caryophyllene, pinene, etc.)
+- THC/CBD content ranges
+- Effects and aromas
+- Strain descriptions
+
+### Database Maintenance Scripts
+
+Scripts in the `scripts/` directory manage the embedded strain database:
+
+```bash
+# List configured strains
+python3 scripts/build_strain_database.py --list
+
+# Add a new strain to config
+python3 scripts/build_strain_database.py --add-strain "Strain Name"
+
+# Rebuild database from API + fallbacks
+python3 scripts/build_strain_database.py
+```
+
+Configuration: `scripts/strain_config.json`
+- `strains`: List of strain names to include
+- `fallback_strains`: Curated data for strains not in API
+
+Output: `app/src/main/assets/strains.json`
+
+### Fallback Strategy
+
+When the Cannlytics API doesn't have data for a strain:
+1. **Build script**: Uses fallback data from `strain_config.json`
+2. **Runtime**: Uses embedded fallback strains in `StrainApiService.kt`
+3. **Last resort**: LLM generates the profile (if configured)
+
+This ensures the app works reliably even when external APIs are unavailable.
 
 ---
 

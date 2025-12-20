@@ -43,6 +43,11 @@ fun ConfigureScreen(
     val isLlmConfigured = llmService.isConfigured()
     val isDark = isSystemInDarkTheme()
 
+    // Refresh available strains when screen is displayed (picks up newly fetched strains)
+    LaunchedEffect(Unit) {
+        viewModel.loadAvailableStrains()
+    }
+
     // Get analysis engine for terpene profiles
     val analysisEngine = remember { LocalAnalysisEngine.getInstance(context) }
     val terpeneOrder = remember { analysisEngine.getMajorTerpenes() }
