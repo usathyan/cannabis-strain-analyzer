@@ -22,6 +22,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.strainanalyzer.app.analysis.LocalAnalysisEngine
 import com.strainanalyzer.app.llm.LlmService
 
 @Composable
@@ -41,6 +42,16 @@ fun ConfigureScreen(
 
     val isLlmConfigured = llmService.isConfigured()
     val isDark = isSystemInDarkTheme()
+
+    // Get analysis engine for terpene profiles
+    val analysisEngine = remember { LocalAnalysisEngine.getInstance(context) }
+    val terpeneOrder = remember { analysisEngine.getMajorTerpenes() }
+    val combinedProfile = remember(userProfile.favoriteStrains) {
+        analysisEngine.getIdealProfile(userProfile.favoriteStrains)
+    }
+    val individualProfiles = remember(userProfile.favoriteStrains) {
+        analysisEngine.getFavoriteProfiles(userProfile.favoriteStrains)
+    }
 
     val backgroundColor = MaterialTheme.colorScheme.background
     val surfaceColor = MaterialTheme.colorScheme.surface
@@ -209,6 +220,42 @@ fun ConfigureScreen(
                                 }
                             }
                         }
+                    }
+                }
+            }
+        }
+
+        // Terpene Profile Visualization
+        if (userProfile.favoriteStrains.isNotEmpty() && combinedProfile.isNotEmpty()) {
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                    colors = CardDefaults.cardColors(containerColor = surfaceColor)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Text(
+                            text = "Your Terpene Profile",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = onSurfaceColor,
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        )
+                        Text(
+                            text = "Based on your favorite strains",
+                            fontSize = 12.sp,
+                            color = onSurfaceVariant,
+                            modifier = Modifier.padding(bottom = 12.dp)
+                        )
+
+                        CombinedProfileChart(
+                            combinedProfile = combinedProfile,
+                            individualProfiles = individualProfiles,
+                            terpeneOrder = terpeneOrder
+                        )
                     }
                 }
             }

@@ -242,23 +242,27 @@ fun CompareScreen(
         // Error message
         if (strainSource == StrainDataService.StrainSource.NOT_FOUND && statusMessage != null) {
             item {
+                val errorCardBg = if (isDark) Color(0xFF4E342E) else Color(0xFFFFF3E0)
+                val errorTitleColor = if (isDark) Color(0xFFFFCC80) else Color(0xFFE65100)
+                val errorTextColor = if (isDark) Color(0xFFFFB74D) else Color(0xFFF57C00)
+
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF3E0))
+                    colors = CardDefaults.cardColors(containerColor = errorCardBg)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
                             text = "Could Not Analyze",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFFE65100)
+                            color = errorTitleColor
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = statusMessage ?: "Unknown error",
                             fontSize = 14.sp,
-                            color = Color(0xFFF57C00)
+                            color = errorTextColor
                         )
                     }
                 }
@@ -344,7 +348,8 @@ fun CompareScreen(
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                        colors = CardDefaults.cardColors(containerColor = surfaceColor)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
@@ -353,6 +358,7 @@ fun CompareScreen(
                                 },
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold,
+                                color = onSurfaceColor,
                                 modifier = Modifier.padding(bottom = 12.dp)
                             )
 
@@ -366,7 +372,7 @@ fun CompareScreen(
                                     text = "Effects",
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.Medium,
-                                    color = Color.Gray
+                                    color = onSurfaceVariant
                                 )
                                 Row(
                                     modifier = Modifier.padding(top = 4.dp),
@@ -386,13 +392,15 @@ fun CompareScreen(
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                        colors = CardDefaults.cardColors(containerColor = surfaceColor)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
                                 text = "Similarity Breakdown",
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Bold,
+                                color = onSurfaceColor,
                                 modifier = Modifier.padding(bottom = 12.dp)
                             )
 
@@ -412,10 +420,14 @@ fun CompareScreen(
 
                 // Local Recommendation Card
                 item {
+                    val localBadgeBg = if (isDark) Color(0xFF1B5E20) else Color(0xFFE8F5E9)
+                    val localBadgeText = if (isDark) Color(0xFFA5D6A7) else Color(0xFF2E7D32)
+
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                        colors = CardDefaults.cardColors(containerColor = surfaceColor)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Row(
@@ -424,17 +436,18 @@ fun CompareScreen(
                                 Text(
                                     text = "Analysis",
                                     fontSize = 18.sp,
-                                    fontWeight = FontWeight.Bold
+                                    fontWeight = FontWeight.Bold,
+                                    color = onSurfaceColor
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Surface(
                                     shape = RoundedCornerShape(8.dp),
-                                    color = Color(0xFFE8F5E9)
+                                    color = localBadgeBg
                                 ) {
                                     Text(
                                         text = "Local",
                                         fontSize = 10.sp,
-                                        color = Color(0xFF2E7D32),
+                                        color = localBadgeText,
                                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
                                     )
                                 }
@@ -446,7 +459,7 @@ fun CompareScreen(
                                 text = result.recommendation,
                                 fontSize = 14.sp,
                                 lineHeight = 20.sp,
-                                color = Color(0xFF424242)
+                                color = onSurfaceColor
                             )
                         }
                     }
@@ -455,33 +468,38 @@ fun CompareScreen(
                 // AI Enhancement Card (Optional)
                 if (isLlmConfigured) {
                     item {
+                        val aiCardBg = if (isDark) Color(0xFF0D47A1) else Color(0xFFE3F2FD)
+                        val aiTitleColor = if (isDark) Color(0xFF90CAF9) else Color(0xFF1565C0)
+                        val aiTextColor = if (isDark) Color(0xFF64B5F6) else Color(0xFF1976D2)
+
                         Card(
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(12.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color(0xFFE3F2FD))
+                            colors = CardDefaults.cardColors(containerColor = aiCardBg)
                         ) {
                             Column(modifier = Modifier.padding(16.dp)) {
                                 Text(
                                     text = "AI Enhancement Available",
                                     fontSize = 16.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color(0xFF1565C0)
+                                    color = aiTitleColor
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Text(
                                     text = "Get personalized insights using ${llmConfig.provider.name}",
                                     fontSize = 13.sp,
-                                    color = Color(0xFF1976D2)
+                                    color = aiTextColor
                                 )
 
                                 if (enhancedAnalysis != null) {
                                     Spacer(modifier = Modifier.height(12.dp))
-                                    Divider()
+                                    Divider(color = aiTextColor.copy(alpha = 0.3f))
                                     Spacer(modifier = Modifier.height(12.dp))
                                     Text(
                                         text = enhancedAnalysis!!,
                                         fontSize = 14.sp,
-                                        lineHeight = 20.sp
+                                        lineHeight = 20.sp,
+                                        color = if (isDark) Color.White else onSurfaceColor
                                     )
                                 } else {
                                     Spacer(modifier = Modifier.height(12.dp))
@@ -528,22 +546,26 @@ fun CompareScreen(
             // No favorites warning
             if (result.strain != null && favoriteStrains.isEmpty()) {
                 item {
+                    val tipCardBg = if (isDark) Color(0xFF5D4037) else Color(0xFFFFF8E1)
+                    val tipTitleColor = if (isDark) Color(0xFFFFCC80) else Color(0xFFF57C00)
+                    val tipTextColor = if (isDark) Color(0xFFFFB74D) else Color(0xFFFF8F00)
+
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF8E1))
+                        colors = CardDefaults.cardColors(containerColor = tipCardBg)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
                                 text = "Tip: Add Favorite Strains",
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Medium,
-                                color = Color(0xFFF57C00)
+                                color = tipTitleColor
                             )
                             Text(
                                 text = "Go to Profile tab and add your favorite strains for personalized matching.",
                                 fontSize = 13.sp,
-                                color = Color(0xFFFF8F00)
+                                color = tipTextColor
                             )
                         }
                     }

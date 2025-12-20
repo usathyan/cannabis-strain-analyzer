@@ -1,294 +1,348 @@
-# 🌿 Cannabis Strain Analyzer - Android App
+# Terpene Profile Analyzer
 
-A modern Android application for cannabis strain analysis and comparison, built with Kotlin and Jetpack Compose.
+**Find your perfect strain through the science of terpenes.**
 
-## 📱 Features
-
-- **Home Dashboard**: View your profile statistics, quick actions, and recent analyses
-- **Configure Profile**: Select favorite strains and create your ideal cannabis profile
-- **Compare Strains**: Analyze and compare strains against your preferences
-- **Z-Score Analysis**: Advanced similarity matching using z-scored cosine similarity
-- **Real-time Backend Integration**: Connects to the FastAPI backend server
-- **Material Design 3**: Modern UI with Material You theming
-
-## 🛠️ Tech Stack
-
-- **Language**: Kotlin
-- **UI Framework**: Jetpack Compose
-- **Architecture**: MVVM with StateFlow
-- **Networking**: Retrofit + OkHttp
-- **JSON Parsing**: Gson
-- **Navigation**: Jetpack Navigation Compose
-- **Minimum SDK**: 24 (Android 7.0)
-- **Target SDK**: 34 (Android 14)
-
-## 📋 Prerequisites
-
-Before building the app, ensure you have:
-
-1. **Android Studio** (Hedgehog or later)
-   - Download from: https://developer.android.com/studio
-
-2. **Java Development Kit (JDK) 17 or higher**
-   - Check version: `java -version`
-   - Download from: https://adoptium.net/
-
-3. **Backend Server Running**
-   - The FastAPI backend must be running on your local machine or accessible network
-   - Default backend URL: `http://localhost:8000`
-
-## 🚀 Setup Instructions
-
-### 1. Backend Server Setup
-
-First, ensure your FastAPI backend is running:
-
-```bash
-# Navigate to the main project directory
-cd /Users/umeshbhatt/code/weed
-
-# Start the backend server
-make run
-```
-
-The server should be accessible at `http://localhost:8000`
-
-### 2. Configure Network Settings
-
-#### For Android Emulator:
-The app is pre-configured to use `http://10.0.2.2:8000/` which maps to localhost on your host machine.
-
-#### For Physical Device:
-You need to update the API endpoint:
-
-1. Open `app/src/main/kotlin/com/strainanalyzer/app/network/ApiClient.kt`
-2. Change the `BASE_URL` to your computer's IP address:
-
-```kotlin
-private const val BASE_URL = "http://YOUR_COMPUTER_IP:8000/"
-```
-
-To find your computer's IP:
-- **Mac**: `ifconfig | grep "inet " | grep -v 127.0.0.1`
-- **Linux**: `ip addr show | grep "inet " | grep -v 127.0.0.1`
-- **Windows**: `ipconfig` (look for IPv4 Address)
-
-Example: `http://192.168.1.100:8000/`
-
-**Important**: Your device must be on the same WiFi network as your computer.
-
-### 3. Build the App
-
-#### Option A: Using Android Studio (Recommended)
-
-1. Open Android Studio
-2. Click "Open" and select the `android-app` folder
-3. Wait for Gradle sync to complete
-4. Click the "Run" button (green play icon) or press `Shift + F10`
-5. Select your device/emulator
-6. The app will build and install automatically
-
-#### Option B: Using Command Line
-
-```bash
-# Navigate to the android-app directory
-cd /Users/umeshbhatt/code/weed/android-app
-
-# Build debug APK
-./gradlew assembleDebug
-
-# The APK will be located at:
-# app/build/outputs/apk/debug/app-debug.apk
-```
-
-### 4. Install APK on Device
-
-#### Via USB (ADB):
-```bash
-# Enable USB debugging on your Android device
-# Connect device via USB
-# Run:
-adb install app/build/outputs/apk/debug/app-debug.apk
-```
-
-#### Via File Transfer:
-1. Copy `app-debug.apk` to your device
-2. Open file manager on device
-3. Tap the APK file
-4. Allow installation from unknown sources if prompted
-5. Install the app
-
-## 📦 Building Release APK
-
-To build a production-ready APK:
-
-```bash
-# Build release APK (unsigned)
-./gradlew assembleRelease
-
-# APK location: app/build/outputs/apk/release/app-release-unsigned.apk
-```
-
-For signed releases, you'll need to:
-1. Generate a keystore
-2. Configure signing in `app/build.gradle.kts`
-3. Build with: `./gradlew assembleRelease`
-
-## 🎨 App Screens
-
-### 1. Home Screen
-- Profile statistics (strains, THC%, analyses)
-- Quick action buttons
-- Recent analyses list
-
-### 2. Configure Screen
-- View favorite strains
-- Select from available strains
-- Update ideal cannabis profile
-- View current profile statistics
-
-### 3. Compare Screen
-- Search for strains
-- Toggle Z-Score analysis
-- View detailed comparison results
-- See terpene profiles and AI analysis
-
-### 4. Profile Screen
-- User information
-- Profile statistics
-
-## 🔧 Troubleshooting
-
-### Connection Issues
-
-**Problem**: Cannot connect to backend
-**Solutions**:
-- Verify backend is running: `curl http://localhost:8000/api/available-strains`
-- Check firewall settings
-- Ensure correct IP address (for physical device)
-- Verify device is on same network
-
-### Build Issues
-
-**Problem**: Gradle sync fails
-**Solutions**:
-- File > Invalidate Caches / Restart
-- Delete `.gradle` folder and rebuild
-- Update Android Studio to latest version
-
-**Problem**: Missing dependencies
-**Solutions**:
-- Check internet connection
-- Sync project with Gradle files
-- Update repositories in `build.gradle.kts`
-
-### Runtime Issues
-
-**Problem**: App crashes on launch
-**Solutions**:
-- Check Logcat for error messages
-- Verify network permissions in AndroidManifest.xml
-- Ensure backend server is accessible
-
-## 📱 Testing
-
-### Using Android Emulator
-1. Open AVD Manager in Android Studio
-2. Create a new virtual device (Pixel 5 recommended)
-3. Select system image (Android 10+ recommended)
-4. Launch emulator
-5. Run the app
-
-### Using Physical Device
-1. Enable Developer Options on your device:
-   - Settings > About Phone > Tap "Build Number" 7 times
-2. Enable USB Debugging:
-   - Settings > Developer Options > USB Debugging
-3. Connect via USB
-4. Run the app from Android Studio
-
-## 🏗️ Project Structure
-
-```
-android-app/
-├── app/
-│   ├── src/
-│   │   └── main/
-│   │       ├── kotlin/com/strainanalyzer/app/
-│   │       │   ├── MainActivity.kt          # Main entry point
-│   │       │   ├── data/
-│   │       │   │   └── Models.kt            # Data models
-│   │       │   ├── network/
-│   │       │   │   ├── ApiService.kt        # Retrofit API interface
-│   │       │   │   └── ApiClient.kt         # Network client
-│   │       │   └── ui/
-│   │       │       ├── StrainViewModel.kt   # State management
-│   │       │       ├── HomeScreen.kt        # Home UI
-│   │       │       ├── ConfigureScreen.kt   # Configuration UI
-│   │       │       ├── CompareScreen.kt     # Comparison UI
-│   │       │       └── theme/               # Material Design theme
-│   │       ├── res/                         # Resources (strings, themes)
-│   │       └── AndroidManifest.xml          # App manifest
-│   └── build.gradle.kts                     # App-level Gradle config
-├── build.gradle.kts                         # Project-level Gradle config
-├── settings.gradle.kts                      # Gradle settings
-└── README.md                                # This file
-```
-
-## 🔐 Permissions
-
-The app requires the following permissions:
-
-- `INTERNET`: To communicate with the backend API
-- `ACCESS_NETWORK_STATE`: To check network connectivity
-
-These are automatically granted and don't require user approval.
-
-## 📊 API Endpoints Used
-
-- `GET /api/available-strains` - Fetch available strains
-- `GET /api/user-profile` - Get user profile data
-- `POST /api/create-ideal-profile` - Create ideal profile
-- `POST /api/add-strain-to-profile` - Add strain to favorites
-- `POST /api/remove-strain-from-profile` - Remove strain
-- `POST /api/compare-strain` - Compare strain analysis
-- `GET /api/ideal-profile` - Get ideal profile details
-
-## 🎯 Future Enhancements
-
-- [ ] Offline mode with local database
-- [ ] Push notifications for new strain recommendations
-- [ ] Dark mode theme
-- [ ] Share results with friends
-- [ ] Strain favorites bookmarking
-- [ ] History of comparisons
-- [ ] Advanced filtering and sorting
-- [ ] Barcode scanner for strain lookup
-
-## 🐛 Known Issues
-
-1. **First Launch**: Initial profile load may take a few seconds
-2. **Network Timeout**: Long analysis requests may timeout on slow connections
-3. **Large Datasets**: Loading 100+ strains may cause lag on older devices
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file in the root directory.
-
-## 🙏 Acknowledgments
-
-- Backend API: FastAPI Cannabis Strain Analyzer
-- UI Design: Material Design 3 Guidelines
-- Icons: Material Icons
-
-## 📞 Support
-
-For issues or questions:
-1. Check this README first
-2. Review the main project's README
-3. Check Android Studio Logcat for error messages
-4. Ensure backend server is running and accessible
+A privacy-first Android app that uses advanced similarity algorithms to match cannabis strains to your personal preference profile. All analysis runs on-device—no data leaves your phone.
 
 ---
 
-**Note**: This app is for educational and research purposes only. Always consult with healthcare professionals regarding cannabis use.
+## The Science Behind the Experience
+
+Cannabis effects aren't random. They're orchestrated by **terpenes**—aromatic compounds that shape each strain's character. The same terpene that makes lavender calming (linalool) creates relaxation in certain strains. The citrus burst in some sativas? That's limonene at work.
+
+This app doesn't guess. It calculates.
+
+When you tell us your favorite strains, we extract their terpene fingerprints and build a mathematical model of what you actually enjoy. Then we compare any new strain against your profile using the same similarity metrics used in machine learning and data science.
+
+### The Terpene Wheel
+
+| Terpene | Aroma | Common Effect | Found In |
+|---------|-------|---------------|----------|
+| **Myrcene** | Earthy, musky | Relaxation, sedation | Mangoes, hops, lemongrass |
+| **Limonene** | Citrus, lemon | Mood elevation, stress relief | Citrus rinds, juniper |
+| **Caryophyllene** | Spicy, peppery | Anti-inflammatory, calm | Black pepper, cloves |
+| **Pinene** | Pine, forest | Alertness, memory | Pine needles, rosemary |
+| **Linalool** | Floral, lavender | Relaxation, anti-anxiety | Lavender, coriander |
+| **Humulene** | Hoppy, earthy | Appetite suppression | Hops, coriander |
+| **Terpinolene** | Herbal, floral | Uplifting, creative | Nutmeg, tea tree |
+| **Ocimene** | Sweet, herbal | Energizing | Mint, parsley, orchids |
+| **Nerolidol** | Woody, floral | Sedative, relaxing | Jasmine, ginger |
+| **Bisabolol** | Floral, sweet | Soothing, anti-irritant | Chamomile |
+| **Eucalyptol** | Minty, cool | Cooling, clearing | Eucalyptus, bay leaves |
+
+Your preference for "relaxing indicas" or "energizing sativas" is really a preference for specific terpene ratios. We make that visible.
+
+---
+
+## How It Works
+
+### 1. Build Your Profile
+
+Add strains you know and love. Each strain you add contributes its terpene fingerprint to your ideal profile. We use **MAX pooling**—taking the highest value of each terpene across all your favorites—to capture what you're drawn to.
+
+```
+Your Favorites:
+├── Granddaddy Purple  → High myrcene (0.85), moderate caryophyllene (0.65)
+├── Blue Dream         → Balanced myrcene (0.55), high limonene (0.60)
+└── OG Kush            → High myrcene (0.75), moderate limonene (0.45)
+
+Your Ideal Profile (MAX pooling):
+├── Myrcene:       0.85  ████████████████░░░░
+├── Caryophyllene: 0.65  █████████████░░░░░░░
+├── Limonene:      0.60  ████████████░░░░░░░░
+├── Pinene:        0.45  █████████░░░░░░░░░░░
+└── Linalool:      0.30  ██████░░░░░░░░░░░░░░
+```
+
+### 2. Search Any Strain
+
+Type any strain name. If it's in our curated database of 50+ strains with lab-verified terpene data, we analyze instantly. If not, the app can generate the profile using on-device AI (Gemini Nano) or cloud APIs—then saves it locally for future use.
+
+### 3. Get Your Match Score
+
+We don't just say "good match." We show you exactly why:
+
+```
+Gelato vs Your Profile: 78% Match (Excellent)
+
+Similarity Breakdown:
+├── Z-Scored Cosine:     82%  ████████████████░░░░
+├── Euclidean Distance:  71%  ██████████████░░░░░░
+└── Pearson Correlation: 79%  ████████████████░░░░
+
+Terpene Comparison:
+├── Myrcene:      +12% above your profile  ↑
+├── Limonene:     -8% below your profile   ↓
+├── Caryophyllene: +3% match               ≈
+└── Linalool:     +15% above your profile  ↑
+```
+
+---
+
+## The Algorithm
+
+Most "strain matching" apps use simple keyword matching or user ratings. We use the same mathematical foundations as recommendation engines and scientific research.
+
+### Multi-Metric Similarity Analysis
+
+**Z-Score Normalization**
+Raw terpene percentages are misleading—myrcene naturally occurs in higher concentrations than bisabolol. We normalize each terpene to its z-score (standard deviations from mean), ensuring fair comparison across all compounds.
+
+```kotlin
+fun zScore(vector: List<Double>): List<Double> {
+    val mean = vector.average()
+    val std = sqrt(vector.map { (it - mean).pow(2) }.average())
+    return vector.map { (it - mean) / std }
+}
+```
+
+**Cosine Similarity (50% weight)**
+Measures the angle between two terpene vectors. Two strains with identical *ratios* of terpenes score 100%, even if absolute concentrations differ. Perfect for comparing profiles regardless of potency.
+
+**Euclidean Distance (25% weight)**
+The straight-line distance in 11-dimensional terpene space. Catches cases where cosine similarity misses—strains with similar ratios but vastly different intensities.
+
+**Pearson Correlation (25% weight)**
+Measures how terpenes move together. If your favorites all have high myrcene when they have high caryophyllene, a strain matching that pattern scores higher.
+
+### Combined Score Formula
+
+```
+Overall Score = (0.5 × Cosine) + (0.25 × Euclidean) + (0.25 × Correlation)
+```
+
+This weighted ensemble reduces the blind spots of any single metric.
+
+---
+
+## Privacy First Architecture
+
+**Your preferences stay on your device.**
+
+| Data | Location | Leaves Device? |
+|------|----------|----------------|
+| Favorite strains | Local SharedPreferences | Never |
+| Terpene calculations | On-device | Never |
+| Custom strain data | Local database | Never |
+| AI-generated strains | Saved locally after generation | Only during generation* |
+
+*When using cloud APIs for unknown strains. Gemini Nano runs entirely on-device.
+
+### On-Device AI with Gemini Nano
+
+On supported devices (Pixel 8+, select Samsung), the app uses **Google's Gemini Nano**—a language model that runs entirely on your phone's NPU. Search for obscure strains without any network request.
+
+When Gemini Nano isn't available, you can optionally configure:
+- **Google Gemini** (cloud)
+- **OpenAI GPT-4** (cloud)
+- **Anthropic Claude** (cloud)
+- **Ollama** (local server)
+
+Or use the app with just the embedded database—no AI required for core functionality.
+
+---
+
+## Features
+
+### Home Dashboard
+- Profile statistics at a glance
+- Favorite strain chips
+- AI status indicator (Nano ready, downloading, or cloud configured)
+- Quick navigation to build profile or search strains
+
+### Profile Builder
+- **Add any strain** by name—known or unknown
+- **Quick-add grid** from our curated database
+- **Terpene visualization** showing your combined profile
+- **Individual strain charts** to see each favorite's contribution
+- Toggle between combined MAX profile and per-strain breakdown
+
+### Strain Analyzer
+- Real-time search with source indication (local/cached/generated)
+- **Match percentage** with breakdown by algorithm
+- **Similarity metrics** with progress bars
+- **Strain details**: type, THC/CBD ranges, effects, flavors
+- **Local analysis summary** generated from templates
+- **Optional AI enhancement** for personalized insights
+
+### Settings
+- Configure cloud API providers with your own keys
+- Download Gemini Nano when available
+- View database statistics
+- Manage saved strains
+
+### Dark Mode
+Full dark theme support with carefully selected colors for readability in low-light environments—because sometimes you're researching at night.
+
+---
+
+## Technical Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                      UI Layer (Compose)                      │
+├─────────────────────────────────────────────────────────────┤
+│  HomeScreen │ ConfigureScreen │ CompareScreen │ Settings    │
+│             │   TerpeneChart  │               │             │
+└──────┬──────┴────────┬────────┴───────┬───────┴─────────────┘
+       │               │                │
+       ▼               ▼                ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    StrainViewModel                           │
+│            (StateFlow, Coroutines, MVVM)                    │
+└──────┬──────────────┬─────────────────┬─────────────────────┘
+       │              │                 │
+       ▼              ▼                 ▼
+┌──────────────┐ ┌─────────────┐ ┌─────────────────────────────┐
+│ LocalAnalysis │ │StrainData   │ │      LlmService             │
+│   Engine      │ │  Service    │ │  ┌─────────────────────────┐│
+│               │ │             │ │  │    GeminiNanoService    ││
+│ • Z-Score     │ │ • Local DB  │ │  │    (On-Device NPU)      ││
+│ • Cosine      │ │ • Caching   │ │  └─────────────────────────┘│
+│ • Euclidean   │ │ • LLM Gen   │ │  ┌─────────────────────────┐│
+│ • Correlation │ │             │ │  │  UnifiedLlmProvider     ││
+└───────────────┘ └─────────────┘ │  │  • Gemini (Cloud)       ││
+                                   │  │  • OpenAI               ││
+                                   │  │  • Anthropic            ││
+                                   │  │  • Ollama               ││
+                                   │  └─────────────────────────┘│
+                                   └─────────────────────────────┘
+```
+
+### Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| Language | Kotlin 1.9 |
+| UI | Jetpack Compose + Material 3 |
+| Architecture | MVVM + StateFlow |
+| Async | Kotlin Coroutines |
+| Local Storage | SharedPreferences + JSON |
+| On-Device AI | Google AI Edge SDK (Gemini Nano) |
+| Cloud AI | Retrofit + OkHttp |
+| Min SDK | 24 (Android 7.0) |
+| Target SDK | 34 (Android 14) |
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- Android device or emulator (Android 7.0+)
+- Java 17+ for building
+- (Optional) API keys for cloud AI providers
+
+### Build & Install
+
+```bash
+# Clone and navigate
+cd android-app
+
+# Build debug APK
+JAVA_HOME=/path/to/jdk17 ./gradlew assembleDebug
+
+# Install via ADB
+adb install app/build/outputs/apk/debug/app-debug.apk
+```
+
+Or open in Android Studio and click Run.
+
+### First Launch
+
+1. **Home screen** shows your empty profile and AI status
+2. Navigate to **Profile** tab
+3. **Add your favorite strains** using the text field or quick-add grid
+4. Return to **Search** tab
+5. **Search any strain** to see your match score
+
+No account required. No backend server. Just you and your preferences.
+
+---
+
+## The Database
+
+The app ships with 50+ carefully curated strains with lab-verified terpene profiles:
+
+**Indicas**: Granddaddy Purple, Northern Lights, Purple Punch, Bubba Kush, Hindu Kush...
+
+**Sativas**: Jack Herer, Durban Poison, Green Crack, Sour Diesel, Super Lemon Haze...
+
+**Hybrids**: Blue Dream, OG Kush, Gelato, Wedding Cake, GSC, Zkittlez, Runtz...
+
+Each strain includes:
+- Complete terpene profile (11 compounds)
+- Effect descriptors
+- Medical use cases
+- THC/CBD ranges
+- Flavor and aroma notes
+- Optimal time of day
+- Suggested activities
+
+Unknown strains can be generated via AI and automatically saved to your local database for future searches.
+
+---
+
+## For the Technically Curious
+
+### Why These Specific Algorithms?
+
+**Cosine similarity** is standard for high-dimensional sparse vectors (think: TF-IDF in search engines). Terpene profiles are exactly that—11 dimensions where many values are near zero.
+
+**Z-score normalization** prevents dominant terpenes (myrcene, caryophyllene) from overshadowing trace compounds that may still influence your experience.
+
+**Ensemble weighting** (50/25/25) was empirically tuned—cosine captures the "shape" of preferences, while Euclidean and correlation catch edge cases the cosine misses.
+
+### Why MAX Pooling for Profile Creation?
+
+Average pooling would dilute strong preferences. If you love one strain with 0.85 myrcene and one with 0.20, averaging to 0.52 doesn't represent what you seek.
+
+MAX pooling says: "You've shown you can enjoy high myrcene. Keep that ceiling." It captures the upper bound of what works for you.
+
+### Why On-Device First?
+
+1. **Privacy**: Cannabis preferences are sensitive. They shouldn't live on someone else's server.
+2. **Speed**: No network latency for calculations. Analysis is instant.
+3. **Reliability**: Works offline, on planes, in areas with poor connectivity.
+4. **Cost**: No API fees for daily use.
+
+---
+
+## Roadmap
+
+- [ ] Strain journal (log your experiences with ratings)
+- [ ] Dispensary menu scanner (OCR + batch analysis)
+- [ ] Terpene tolerance tracking over time
+- [ ] Export profile for sharing or backup
+- [ ] Widget for quick strain lookup
+- [ ] Wear OS companion
+
+---
+
+## Contributing
+
+Issues and PRs welcome. The core algorithm lives in `LocalAnalysisEngine.kt` if you want to experiment with different similarity metrics.
+
+---
+
+## Disclaimer
+
+This app is for educational and informational purposes. Cannabis laws vary by jurisdiction. Always comply with local regulations. Consult healthcare professionals for medical advice.
+
+The terpene data and effects are based on general research and may vary by batch, grower, and individual physiology. Your experience may differ.
+
+---
+
+## How This Was Built
+
+Curious about the development process? Read **[BUILDING.md](BUILDING.md)** — a chronicle of human-AI collaboration that took this project from a Python web app to a privacy-first Android application with on-device AI.
+
+Topics covered:
+- The evolution from server-dependent to fully offline
+- Algorithm iterations and why we chose ensemble similarity
+- Architectural decisions and trade-offs
+- What it's like to pair-program with Claude
+
+---
+
+**Built with Kotlin, Compose, and a deep appreciation for the entourage effect.**
