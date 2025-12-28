@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.collect
 sealed class Screen {
     data object Home : Screen()
     data object Settings : Screen()
-    data class Scanning(val url: String) : Screen()
+    data class Scanning(val imageBase64: String) : Screen()
     data class Dashboard(val menu: DispensaryMenu) : Screen()
     data class StrainDetail(val strain: StrainData) : Screen()
 }
@@ -65,10 +65,10 @@ fun App() {
                 println("[BudMash] Rendering HomeScreen")
                 HomeScreen(
                     hasApiKey = apiKey.isNotBlank(),
-                    onScanClick = { url ->
-                        println("[BudMash] Scan clicked with URL: $url")
+                    onPhotoCapture = { imageBase64 ->
+                        println("[BudMash] Photo captured, base64 length: ${imageBase64.length}")
                         parseStatus = ParseStatus.Fetching // Reset status
-                        currentScreen = Screen.Scanning(url)
+                        currentScreen = Screen.Scanning(imageBase64)
                     },
                     onSettingsClick = {
                         println("[BudMash] Settings clicked")
@@ -101,12 +101,12 @@ fun App() {
             }
 
             is Screen.Scanning -> {
-                println("[BudMash] Rendering ScanScreen for URL: ${screen.url}")
+                println("[BudMash] Rendering ScanScreen for image")
 
                 // Trigger parsing when entering scan screen
-                LaunchedEffect(screen.url) {
-                    println("[BudMash] LaunchedEffect: Starting parse for ${screen.url}")
-                    parser.parseMenu(screen.url).collect { status ->
+                LaunchedEffect(screen.imageBase64) {
+                    println("[BudMash] LaunchedEffect: Starting parse for image")
+                    parser.parseFromImage(screen.imageBase64).collect { status ->
                         println("[BudMash] Parse status: $status")
                         parseStatus = status
                     }

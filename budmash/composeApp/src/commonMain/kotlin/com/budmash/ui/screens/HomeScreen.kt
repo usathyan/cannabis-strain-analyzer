@@ -11,18 +11,34 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
-private const val DEFAULT_URL = "https://auntmarysnj.co/order-online/?selected_value=rec"
+import com.budmash.capture.ImageCapture
+import com.budmash.capture.ImageCaptureResult
 
 @Composable
 fun HomeScreen(
     hasApiKey: Boolean = false,
-    onScanClick: (String) -> Unit,
+    onPhotoCapture: (String) -> Unit,
     onSettingsClick: () -> Unit = {}
 ) {
-    println("[BudMash] HomeScreen composable rendering")
-    var url by remember { mutableStateOf(DEFAULT_URL) }
-    println("[BudMash] HomeScreen URL field initialized: $url")
+    val imageCapture = remember { ImageCapture() }
+    var isCapturing by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+
+    fun handleCaptureResult(result: ImageCaptureResult) {
+        isCapturing = false
+        when (result) {
+            is ImageCaptureResult.Success -> {
+                errorMessage = null
+                onPhotoCapture(result.base64Image)
+            }
+            is ImageCaptureResult.Error -> {
+                errorMessage = result.message
+            }
+            is ImageCaptureResult.Cancelled -> {
+                // User cancelled, do nothing
+            }
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -61,13 +77,13 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Paste a dispensary menu URL to find your matches",
+                text = "Take a photo of a dispensary menu to find your matches",
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onBackground
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             // API Key warning
             if (!hasApiKey) {
@@ -98,45 +114,65 @@ fun HomeScreen(
                         }
                     }
                 }
+                Spacer(modifier = Modifier.height(16.dp))
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            OutlinedTextField(
-                value = url,
-                onValueChange = { url = it },
-                label = {
+            // Error message
+            errorMessage?.let { error ->
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    color = MaterialTheme.colorScheme.errorContainer,
+                    shape = MaterialTheme.shapes.small
+                ) {
                     Text(
-                        "Dispensary Menu URL",
-                        color = MaterialTheme.colorScheme.onSurface
+                        text = error,
+                        modifier = Modifier.padding(12.dp),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onErrorContainer
                     )
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
+            // Take Photo button
+            Button(
+                onClick = {
+                    isCapturing = true
+                    errorMessage = null
+                    imageCapture.captureFromCamera { result ->
+                        handleCaptureResult(result)
+                    }
                 },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
-                    focusedLabelColor = MaterialTheme.colorScheme.primary,
-                    unfocusedLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                    cursorColor = MaterialTheme.colorScheme.primary
-                )
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Button(
-                onClick = { onScanClick(url) },
-                modifier = Modifier.fillMaxWidth(),
-                enabled = url.isNotBlank(),
+                enabled = !isCapturing,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = Color.White
                 )
             ) {
                 Text(
-                    "Scan Menu",
+                    text = if (isCapturing) "Capturing..." else "Take Photo",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Choose Photo button
+            OutlinedButton(
+                onClick = {
+                    isCapturing = true
+                    errorMessage = null
+                    imageCapture.pickFromGallery { result ->
+                        handleCaptureResult(result)
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !isCapturing
+            ) {
+                Text(
+                    text = "Choose from Gallery",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium
                 )

@@ -17,4 +17,5 @@ sealed class ParseStatus {
 
 interface MenuParser {
     fun parseMenu(url: String): Flow<ParseStatus>
+    fun parseFromImage(imageBase64: String): Flow<ParseStatus>
 }

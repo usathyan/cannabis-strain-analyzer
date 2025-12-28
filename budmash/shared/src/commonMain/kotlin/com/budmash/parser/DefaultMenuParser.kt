@@ -1,13 +1,12 @@
 package com.budmash.parser
 
+import com.budmash.capture.CaptureResult
+import com.budmash.capture.CaptureStatus
+import com.budmash.capture.ScreenshotCapture
 import com.budmash.data.DispensaryMenu
 import com.budmash.data.ParseError
 import com.budmash.llm.LlmConfig
 import com.budmash.llm.LlmProvider
-import io.ktor.client.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -18,56 +17,83 @@ class DefaultMenuParser(
     private val config: LlmConfig
 ) : MenuParser {
 
-    private val extractor = LlmMenuExtractor(llmProvider)
+    private val visionExtractor = VisionMenuExtractor(llmProvider)
     private val terpeneResolver = DefaultTerpeneResolver(llmProvider, config)
-    private val httpClient = HttpClient()
+    private val screenshotCapture = ScreenshotCapture()
 
     override fun parseMenu(url: String): Flow<ParseStatus> = flow {
         println("[BudMash] DefaultMenuParser starting for URL: $url")
 
         emit(ParseStatus.Fetching)
 
-        // Fetch HTML
-        val htmlResult = fetchHtml(url)
-        if (htmlResult.isFailure) {
-            emit(ParseStatus.Error(ParseError.NetworkError(htmlResult.exceptionOrNull()?.message ?: "Unknown error")))
+        // Step 1: Capture screenshot of the webpage
+        var screenshotResult: CaptureResult? = null
+        var captureError: String? = null
+
+        screenshotCapture.capture(url).collect { status ->
+            when (status) {
+                is CaptureStatus.Loading -> {
+                    println("[BudMash] Screenshot capture starting...")
+                }
+                is CaptureStatus.Progress -> {
+                    println("[BudMash] Screenshot capture progress: ${status.percent}%")
+                }
+                is CaptureStatus.Success -> {
+                    screenshotResult = status.result
+                    println("[BudMash] Screenshot captured: ${status.result.width}x${status.result.height}")
+                }
+                is CaptureStatus.Error -> {
+                    captureError = status.message
+                    println("[BudMash] Screenshot capture error: ${status.message}")
+                }
+            }
+        }
+
+        // Check for capture errors
+        if (captureError != null) {
+            emit(ParseStatus.Error(ParseError.NetworkError("Screenshot capture failed: $captureError")))
             return@flow
         }
 
-        val html = htmlResult.getOrThrow()
-        println("[BudMash] HTML length: ${html.length} chars")
-        println("[BudMash] HTML preview (first 500 chars): ${html.take(500)}")
-        println("[BudMash] HTML contains 'product': ${html.lowercase().contains("product")}")
-        println("[BudMash] HTML contains 'flower': ${html.lowercase().contains("flower")}")
-        println("[BudMash] HTML contains 'strain': ${html.lowercase().contains("strain")}")
-        emit(ParseStatus.FetchComplete(html.length))
+        val screenshot = screenshotResult
+        if (screenshot == null) {
+            emit(ParseStatus.Error(ParseError.NetworkError("Screenshot capture returned no result")))
+            return@flow
+        }
 
-        // Extract strains via LLM
-        val strainsResult = extractor.extractStrains(html, config)
+        println("[BudMash] Screenshot base64 length: ${screenshot.base64Image.length}")
+        emit(ParseStatus.FetchComplete(screenshot.base64Image.length))
+
+        // Step 2: Extract strains via vision LLM
+        println("[BudMash] Sending screenshot to vision LLM for extraction...")
+        val strainsResult = visionExtractor.extractFromScreenshot(screenshot.base64Image, config)
+
         if (strainsResult.isFailure) {
-            emit(ParseStatus.Error(ParseError.LlmError(strainsResult.exceptionOrNull()?.message ?: "Extraction failed")))
+            emit(ParseStatus.Error(ParseError.LlmError(strainsResult.exceptionOrNull()?.message ?: "Vision extraction failed")))
             return@flow
         }
 
-        val extractedStrains = strainsResult.getOrThrow()
-        emit(ParseStatus.ProductsFound(extractedStrains.size, extractedStrains.size))
+        var strains = strainsResult.getOrThrow()
+        println("[BudMash] Vision extracted ${strains.size} strains")
+        emit(ParseStatus.ProductsFound(strains.size, strains.size))
 
-        // Convert to StrainData
-        var strains = extractedStrains.map { it.toStrainData() }
+        if (strains.isEmpty()) {
+            emit(ParseStatus.Error(ParseError.NoFlowersFound))
+            return@flow
+        }
 
-        // Resolve terpenes
+        // Step 3: Resolve terpenes for each strain
         strains = terpeneResolver.resolveAll(strains, config) { current, total ->
-            // Note: We can't emit from inside the callback directly
-            // The progress is logged instead
             println("[BudMash] Resolving terpenes: $current/$total")
         }
 
-        // For UI updates, emit terpene progress
+        // Emit terpene progress for UI updates
         strains.forEachIndexed { index, _ ->
             emit(ParseStatus.ResolvingTerpenes(index + 1, strains.size))
-            delay(50) // Brief delay for UI update
+            delay(50)
         }
 
+        // Step 4: Build and return menu
         val menu = DispensaryMenu(
             url = url,
             fetchedAt = Clock.System.now().toEpochMilliseconds(),
@@ -78,31 +104,48 @@ class DefaultMenuParser(
         emit(ParseStatus.Complete(menu))
     }
 
-    private suspend fun fetchHtml(url: String): Result<String> {
-        return try {
-            val response: HttpResponse = httpClient.get(url)
-            validateAndExtract(response)
-        } catch (e: Exception) {
-            // Retry with exponential backoff
-            var lastException = e
-            for (attempt in 1..3) {
-                delay((1000L shl (attempt - 1)).coerceAtMost(4000))
-                try {
-                    val response: HttpResponse = httpClient.get(url)
-                    return validateAndExtract(response)
-                } catch (retryError: Exception) {
-                    lastException = retryError
-                }
-            }
-            Result.failure(lastException)
-        }
-    }
+    override fun parseFromImage(imageBase64: String): Flow<ParseStatus> = flow {
+        println("[BudMash] DefaultMenuParser starting for image, base64 length: ${imageBase64.length}")
 
-    private suspend fun validateAndExtract(response: HttpResponse): Result<String> {
-        return if (response.status.isSuccess()) {
-            Result.success(response.bodyAsText())
-        } else {
-            Result.failure(Exception("HTTP ${response.status.value}: ${response.status.description}"))
+        emit(ParseStatus.Fetching)
+        emit(ParseStatus.FetchComplete(imageBase64.length))
+
+        // Step 1: Extract strains via vision LLM
+        println("[BudMash] Sending image to vision LLM for extraction...")
+        val strainsResult = visionExtractor.extractFromScreenshot(imageBase64, config)
+
+        if (strainsResult.isFailure) {
+            emit(ParseStatus.Error(ParseError.LlmError(strainsResult.exceptionOrNull()?.message ?: "Vision extraction failed")))
+            return@flow
         }
+
+        var strains = strainsResult.getOrThrow()
+        println("[BudMash] Vision extracted ${strains.size} strains")
+        emit(ParseStatus.ProductsFound(strains.size, strains.size))
+
+        if (strains.isEmpty()) {
+            emit(ParseStatus.Error(ParseError.NoFlowersFound))
+            return@flow
+        }
+
+        // Step 2: Resolve terpenes for each strain
+        strains = terpeneResolver.resolveAll(strains, config) { current, total ->
+            println("[BudMash] Resolving terpenes: $current/$total")
+        }
+
+        strains.forEachIndexed { index, _ ->
+            emit(ParseStatus.ResolvingTerpenes(index + 1, strains.size))
+            delay(50)
+        }
+
+        // Step 3: Build and return menu
+        val menu = DispensaryMenu(
+            url = "Photo capture",
+            fetchedAt = Clock.System.now().toEpochMilliseconds(),
+            strains = strains
+        )
+
+        println("[BudMash] DefaultMenuParser complete with ${strains.size} strains")
+        emit(ParseStatus.Complete(menu))
     }
 }

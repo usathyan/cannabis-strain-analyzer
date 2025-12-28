@@ -43,6 +43,34 @@ class MockMenuParser : MenuParser {
         emit(ParseStatus.Complete(menu))
     }
 
+    override fun parseFromImage(imageBase64: String): Flow<ParseStatus> = flow {
+        println("[BudMash] MockMenuParser starting for image, base64 length: ${imageBase64.length}")
+
+        emit(ParseStatus.Fetching)
+        delay(500)
+
+        emit(ParseStatus.FetchComplete(imageBase64.length))
+        delay(300)
+
+        emit(ParseStatus.ProductsFound(6, 6))
+        delay(200)
+
+        val sampleStrains = createSampleStrains()
+        sampleStrains.forEachIndexed { index, _ ->
+            emit(ParseStatus.ResolvingTerpenes(index + 1, sampleStrains.size))
+            delay(100)
+        }
+
+        val menu = DispensaryMenu(
+            url = "Photo capture",
+            fetchedAt = Clock.System.now().toEpochMilliseconds(),
+            strains = sampleStrains
+        )
+
+        println("[BudMash] MockMenuParser complete with ${sampleStrains.size} strains")
+        emit(ParseStatus.Complete(menu))
+    }
+
     private fun createSampleStrains(): List<StrainData> = listOf(
         StrainData(
             name = "Blue Dream",
