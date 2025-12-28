@@ -7,6 +7,7 @@ import com.budmash.llm.LlmProvider
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import io.ktor.http.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -75,7 +76,7 @@ class DefaultMenuParser(
     private suspend fun fetchHtml(url: String): Result<String> {
         return try {
             val response: HttpResponse = httpClient.get(url)
-            Result.success(response.bodyAsText())
+            validateAndExtract(response)
         } catch (e: Exception) {
             // Retry with exponential backoff
             var lastException = e
@@ -83,12 +84,20 @@ class DefaultMenuParser(
                 delay((1000L shl (attempt - 1)).coerceAtMost(4000))
                 try {
                     val response: HttpResponse = httpClient.get(url)
-                    return Result.success(response.bodyAsText())
+                    return validateAndExtract(response)
                 } catch (retryError: Exception) {
                     lastException = retryError
                 }
             }
             Result.failure(lastException)
+        }
+    }
+
+    private suspend fun validateAndExtract(response: HttpResponse): Result<String> {
+        return if (response.status.isSuccess()) {
+            Result.success(response.bodyAsText())
+        } else {
+            Result.failure(Exception("HTTP ${response.status.value}: ${response.status.description}"))
         }
     }
 }
