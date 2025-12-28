@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.budmash.data.SimilarityResult
 import com.budmash.data.StrainData
+import kotlin.math.round
 
 @Composable
 fun DashboardScreen(
@@ -100,7 +101,7 @@ private fun StrainCard(
                     .sortedByDescending { it.first }
                     .take(3)
                     .filter { it.first > 0 }
-                    .joinToString(", ") { "${it.second} %.2f".format(it.first) }
+                    .joinToString(", ") { "${it.second} ${round(it.first * 100) / 100}" }
                 if (topTerpenes.isNotEmpty()) {
                     Text(
                         text = topTerpenes,

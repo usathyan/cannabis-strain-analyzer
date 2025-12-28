@@ -77,7 +77,7 @@ fun App() {
                     currentApiKey = apiKey,
                     currentModel = model,
                     onSave = { newApiKey, newModel ->
-                        println("[BudMash] Saving settings - API Key: ${newApiKey.take(8)}..., Model: $newModel")
+                        println("[BudMash] Saving settings - Model: $newModel")
                         // Update state
                         apiKey = newApiKey
                         model = newModel
