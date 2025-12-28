@@ -2,6 +2,7 @@
 kotlin = "2.0.21"
 agp = "8.2.2"
 compose-multiplatform = "1.7.1"
+androidx-activity = "1.9.3"
 ktor = "2.3.12"
 kotlinx-serialization = "1.7.3"
 kotlinx-coroutines = "1.9.0"
@@ -29,6 +30,9 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 # Koin DI
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
+
+# AndroidX
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
 
 # Testing
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
