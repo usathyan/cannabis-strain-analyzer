@@ -25,7 +25,17 @@ class LlmMenuExtractor(
         }
 
         val categorized = categorizedResult.getOrThrow()
-        val flowers = categorized.categories["flower"] ?: categorized.categories["flowers"] ?: emptyList()
+
+        // Log categories received from LLM
+        println("[BudMash] LLM returned categories: ${categorized.categories.keys}")
+
+        // Case-insensitive lookup for flower category
+        val flowerKey = categorized.categories.keys.find {
+            it.lowercase() in listOf("flower", "flowers", "cannabis", "weed", "bud", "buds")
+        }
+        val flowers = if (flowerKey != null) categorized.categories[flowerKey]!! else emptyList()
+
+        println("[BudMash] Found ${flowers.size} flowers under key: $flowerKey")
 
         if (flowers.isEmpty()) {
             return Result.failure(Exception(ParseError.NoFlowersFound.toUserMessage()))
@@ -41,11 +51,16 @@ class LlmMenuExtractor(
         val messages = listOf(
             LlmMessage(
                 role = "system",
-                content = """Parse this dispensary menu HTML into categorized JSON.
+                content = """Parse this dispensary menu HTML and extract ALL products into categorized JSON.
+IMPORTANT: Extract EVERY product you find - do not limit or summarize. Include ALL items.
+
 Group products by category (flower, edibles, vapes, concentrates, pre-rolls, tinctures, topicals, etc.)
-For each product capture: name, category, price, any visible details.
+For each product capture: name, category, price, any visible details (THC%, strain type, description).
+
 Output valid JSON only with this structure:
-{"categories": {"flower": [{"name": "...", "price": "...", "details": "..."}], "edibles": [...], ...}}"""
+{"categories": {"flower": [{"name": "...", "price": "...", "details": "..."}], "edibles": [...], ...}}
+
+Remember: Extract ALL products, not just a sample."""
             ),
             LlmMessage(role = "user", content = truncatedHtml)
         )
@@ -68,16 +83,19 @@ Output valid JSON only with this structure:
         val messages = listOf(
             LlmMessage(
                 role = "system",
-                content = """Extract detailed strain data for these flower products.
+                content = """Extract detailed strain data for ALL these flower products.
+IMPORTANT: Process EVERY flower in the list - do not skip any.
+
 For each strain provide:
 - name: exact product name
 - type: INDICA, SATIVA, or HYBRID (infer from description if not stated)
-- thcMin: minimum THC percentage (number)
-- thcMax: maximum THC percentage (number)
-- price: numeric price in dollars
+- thcMin: minimum THC percentage (number, or null if unknown)
+- thcMax: maximum THC percentage (number, or null if unknown)
+- price: numeric price in dollars (or null if unknown)
 - description: brief description if available
 
-Output valid JSON only: {"strains": [...]}"""
+Output valid JSON only: {"strains": [...]}
+Include ALL flowers from input, not just a subset."""
             ),
             LlmMessage(role = "user", content = flowersJson)
         )
