@@ -18,18 +18,3 @@ sealed class ParseStatus {
 interface MenuParser {
     fun parseMenu(url: String): Flow<ParseStatus>
 }
-
-interface LlmMenuExtractor {
-    suspend fun extractStrainsFromHtml(html: String): List<ExtractedStrain>
-}
-
-data class ExtractedStrain(
-    val name: String,
-    val type: String?,
-    val thcMin: Double?,
-    val thcMax: Double?,
-    val cbdMin: Double?,
-    val cbdMax: Double?,
-    val price: Double?,
-    val description: String?
-)

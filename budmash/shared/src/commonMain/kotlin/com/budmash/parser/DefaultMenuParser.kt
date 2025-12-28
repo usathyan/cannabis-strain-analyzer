@@ -4,6 +4,7 @@ import com.budmash.data.DispensaryMenu
 import com.budmash.data.ParseError
 import com.budmash.data.StrainData
 import com.budmash.data.StrainType
+import com.budmash.llm.LlmConfig
 import com.budmash.network.MenuFetcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -11,7 +12,8 @@ import kotlinx.datetime.Clock
 
 class DefaultMenuParser(
     private val llmExtractor: LlmMenuExtractor,
-    private val terpeneResolver: TerpeneResolver
+    private val terpeneResolver: TerpeneResolver,
+    private val llmConfig: LlmConfig
 ) : MenuParser {
 
     override fun parseMenu(url: String): Flow<ParseStatus> = flow {
@@ -27,24 +29,24 @@ class DefaultMenuParser(
         emit(ParseStatus.FetchComplete(html.length))
 
         // Extract strains via LLM
-        val extracted = try {
-            llmExtractor.extractStrainsFromHtml(html)
-        } catch (e: Exception) {
-            emit(ParseStatus.Error(ParseError.LlmError(e.message ?: "Unknown error")))
+        val extractResult = llmExtractor.extractStrains(html, llmConfig)
+        if (extractResult.isFailure) {
+            emit(ParseStatus.Error(ParseError.LlmError(extractResult.exceptionOrNull()?.message ?: "Unknown error")))
             return@flow
         }
 
+        val extracted = extractResult.getOrThrow()
         val flowerStrains = extracted.filter {
-            it.type?.lowercase() in listOf("indica", "sativa", "hybrid", "flower", null)
+            it.type.lowercase() in listOf("indica", "sativa", "hybrid")
         }
         emit(ParseStatus.ProductsFound(extracted.size, flowerStrains.size))
 
         // Resolve terpene data for each strain
         val strains = mutableListOf<StrainData>()
-        flowerStrains.forEachIndexed { index, extracted ->
+        flowerStrains.forEachIndexed { index, strain ->
             emit(ParseStatus.ResolvingTerpenes(index + 1, flowerStrains.size))
 
-            val strainData = terpeneResolver.resolve(extracted)
+            val strainData = terpeneResolver.resolve(strain)
             strains.add(strainData)
         }
 
