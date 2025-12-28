@@ -345,6 +345,7 @@ graph TB
 ### Prerequisites
 
 - Android device or emulator (Android 7.0+)
+- Android SDK (included with Android Studio, or standalone)
 - Java 17+ for building
 - (Optional) API keys for cloud AI providers
 
@@ -354,12 +355,20 @@ graph TB
 # Clone and navigate
 cd android-app
 
+# macOS: Install Java 17 via Homebrew if not already installed
+brew install openjdk@17
+
+# Configure Android SDK path (create local.properties if it doesn't exist)
+echo "sdk.dir=$HOME/Library/Android/sdk" > local.properties
+
 # Build debug APK
-JAVA_HOME=/path/to/jdk17 ./gradlew assembleDebug
+JAVA_HOME="$(brew --prefix openjdk@17)" ./gradlew assembleDebug
 
 # Install via ADB
 adb install app/build/outputs/apk/debug/app-debug.apk
 ```
+
+**Linux/Windows:** Set `JAVA_HOME` to your JDK 17 path and update `sdk.dir` in `local.properties` to your Android SDK location.
 
 Or open in Android Studio and click Run.
 

@@ -19,15 +19,20 @@ sealed class Screen {
 
 @Composable
 fun App() {
+    println("[BudMash] App composable initializing")
     var currentScreen by remember { mutableStateOf<Screen>(Screen.Home) }
     var parseStatus by remember { mutableStateOf<ParseStatus>(ParseStatus.Fetching) }
     var likedStrains by remember { mutableStateOf<Set<String>>(emptySet()) }
 
+    println("[BudMash] Current screen: $currentScreen")
+
     BudMashTheme {
         when (val screen = currentScreen) {
             is Screen.Home -> {
+                println("[BudMash] Rendering HomeScreen")
                 HomeScreen(
                     onScanClick = { url ->
+                        println("[BudMash] Scan clicked with URL: $url")
                         currentScreen = Screen.Scanning(url)
                         // TODO: Trigger actual parsing
                     }
@@ -35,22 +40,25 @@ fun App() {
             }
 
             is Screen.Scanning -> {
+                println("[BudMash] Rendering ScanScreen for URL: ${screen.url}")
                 ScanScreen(
                     status = parseStatus,
                     onComplete = {
-                        // Navigate to dashboard when complete
+                        println("[BudMash] Scan complete, navigating to Dashboard")
                         val status = parseStatus
                         if (status is ParseStatus.Complete) {
                             currentScreen = Screen.Dashboard(status.menu)
                         }
                     },
                     onError = {
+                        println("[BudMash] Scan error, returning to Home")
                         currentScreen = Screen.Home
                     }
                 )
             }
 
             is Screen.Dashboard -> {
+                println("[BudMash] Rendering Dashboard with ${screen.menu.strains.size} strains")
                 val results = screen.menu.strains.map { strain ->
                     SimilarityResult(
                         strain = strain,
@@ -77,6 +85,7 @@ fun App() {
             }
 
             is Screen.StrainDetail -> {
+                println("[BudMash] Rendering StrainDetail for: ${screen.strain.name}")
                 // TODO: Implement detail screen
             }
         }

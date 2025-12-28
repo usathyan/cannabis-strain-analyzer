@@ -14,7 +14,9 @@ private const val DEFAULT_URL = "https://auntmarysnj.co/order-online/?selected_v
 fun HomeScreen(
     onScanClick: (String) -> Unit
 ) {
+    println("[BudMash] HomeScreen composable rendering")
     var url by remember { mutableStateOf(DEFAULT_URL) }
+    println("[BudMash] HomeScreen URL field initialized: $url")
 
     Column(
         modifier = Modifier
