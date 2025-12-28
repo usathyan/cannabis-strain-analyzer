@@ -35,6 +35,11 @@ class DefaultMenuParser(
         }
 
         val html = htmlResult.getOrThrow()
+        println("[BudMash] HTML length: ${html.length} chars")
+        println("[BudMash] HTML preview (first 500 chars): ${html.take(500)}")
+        println("[BudMash] HTML contains 'product': ${html.lowercase().contains("product")}")
+        println("[BudMash] HTML contains 'flower': ${html.lowercase().contains("flower")}")
+        println("[BudMash] HTML contains 'strain': ${html.lowercase().contains("strain")}")
         emit(ParseStatus.FetchComplete(html.length))
 
         // Extract strains via LLM

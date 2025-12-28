@@ -19,6 +19,8 @@ import kotlin.math.round
 @Composable
 fun DashboardScreen(
     strains: List<SimilarityResult>,
+    likedStrains: Set<String> = emptySet(),
+    dislikedStrains: Set<String> = emptySet(),
     hasProfile: Boolean,
     onStrainClick: (StrainData) -> Unit,
     onLikeClick: (StrainData) -> Unit,
@@ -54,8 +56,12 @@ fun DashboardScreen(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(strains) { result ->
+                val isLiked = result.strain.name in likedStrains
+                val isDisliked = result.strain.name in dislikedStrains
                 StrainCard(
                     result = result,
+                    isLiked = isLiked,
+                    isDisliked = isDisliked,
                     hasProfile = hasProfile,
                     onClick = { onStrainClick(result.strain) },
                     onLike = { onLikeClick(result.strain) },
@@ -69,15 +75,25 @@ fun DashboardScreen(
 @Composable
 private fun StrainCard(
     result: SimilarityResult,
+    isLiked: Boolean = false,
+    isDisliked: Boolean = false,
     hasProfile: Boolean,
     onClick: () -> Unit,
     onLike: () -> Unit,
     onDislike: () -> Unit
 ) {
+    // Visual feedback for liked/disliked state
+    val cardColor = when {
+        isLiked -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+        isDisliked -> MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f)
+        else -> MaterialTheme.colorScheme.surface
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() }
+            .clickable { onClick() },
+        colors = CardDefaults.cardColors(containerColor = cardColor)
     ) {
         Row(
             modifier = Modifier
@@ -87,10 +103,30 @@ private fun StrainCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = result.strain.name,
-                    style = MaterialTheme.typography.titleMedium
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = result.strain.name,
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    // Show badge for liked/disliked
+                    if (isLiked) {
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Icon(
+                            Icons.Default.Check,
+                            contentDescription = "Liked",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    } else if (isDisliked) {
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Icon(
+                            Icons.Default.Close,
+                            contentDescription = "Disliked",
+                            tint = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                }
                 Text(
                     text = result.strain.type.name,
                     style = MaterialTheme.typography.bodySmall
@@ -124,13 +160,21 @@ private fun StrainCard(
                 )
             }
 
-            // Like/Dislike buttons
+            // Like/Dislike buttons with filled state
             Row {
                 IconButton(onClick = onLike) {
-                    Icon(Icons.Default.Check, "Like", tint = MaterialTheme.colorScheme.primary)
+                    Icon(
+                        Icons.Default.Check,
+                        "Like",
+                        tint = if (isLiked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
                 IconButton(onClick = onDislike) {
-                    Icon(Icons.Default.Close, "Dislike", tint = MaterialTheme.colorScheme.error)
+                    Icon(
+                        Icons.Default.Close,
+                        "Dislike",
+                        tint = if (isDisliked) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             }
         }

@@ -38,6 +38,7 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.ktor.client.cio)
             implementation(libs.kotlinx.coroutines.android)
+            implementation(libs.jsoup)
         }
 
         iosMain.dependencies {

@@ -16,10 +16,32 @@ class LlmMenuExtractor(
         ignoreUnknownKeys = true
         isLenient = true
     }
+    private val preprocessor = HtmlPreprocessor()
 
     suspend fun extractStrains(html: String, config: LlmConfig): Result<List<ExtractedStrain>> {
-        // Pass 1: Categorize menu
-        val categorizedResult = categorizeMenu(html, config)
+        // Step 1: Try preprocessor extraction first (fast, no LLM cost)
+        val preprocessedCandidates = preprocessor.extractProductText(html)
+        println("[BudMash] Preprocessor found ${preprocessedCandidates.size} candidates")
+
+        // If preprocessor found enough products, convert and use them directly
+        if (preprocessedCandidates.size >= 5) {
+            println("[BudMash] Using preprocessor results directly")
+            val flowers = preprocessedCandidates.map { candidate ->
+                MenuProduct(
+                    name = candidate.name,
+                    price = candidate.price,
+                    details = listOfNotNull(candidate.category, candidate.details).joinToString("; ")
+                )
+            }
+            return extractDetailedStrains(flowers, config)
+        }
+
+        // Step 2: Preprocess HTML to reduce size and focus on content
+        val cleanedHtml = preprocessor.preprocess(html)
+        println("[BudMash] Cleaned HTML size: ${cleanedHtml.length} (from ${html.length})")
+
+        // Step 3: Use LLM to categorize and extract
+        val categorizedResult = categorizeMenu(cleanedHtml, config)
         if (categorizedResult.isFailure) {
             return Result.failure(categorizedResult.exceptionOrNull()!!)
         }
@@ -52,15 +74,20 @@ class LlmMenuExtractor(
             LlmMessage(
                 role = "system",
                 content = """Parse this dispensary menu HTML and extract ALL products into categorized JSON.
-IMPORTANT: Extract EVERY product you find - do not limit or summarize. Include ALL items.
+
+CRITICAL RULES:
+1. ONLY extract product names that appear EXACTLY in the HTML text
+2. Do NOT invent, hallucinate, or guess product names
+3. If no products are visible in the HTML, return {"categories": {}}
+4. Extract EVERY product you can find - do not limit or summarize
 
 Group products by category (flower, edibles, vapes, concentrates, pre-rolls, tinctures, topicals, etc.)
-For each product capture: name, category, price, any visible details (THC%, strain type, description).
+For each product capture: name (exact text from HTML), category, price, any visible details.
 
-Output valid JSON only with this structure:
-{"categories": {"flower": [{"name": "...", "price": "...", "details": "..."}], "edibles": [...], ...}}
+Output valid JSON only:
+{"categories": {"flower": [{"name": "...", "price": "...", "details": "..."}], ...}}
 
-Remember: Extract ALL products, not just a sample."""
+If the HTML appears to be a JavaScript app without visible product data, return empty categories."""
             ),
             LlmMessage(role = "user", content = truncatedHtml)
         )

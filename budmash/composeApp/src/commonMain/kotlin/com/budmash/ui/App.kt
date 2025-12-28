@@ -10,6 +10,7 @@ import com.budmash.llm.LlmConfigStorage
 import com.budmash.llm.LlmProviderType
 import com.budmash.parser.DefaultMenuParser
 import com.budmash.parser.ParseStatus
+import com.budmash.profile.ProfileStorage
 import com.budmash.ui.screens.DashboardScreen
 import com.budmash.ui.screens.HomeScreen
 import com.budmash.ui.screens.ScanScreen
@@ -30,7 +31,11 @@ fun App() {
     println("[BudMash] App composable initializing")
     var currentScreen by remember { mutableStateOf<Screen>(Screen.Home) }
     var parseStatus by remember { mutableStateOf<ParseStatus>(ParseStatus.Fetching) }
-    var likedStrains by remember { mutableStateOf<Set<String>>(emptySet()) }
+
+    // Profile storage for liked/disliked strains
+    val profileStorage = remember { ProfileStorage() }
+    var likedStrains by remember { mutableStateOf(profileStorage.getLikedStrains()) }
+    var dislikedStrains by remember { mutableStateOf(profileStorage.getDislikedStrains()) }
 
     // LLM configuration storage
     val configStorage = remember { LlmConfigStorage() }
@@ -137,15 +142,23 @@ fun App() {
 
                 DashboardScreen(
                     strains = results,
+                    likedStrains = likedStrains,
+                    dislikedStrains = dislikedStrains,
                     hasProfile = likedStrains.isNotEmpty(),
                     onStrainClick = { strain ->
                         currentScreen = Screen.StrainDetail(strain)
                     },
                     onLikeClick = { strain ->
-                        likedStrains = likedStrains + strain.name
+                        profileStorage.addLikedStrain(strain.name)
+                        likedStrains = profileStorage.getLikedStrains()
+                        dislikedStrains = profileStorage.getDislikedStrains()
+                        println("[BudMash] Liked: ${strain.name}, total liked: ${likedStrains.size}")
                     },
                     onDislikeClick = { strain ->
-                        likedStrains = likedStrains - strain.name
+                        profileStorage.addDislikedStrain(strain.name)
+                        likedStrains = profileStorage.getLikedStrains()
+                        dislikedStrains = profileStorage.getDislikedStrains()
+                        println("[BudMash] Disliked: ${strain.name}, total disliked: ${dislikedStrains.size}")
                     }
                 )
             }
