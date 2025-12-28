@@ -1,0 +1,25 @@
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+.DS_Store
+
+# Local properties
+local.properties
+
+# Kotlin
+*.class
+*.log
+
+# Build outputs
+*.apk
+*.aab
+*.dex
+*.ap_
+
+# JNI
+*.so
