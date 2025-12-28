@@ -80,7 +80,7 @@ class DefaultMenuParser(
             // Retry with exponential backoff
             var lastException = e
             for (attempt in 1..3) {
-                delay((1000L * attempt).coerceAtMost(4000))
+                delay((1000L shl (attempt - 1)).coerceAtMost(4000))
                 try {
                     val response: HttpResponse = httpClient.get(url)
                     return Result.success(response.bodyAsText())
