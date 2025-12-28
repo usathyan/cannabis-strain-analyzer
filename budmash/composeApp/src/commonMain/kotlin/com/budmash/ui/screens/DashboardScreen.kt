@@ -90,9 +90,7 @@ private fun StrainCard(
     }
 
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() },
+        modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = cardColor)
     ) {
         Row(
@@ -102,7 +100,12 @@ private fun StrainCard(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(modifier = Modifier.weight(1f)) {
+            // Clickable content area (strain info) - separate from buttons
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .clickable { onClick() }
+            ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = result.strain.name,
@@ -160,7 +163,7 @@ private fun StrainCard(
                 )
             }
 
-            // Like/Dislike buttons with filled state
+            // Like/Dislike buttons - NOT inside clickable area
             Row {
                 IconButton(onClick = onLike) {
                     Icon(

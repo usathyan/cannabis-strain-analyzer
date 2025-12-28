@@ -16,10 +16,24 @@ data class LlmConfig(
     val temperature: Float = 0.3f
 )
 
+// Legacy text-only message
 @Serializable
 data class LlmMessage(
     val role: String,  // "system", "user", "assistant"
     val content: String
+)
+
+// Multimodal content types for vision
+sealed class MessageContent {
+    data class Text(val text: String) : MessageContent()
+    data class ImageBase64(val base64: String, val mediaType: String = "image/png") : MessageContent()
+    data class ImageUrl(val url: String) : MessageContent()
+}
+
+// Multimodal message for vision-capable models
+data class MultimodalMessage(
+    val role: String,
+    val content: List<MessageContent>
 )
 
 data class LlmResponse(
@@ -29,4 +43,7 @@ data class LlmResponse(
 
 interface LlmProvider {
     suspend fun complete(messages: List<LlmMessage>, config: LlmConfig): LlmResponse
+
+    // Vision-capable completion
+    suspend fun completeVision(messages: List<MultimodalMessage>, config: LlmConfig): LlmResponse
 }

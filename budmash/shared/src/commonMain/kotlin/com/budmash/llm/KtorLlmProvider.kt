@@ -31,6 +31,56 @@ class KtorLlmProvider : LlmProvider {
         }
     }
 
+    override suspend fun completeVision(messages: List<MultimodalMessage>, config: LlmConfig): LlmResponse {
+        return when (config.provider) {
+            LlmProviderType.OPENROUTER -> completeVisionOpenRouter(messages, config)
+            else -> throw IllegalArgumentException("Vision not supported for ${config.provider}")
+        }
+    }
+
+    private suspend fun completeVisionOpenRouter(messages: List<MultimodalMessage>, config: LlmConfig): LlmResponse {
+        val baseUrl = config.baseUrl ?: "https://openrouter.ai/api/v1"
+
+        val openAIMessages = messages.map { msg ->
+            OpenAIVisionMessage(
+                role = msg.role,
+                content = msg.content.map { content ->
+                    when (content) {
+                        is MessageContent.Text -> OpenAIContentPart.TextPart(text = content.text)
+                        is MessageContent.ImageBase64 -> OpenAIContentPart.ImagePart(
+                            image_url = OpenAIImageUrl(
+                                url = "data:${content.mediaType};base64,${content.base64}"
+                            )
+                        )
+                        is MessageContent.ImageUrl -> OpenAIContentPart.ImagePart(
+                            image_url = OpenAIImageUrl(url = content.url)
+                        )
+                    }
+                }
+            )
+        }
+
+        val request = OpenAIVisionRequest(
+            model = config.model,
+            messages = openAIMessages,
+            max_tokens = config.maxTokens,
+            temperature = config.temperature
+        )
+
+        val response: OpenAIResponse = client.post("$baseUrl/chat/completions") {
+            contentType(ContentType.Application.Json)
+            header("Authorization", "Bearer ${config.apiKey}")
+            header("HTTP-Referer", "https://budmash.app")
+            header("X-Title", "BudMash")
+            setBody(request)
+        }.body()
+
+        return LlmResponse(
+            content = response.choices.firstOrNull()?.message?.content ?: "",
+            tokensUsed = response.usage?.total_tokens ?: 0
+        )
+    }
+
     private suspend fun completeOpenRouter(messages: List<LlmMessage>, config: LlmConfig): LlmResponse {
         val baseUrl = config.baseUrl ?: "https://openrouter.ai/api/v1"
         return completeOpenAIFormat(messages, config, baseUrl, mapOf(
@@ -144,3 +194,39 @@ private data class AnthropicContent(val text: String)
 
 @Serializable
 private data class AnthropicUsage(val input_tokens: Int, val output_tokens: Int)
+
+// Vision request models
+@Serializable
+private data class OpenAIVisionRequest(
+    val model: String,
+    val messages: List<OpenAIVisionMessage>,
+    val max_tokens: Int,
+    val temperature: Float
+)
+
+@Serializable
+private data class OpenAIVisionMessage(
+    val role: String,
+    val content: List<OpenAIContentPart>
+)
+
+@Serializable
+private sealed class OpenAIContentPart {
+    @Serializable
+    @kotlinx.serialization.SerialName("text")
+    data class TextPart(
+        val text: String
+    ) : OpenAIContentPart()
+
+    @Serializable
+    @kotlinx.serialization.SerialName("image_url")
+    data class ImagePart(
+        val image_url: OpenAIImageUrl
+    ) : OpenAIContentPart()
+}
+
+@Serializable
+private data class OpenAIImageUrl(
+    val url: String,
+    val detail: String = "auto"
+)
