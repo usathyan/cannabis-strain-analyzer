@@ -24,7 +24,11 @@ actual class LlmConfigStorage {
 
     actual fun getProvider(): LlmProviderType {
         val name = prefs?.getString("provider", "OPENROUTER") ?: "OPENROUTER"
-        return LlmProviderType.valueOf(name)
+        return try {
+            LlmProviderType.valueOf(name)
+        } catch (e: IllegalArgumentException) {
+            LlmProviderType.OPENROUTER
+        }
     }
 
     actual fun setProvider(provider: LlmProviderType) {
