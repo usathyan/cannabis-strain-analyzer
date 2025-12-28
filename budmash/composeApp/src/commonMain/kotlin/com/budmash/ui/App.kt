@@ -4,11 +4,13 @@ import androidx.compose.runtime.*
 import com.budmash.data.DispensaryMenu
 import com.budmash.data.SimilarityResult
 import com.budmash.data.StrainData
+import com.budmash.parser.MockMenuParser
 import com.budmash.parser.ParseStatus
 import com.budmash.ui.screens.DashboardScreen
 import com.budmash.ui.screens.HomeScreen
 import com.budmash.ui.screens.ScanScreen
 import com.budmash.ui.theme.BudMashTheme
+import kotlinx.coroutines.flow.collect
 
 sealed class Screen {
     data object Home : Screen()
@@ -24,6 +26,9 @@ fun App() {
     var parseStatus by remember { mutableStateOf<ParseStatus>(ParseStatus.Fetching) }
     var likedStrains by remember { mutableStateOf<Set<String>>(emptySet()) }
 
+    // Parser instance
+    val parser = remember { MockMenuParser() }
+
     println("[BudMash] Current screen: $currentScreen")
 
     BudMashTheme {
@@ -33,14 +38,24 @@ fun App() {
                 HomeScreen(
                     onScanClick = { url ->
                         println("[BudMash] Scan clicked with URL: $url")
+                        parseStatus = ParseStatus.Fetching // Reset status
                         currentScreen = Screen.Scanning(url)
-                        // TODO: Trigger actual parsing
                     }
                 )
             }
 
             is Screen.Scanning -> {
                 println("[BudMash] Rendering ScanScreen for URL: ${screen.url}")
+
+                // Trigger parsing when entering scan screen
+                LaunchedEffect(screen.url) {
+                    println("[BudMash] LaunchedEffect: Starting parse for ${screen.url}")
+                    parser.parseMenu(screen.url).collect { status ->
+                        println("[BudMash] Parse status: $status")
+                        parseStatus = status
+                    }
+                }
+
                 ScanScreen(
                     status = parseStatus,
                     onComplete = {
