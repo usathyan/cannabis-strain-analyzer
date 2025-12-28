@@ -16,13 +16,13 @@
 <tr>
 <td><img src="screenshots/01-my-profile.png" width="180" alt="Profile"></td>
 <td><img src="screenshots/02-search.png" width="180" alt="Search"></td>
-<td><img src="screenshots/03-scan-results.png" width="180" alt="Results"></td>
+<td><img src="screenshots/04-strain-detail-top.png" width="180" alt="Match"></td>
 <td><img src="screenshots/05-strain-detail-terpenes.png" width="180" alt="Details"></td>
 </tr>
 <tr>
 <td align="center"><b>Your Profile</b></td>
 <td align="center"><b>Scan Menu</b></td>
-<td align="center"><b>Match Scores</b></td>
+<td align="center"><b>Similarity Breakdown</b></td>
 <td align="center"><b>Terpene Analysis</b></td>
 </tr>
 </table>
@@ -198,7 +198,6 @@ See every strain scored against your profile. Tap for detailed analysis.
 
 - Terpene profile stored locally on your device
 - API keys stored in device secure storage
-- No data sent anywhere except vision API for menu analysis
 
 ---
 
