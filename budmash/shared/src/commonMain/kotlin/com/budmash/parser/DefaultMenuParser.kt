@@ -1,6 +1,7 @@
 package com.budmash.parser
 
 import com.budmash.data.DispensaryMenu
+import com.budmash.data.ParseError
 import com.budmash.data.StrainData
 import com.budmash.data.StrainType
 import com.budmash.network.MenuFetcher
@@ -18,7 +19,7 @@ class DefaultMenuParser(
 
         val htmlResult = MenuFetcher.fetchMenuHtml(url)
         if (htmlResult.isFailure) {
-            emit(ParseStatus.Error("Failed to fetch: ${htmlResult.exceptionOrNull()?.message}"))
+            emit(ParseStatus.Error(ParseError.NetworkError(htmlResult.exceptionOrNull()?.message ?: "Unknown error")))
             return@flow
         }
 
@@ -29,7 +30,7 @@ class DefaultMenuParser(
         val extracted = try {
             llmExtractor.extractStrainsFromHtml(html)
         } catch (e: Exception) {
-            emit(ParseStatus.Error("LLM extraction failed: ${e.message}"))
+            emit(ParseStatus.Error(ParseError.LlmError(e.message ?: "Unknown error")))
             return@flow
         }
 
