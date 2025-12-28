@@ -16,6 +16,7 @@ import com.budmash.data.SimilarityResult
 import com.budmash.data.StrainData
 import kotlin.math.round
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(
     strains: List<SimilarityResult>,
@@ -24,9 +25,22 @@ fun DashboardScreen(
     hasProfile: Boolean,
     onStrainClick: (StrainData) -> Unit,
     onLikeClick: (StrainData) -> Unit,
-    onDislikeClick: (StrainData) -> Unit
+    onDislikeClick: (StrainData) -> Unit,
+    onBack: () -> Unit = {}
 ) {
-    Column(modifier = Modifier.fillMaxSize()) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Scan Results") },
+                navigationIcon = {
+                    TextButton(onClick = onBack) {
+                        Text("< Back")
+                    }
+                }
+            )
+        }
+    ) { padding ->
+    Column(modifier = Modifier.fillMaxSize().padding(padding)) {
         // Header
         Surface(
             modifier = Modifier.fillMaxWidth(),
@@ -69,6 +83,7 @@ fun DashboardScreen(
                 )
             }
         }
+    }
     }
 }
 

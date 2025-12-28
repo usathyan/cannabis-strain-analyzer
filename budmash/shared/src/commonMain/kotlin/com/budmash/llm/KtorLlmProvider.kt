@@ -2,6 +2,7 @@ package com.budmash.llm
 
 import io.ktor.client.*
 import io.ktor.client.call.*
+import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.http.*
@@ -19,6 +20,11 @@ class KtorLlmProvider : LlmProvider {
     private val client = HttpClient {
         install(ContentNegotiation) {
             json(json)
+        }
+        install(HttpTimeout) {
+            requestTimeoutMillis = 120_000  // 2 minutes for vision API
+            connectTimeoutMillis = 30_000
+            socketTimeoutMillis = 120_000
         }
     }
 

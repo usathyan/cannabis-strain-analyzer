@@ -17,6 +17,12 @@ actual class LlmConfigStorage {
         defaults.setObject(model, "budmash_model")
     }
 
+    actual fun getVisionModel(): String = defaults.stringForKey("budmash_vision_model") ?: "google/gemini-2.0-flash-001"
+
+    actual fun setVisionModel(model: String) {
+        defaults.setObject(model, "budmash_vision_model")
+    }
+
     actual fun getProvider(): LlmProviderType {
         val name = defaults.stringForKey("budmash_provider") ?: "OPENROUTER"
         return try {

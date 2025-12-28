@@ -12,15 +12,34 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.budmash.data.SimilarityResult
 import com.budmash.data.StrainData
 import com.budmash.data.StrainType
+
+// Terpene effect mappings for AI insights
+private val TERPENE_EFFECTS = mapOf(
+    "Myrcene" to listOf("relaxation", "sedation", "body high", "muscle relief"),
+    "Limonene" to listOf("mood elevation", "stress relief", "energy", "focus"),
+    "Caryophyllene" to listOf("anti-inflammatory", "pain relief", "anxiety relief"),
+    "Pinene" to listOf("alertness", "memory retention", "creativity", "focus"),
+    "Linalool" to listOf("calming", "sleep aid", "anxiety relief", "relaxation"),
+    "Humulene" to listOf("appetite suppression", "anti-inflammatory", "earthy calm"),
+    "Terpinolene" to listOf("uplifting", "creative", "slightly sedating"),
+    "Ocimene" to listOf("energizing", "uplifting", "decongestant"),
+    "Nerolidol" to listOf("sedation", "relaxation", "anti-anxiety"),
+    "Bisabolol" to listOf("anti-inflammatory", "skin soothing", "calming"),
+    "Eucalyptol" to listOf("mental clarity", "focus", "respiratory relief")
+)
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun StrainDetailScreen(
     strain: StrainData,
+    similarity: SimilarityResult? = null,
+    idealProfile: List<Double> = emptyList(),
     isLiked: Boolean,
     isDisliked: Boolean,
     onBack: () -> Unit,
@@ -49,6 +68,24 @@ fun StrainDetailScreen(
             // Header: Name, Type, THC, Price
             item {
                 StrainHeader(strain)
+            }
+
+            // Match Score Card (if similarity data available)
+            similarity?.let { sim ->
+                item {
+                    MatchScoreCard(sim)
+                }
+            }
+
+            // AI Insights (if profile exists)
+            if (idealProfile.isNotEmpty()) {
+                item {
+                    TerpeneInsightsCard(
+                        strain = strain,
+                        idealProfile = idealProfile,
+                        matchPercent = similarity?.let { (it.overallScore * 100).toInt() }
+                    )
+                }
             }
 
             // Description
@@ -159,6 +196,299 @@ private fun StrainHeader(strain: StrainData) {
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.primary
                 )
+            }
+        }
+    }
+}
+
+@Composable
+private fun MatchScoreCard(similarity: SimilarityResult) {
+    val matchPercent = (similarity.overallScore * 100).toInt()
+    val matchColor = when {
+        matchPercent >= 80 -> Color(0xFF4CAF50)
+        matchPercent >= 60 -> Color(0xFFFF9800)
+        else -> MaterialTheme.colorScheme.surfaceVariant
+    }
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = matchColor.copy(alpha = 0.15f)
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            // Overall score header
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Profile Match",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                Surface(
+                    color = matchColor,
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text(
+                        text = "$matchPercent%",
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = if (matchPercent >= 60) Color.White else MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+
+            // Breakdown section
+            Text(
+                text = "Similarity Breakdown",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            // Cosine Similarity (50% weight)
+            SimilarityBreakdownRow(
+                name = "Z-Scored Cosine",
+                score = similarity.cosineScore,
+                weight = "50%",
+                description = "Direction alignment of terpene profiles"
+            )
+
+            // Euclidean Similarity (25% weight)
+            SimilarityBreakdownRow(
+                name = "Euclidean Distance",
+                score = similarity.euclideanScore,
+                weight = "25%",
+                description = "Overall magnitude similarity"
+            )
+
+            // Pearson Correlation (25% weight)
+            SimilarityBreakdownRow(
+                name = "Pearson Correlation",
+                score = similarity.pearsonScore,
+                weight = "25%",
+                description = "Pattern correlation in profile"
+            )
+        }
+    }
+}
+
+@Composable
+private fun SimilarityBreakdownRow(
+    name: String,
+    score: Double,
+    weight: String,
+    description: String
+) {
+    val scorePercent = (score * 100).toInt()
+
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = name,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Medium
+                    )
+                    Surface(
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        shape = RoundedCornerShape(4.dp)
+                    ) {
+                        Text(
+                            text = weight,
+                            modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp),
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                    }
+                }
+                Text(
+                    text = description,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Text(
+                text = "$scorePercent%",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = when {
+                    scorePercent >= 80 -> Color(0xFF4CAF50)
+                    scorePercent >= 60 -> Color(0xFFFF9800)
+                    else -> MaterialTheme.colorScheme.onSurfaceVariant
+                }
+            )
+        }
+
+        // Progress bar
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(6.dp)
+                .clip(RoundedCornerShape(3.dp))
+                .background(MaterialTheme.colorScheme.surfaceVariant)
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .fillMaxWidth(score.toFloat().coerceIn(0f, 1f))
+                    .clip(RoundedCornerShape(3.dp))
+                    .background(
+                        when {
+                            scorePercent >= 80 -> Color(0xFF4CAF50)
+                            scorePercent >= 60 -> Color(0xFFFF9800)
+                            else -> MaterialTheme.colorScheme.primary
+                        }
+                    )
+            )
+        }
+    }
+}
+
+@Composable
+private fun TerpeneInsightsCard(
+    strain: StrainData,
+    idealProfile: List<Double>,
+    matchPercent: Int?
+) {
+    val strainProfile = strain.terpeneProfile()
+    val terpeneNames = StrainData.TERPENE_NAMES
+
+    // Find top matching terpenes (both strain and profile have significant values)
+    val matchingTerpenes = terpeneNames.indices
+        .filter { i -> strainProfile[i] > 0.01 && idealProfile[i] > 0.01 }
+        .sortedByDescending { i -> minOf(strainProfile[i], idealProfile[i]) }
+        .take(3)
+        .map { i -> terpeneNames[i] }
+
+    // Find dominant terpenes in strain
+    val dominantTerpenes = strainProfile
+        .zip(terpeneNames)
+        .filter { it.first > 0.1 }
+        .sortedByDescending { it.first }
+        .take(3)
+        .map { it.second }
+
+    // Find terpenes you want but strain lacks
+    val missingTerpenes = terpeneNames.indices
+        .filter { i -> idealProfile[i] > 0.2 && strainProfile[i] < 0.05 }
+        .map { i -> terpeneNames[i] }
+
+    // Generate insights
+    val insights = buildList {
+        // Main recommendation
+        if (matchPercent != null) {
+            if (matchPercent >= 80) {
+                add("Excellent match! This strain closely aligns with your terpene preferences.")
+            } else if (matchPercent >= 60) {
+                add("Good match. This strain has several terpenes you enjoy.")
+            } else if (matchPercent >= 40) {
+                add("Moderate match. Worth trying if you're open to exploration.")
+            } else {
+                add("This strain differs from your usual preferences—could be interesting or not your style.")
+            }
+        }
+
+        // Matching terpenes insight
+        if (matchingTerpenes.isNotEmpty()) {
+            val effects = matchingTerpenes.flatMap { TERPENE_EFFECTS[it] ?: emptyList() }.distinct().take(4)
+            add("Your profile shares ${matchingTerpenes.joinToString(", ")} with this strain, suggesting ${effects.joinToString(", ")}.")
+        }
+
+        // Dominant terpene effects
+        if (dominantTerpenes.isNotEmpty()) {
+            val allEffects = dominantTerpenes.flatMap { TERPENE_EFFECTS[it] ?: emptyList() }.distinct().take(5)
+            add("Dominant terpenes suggest: ${allEffects.joinToString(", ")}.")
+        }
+
+        // Missing terpenes
+        if (missingTerpenes.isNotEmpty() && missingTerpenes.size <= 2) {
+            add("Note: lower in ${missingTerpenes.joinToString(", ")} compared to your profile.")
+        }
+    }
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f)
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = "✨",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Text(
+                    text = "Insights",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            insights.forEach { insight ->
+                Text(
+                    text = "• $insight",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                )
+            }
+
+            // Expected effects based on strain's terpenes
+            if (dominantTerpenes.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "Expected Effects",
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    val topEffects = dominantTerpenes
+                        .flatMap { TERPENE_EFFECTS[it] ?: emptyList() }
+                        .groupingBy { it }
+                        .eachCount()
+                        .entries
+                        .sortedByDescending { it.value }
+                        .take(4)
+                        .map { it.key }
+
+                    topEffects.forEach { effect ->
+                        Surface(
+                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text(
+                                text = effect,
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                }
             }
         }
     }

@@ -14,11 +14,13 @@ import androidx.compose.ui.unit.dp
 fun SettingsScreen(
     currentApiKey: String,
     currentModel: String,
-    onSave: (apiKey: String, model: String) -> Unit,
+    currentVisionModel: String,
+    onSave: (apiKey: String, model: String, visionModel: String) -> Unit,
     onBack: () -> Unit
 ) {
     var apiKey by remember { mutableStateOf(currentApiKey) }
     var model by remember { mutableStateOf(currentModel) }
+    var visionModel by remember { mutableStateOf(currentVisionModel) }
 
     Column(
         modifier = Modifier
@@ -59,7 +61,7 @@ fun SettingsScreen(
         OutlinedTextField(
             value = model,
             onValueChange = { model = it },
-            label = { Text("Model") },
+            label = { Text("Analysis Model") },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             colors = OutlinedTextFieldDefaults.colors(
@@ -73,10 +75,33 @@ fun SettingsScreen(
             )
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "For text analysis (default: anthropic/claude-3-haiku)",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        OutlinedTextField(
+            value = visionModel,
+            onValueChange = { visionModel = it },
+            label = { Text("Vision Model") },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true,
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                focusedLabelColor = MaterialTheme.colorScheme.primary,
+                unfocusedLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                cursorColor = MaterialTheme.colorScheme.primary
+            )
+        )
 
         Text(
-            text = "Default: anthropic/claude-3-haiku",
+            text = "For menu scanning (default: google/gemini-2.0-flash-001)",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
         )
@@ -95,7 +120,7 @@ fun SettingsScreen(
             }
 
             Button(
-                onClick = { onSave(apiKey, model) },
+                onClick = { onSave(apiKey, model, visionModel) },
                 modifier = Modifier.weight(1f),
                 enabled = apiKey.isNotBlank()
             ) {

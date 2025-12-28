@@ -11,7 +11,8 @@ import kotlinx.datetime.Clock
 
 class DefaultMenuParser(
     private val llmProvider: LlmProvider,
-    private val config: LlmConfig
+    private val config: LlmConfig,
+    private val visionModel: String = "google/gemini-2.0-flash-001"
 ) : MenuParser {
 
     private val visionExtractor = VisionMenuExtractor(llmProvider)
@@ -29,8 +30,8 @@ class DefaultMenuParser(
         emit(ParseStatus.FetchComplete(imageBase64.length))
 
         // Step 1: Extract strains via vision LLM
-        println("[BudMash] Sending image to vision LLM for extraction...")
-        val strainsResult = visionExtractor.extractFromScreenshot(imageBase64, config)
+        println("[BudMash] Sending image to vision LLM for extraction using model: $visionModel")
+        val strainsResult = visionExtractor.extractFromScreenshot(imageBase64, config, visionModel)
 
         if (strainsResult.isFailure) {
             emit(ParseStatus.Error(ParseError.LlmError(strainsResult.exceptionOrNull()?.message ?: "Vision extraction failed")))

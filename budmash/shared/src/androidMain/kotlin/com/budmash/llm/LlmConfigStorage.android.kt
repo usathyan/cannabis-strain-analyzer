@@ -29,6 +29,12 @@ actual class LlmConfigStorage {
         prefs?.edit()?.putString("model", model)?.apply()
     }
 
+    actual fun getVisionModel(): String = prefs?.getString("vision_model", "google/gemini-2.0-flash-001") ?: "google/gemini-2.0-flash-001"
+
+    actual fun setVisionModel(model: String) {
+        prefs?.edit()?.putString("vision_model", model)?.apply()
+    }
+
     actual fun getProvider(): LlmProviderType {
         val name = prefs?.getString("provider", "OPENROUTER") ?: "OPENROUTER"
         return try {
