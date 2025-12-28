@@ -28,17 +28,17 @@ fun HomeScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        // Settings icon in top-right corner
-        IconButton(
+        // Settings button in top-right corner
+        TextButton(
             onClick = onSettingsClick,
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(16.dp)
         ) {
             Text(
-                text = "\u2699",  // Gear unicode symbol
-                fontSize = 24.sp,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+                text = "Settings",
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.primary
             )
         }
 
