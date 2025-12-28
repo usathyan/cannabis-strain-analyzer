@@ -61,8 +61,9 @@ fun ScanScreen(
             }
 
             is ParseStatus.Error -> {
-                LaunchedEffect(Unit) { onError(status.message) }
-                Text("Error: ${status.message}", color = MaterialTheme.colorScheme.error)
+                val errorMessage = status.error.toUserMessage()
+                LaunchedEffect(Unit) { onError(errorMessage) }
+                Text("Error: $errorMessage", color = MaterialTheme.colorScheme.error)
             }
         }
     }

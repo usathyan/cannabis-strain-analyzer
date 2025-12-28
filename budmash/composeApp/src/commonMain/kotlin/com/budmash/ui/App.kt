@@ -4,7 +4,10 @@ import androidx.compose.runtime.*
 import com.budmash.data.DispensaryMenu
 import com.budmash.data.SimilarityResult
 import com.budmash.data.StrainData
-import com.budmash.parser.MockMenuParser
+import com.budmash.llm.KtorLlmProvider
+import com.budmash.llm.LlmConfig
+import com.budmash.llm.LlmProviderType
+import com.budmash.parser.DefaultMenuParser
 import com.budmash.parser.ParseStatus
 import com.budmash.ui.screens.DashboardScreen
 import com.budmash.ui.screens.HomeScreen
@@ -26,8 +29,16 @@ fun App() {
     var parseStatus by remember { mutableStateOf<ParseStatus>(ParseStatus.Fetching) }
     var likedStrains by remember { mutableStateOf<Set<String>>(emptySet()) }
 
-    // Parser instance
-    val parser = remember { MockMenuParser() }
+    // LLM-based menu parser
+    val llmProvider = remember { KtorLlmProvider() }
+    val config = remember {
+        LlmConfig(
+            provider = LlmProviderType.OPENROUTER,
+            apiKey = "", // TODO: Get from storage or environment
+            model = "anthropic/claude-3-haiku"
+        )
+    }
+    val parser = remember { DefaultMenuParser(llmProvider, config) }
 
     println("[BudMash] Current screen: $currentScreen")
 
