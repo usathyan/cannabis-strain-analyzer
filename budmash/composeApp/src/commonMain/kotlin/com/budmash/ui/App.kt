@@ -15,6 +15,7 @@ import com.budmash.ui.screens.DashboardScreen
 import com.budmash.ui.screens.HomeScreen
 import com.budmash.ui.screens.ScanScreen
 import com.budmash.ui.screens.SettingsScreen
+import com.budmash.ui.screens.StrainDetailScreen
 import com.budmash.ui.theme.BudMashTheme
 import kotlinx.coroutines.flow.collect
 
@@ -165,7 +166,32 @@ fun App() {
 
             is Screen.StrainDetail -> {
                 println("[BudMash] Rendering StrainDetail for: ${screen.strain.name}")
-                // TODO: Implement detail screen
+                StrainDetailScreen(
+                    strain = screen.strain,
+                    isLiked = screen.strain.name in likedStrains,
+                    isDisliked = screen.strain.name in dislikedStrains,
+                    onBack = {
+                        currentScreen = Screen.Dashboard(
+                            DispensaryMenu(
+                                url = "Photo capture",
+                                fetchedAt = 0,
+                                strains = (parseStatus as? ParseStatus.Complete)?.menu?.strains ?: emptyList()
+                            )
+                        )
+                    },
+                    onLike = {
+                        profileStorage.addLikedStrain(screen.strain.name)
+                        likedStrains = profileStorage.getLikedStrains()
+                        dislikedStrains = profileStorage.getDislikedStrains()
+                        println("[BudMash] Liked from detail: ${screen.strain.name}")
+                    },
+                    onDislike = {
+                        profileStorage.addDislikedStrain(screen.strain.name)
+                        likedStrains = profileStorage.getLikedStrains()
+                        dislikedStrains = profileStorage.getDislikedStrains()
+                        println("[BudMash] Disliked from detail: ${screen.strain.name}")
+                    }
+                )
             }
         }
     }
