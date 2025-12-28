@@ -60,6 +60,3 @@ class DefaultMenuParser(
     }
 }
 
-interface TerpeneResolver {
-    suspend fun resolve(extracted: ExtractedStrain): StrainData
-}
