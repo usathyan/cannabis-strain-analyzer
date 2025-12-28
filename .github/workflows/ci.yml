@@ -4,16 +4,14 @@ on:
   push:
     branches: [main]
     paths:
-      - 'android-app/**'
+      - 'composeApp/**'
+      - 'shared/**'
+      - 'gradle/**'
+      - 'build.gradle.kts'
+      - 'settings.gradle.kts'
       - '.github/workflows/ci.yml'
   pull_request:
     branches: [main]
-    paths:
-      - 'android-app/**'
-
-defaults:
-  run:
-    working-directory: android-app
 
 jobs:
   build:
@@ -35,24 +33,11 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build Debug APK
-        run: ./gradlew assembleDebug
-
-      - name: Run Lint
-        run: ./gradlew lintDebug
-        continue-on-error: true
+        run: ./gradlew :composeApp:assembleDebug
 
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:
           name: debug-apk
-          path: android-app/app/build/outputs/apk/debug/*.apk
-          retention-days: 7
-
-      - name: Upload Lint Report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: lint-report
-          path: android-app/app/build/reports/lint-results-debug.html
-          if-no-files-found: ignore
+          path: composeApp/build/outputs/apk/debug/*.apk
           retention-days: 7

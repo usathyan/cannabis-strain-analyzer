@@ -183,15 +183,98 @@ The "agentic" experience isn't about AI autonomy—it's about visibility. Watchi
 
 The MVP is a foundation. The road ahead includes:
 
-- **LLM Integration**: Connect menu parsing to actual AI extraction
-- **Terpene Resolution**: Link to Cannlytics API and local database
+- ~~**LLM Integration**: Connect menu parsing to actual AI extraction~~ ✅ Done
+- ~~**Terpene Resolution**: Link to Cannlytics API and local database~~ ✅ Done
 - **iOS Build**: Compile and test on iPhone/iPad
-- **Strain Detail Screen**: Deep dive into individual strains
+- ~~**Strain Detail Screen**: Deep dive into individual strains~~ ✅ Done
 - **Comparison Mode**: Side-by-side analysis
 - **Scan History**: Remember previous dispensary scans
 - **Maps Integration**: Find dispensaries by location
 
-But those are tasks for another session.
+---
+
+## Phase 2: From MVP to Real App (December 28, 2025)
+
+The MVP proved the architecture. Phase 2 made it actually useful.
+
+### Vision-Powered Menu Extraction
+
+The first real feature: take a screenshot of any dispensary menu and extract strain data using AI vision.
+
+**The Challenge:** Vision APIs (Gemini Flash, GPT-4V) have resolution limits. When you feed them a tall scroll screenshot—common when capturing a full dispensary menu—they downsample the image and lose text detail. Our first test only extracted 24 of 77 visible strains.
+
+**The Solution:** Image chunking. For images taller than 4000px:
+1. Split into ~3000px chunks with 200px overlap
+2. Send each chunk to the vision model separately
+3. Merge results, deduplicating strains that appear in overlap regions
+
+This required platform-specific implementations:
+- **Android**: `BitmapFactory` + `Bitmap.createBitmap()`
+- **iOS**: `UIImage` + `CGImageCreateWithImageInRect()`
+
+Expect/actual pattern for the win.
+
+### JSON Recovery for Truncated Responses
+
+Vision models sometimes return truncated JSON—they hit token limits mid-response. Rather than fail completely, we implemented multi-strategy recovery:
+
+1. **Strategy 1**: Full object regex with all fields
+2. **Strategy 2**: Name + type only
+3. **Strategy 3**: Just names (last resort)
+4. **AI Cleanup**: Use a text model to extract from the raw response
+
+This ensures partial results are better than no results.
+
+### Similarity Scoring
+
+The core value proposition: given your terpene preferences, how well does a new strain match?
+
+**Three algorithms, weighted:**
+- **Z-Score Normalized Cosine Similarity** (50%): Profile shape comparison
+- **Euclidean Distance** (25%): Absolute concentration matching
+- **Pearson Correlation** (25%): Pattern validation
+
+The z-score normalization was crucial. Raw terpene values vary wildly (Myrcene at 0.5% vs Terpinolene at 0.05%). Without normalization, common terpenes dominate. Z-scoring puts them all on equal footing.
+
+### MAX Pooling for Profile Building
+
+When building a user's ideal profile from liked strains, we use MAX pooling rather than averaging:
+- You like Blue Dream (Myrcene: 0.4%, Limonene: 0.3%)
+- You like Sour Diesel (Myrcene: 0.2%, Limonene: 0.5%)
+- Your profile: Myrcene: 0.4%, Limonene: 0.5% (takes the MAX)
+
+This preserves peak preferences. If you respond to high limonene in one strain and high myrcene in another, both are captured.
+
+### Navigation That Works
+
+A subtle but important fix: the back button from strain detail now returns to the results screen, not a blank search screen. Implemented via a `returnTo` field that tracks navigation history.
+
+### Model Selection
+
+Users can now choose their vision model in Settings:
+- Gemini 2.0 Flash (default)
+- Gemini 1.5 Flash
+- Other OpenRouter-supported vision models
+
+---
+
+## Phase 3: Repository Restructure (December 28, 2025)
+
+The original repo had grown organically:
+- `android-app/` - Old Android-only app
+- `budmash/` - New KMM project
+- `legacy/` - Python backend prototype
+- Various docs and scripts
+
+This was confusing. The KMM project *is* the project now.
+
+**The restructure:**
+1. Remove `android-app/`, `legacy/`, old docs
+2. Move `budmash/` contents to root
+3. Update GitHub Actions workflows
+4. Clean up `.gitignore`
+
+Now the repo is just the app. Clean.
 
 ---
 
