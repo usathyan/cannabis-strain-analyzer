@@ -4,7 +4,7 @@
 
 ### Your Personal Terpene-Based Strain Matcher
 
-*Find cannabis strains that match your chemistry, not just your guesses.*
+*Unlock new strains that deliver the effects you already love—backed by science.*
 
 [![Build](https://github.com/usathyan/cannabis-strain-analyzer/actions/workflows/ci.yml/badge.svg)](https://github.com/usathyan/cannabis-strain-analyzer/actions)
 [![Release](https://img.shields.io/github/v/release/usathyan/cannabis-strain-analyzer?include_prereleases)](https://github.com/usathyan/cannabis-strain-analyzer/releases)
@@ -34,17 +34,17 @@
 
 ## Powered by Generative AI
 
-BudMash harnesses the power of cutting-edge **Generative AI** to transform how you discover cannabis strains. Simply snap a photo of any dispensary menu, and our AI instantly extracts every strain, fetches terpene profiles, and calculates personalized match scores—all in seconds.
+BudMash harnesses **cutting-edge Generative AI** to do what was previously impossible: instantly analyze any dispensary menu and match every strain against your personal terpene profile.
 
-No more manually searching strain databases. No more guessing. Just **science-backed recommendations** tailored to your unique preferences.
+Snap a photo. Get science-backed predictions. **Discover strains you'd never know to try**—with confidence they'll deliver the experience you're looking for.
 
 <div align="center">
 
-| What You Do | What AI Does |
-|-------------|--------------|
-| Take a screenshot | Extracts 50+ strains in seconds |
-| Like strains you enjoy | Builds your chemical fingerprint |
-| Walk into any dispensary | Instantly know your best matches |
+| What You Do | What AI Does | What You Get |
+|-------------|--------------|--------------|
+| Take a screenshot | Extracts 50+ strains instantly | Every option, analyzed |
+| Like strains you enjoy | Decodes your molecular preferences | Your chemical fingerprint |
+| Walk into any dispensary | Matches menu to your profile | **Confidence in every purchase** |
 
 </div>
 
@@ -52,9 +52,21 @@ No more manually searching strain databases. No more guessing. Just **science-ba
 
 ## The Problem
 
-You walk into a dispensary. The menu has 50+ flower strains. Some you've tried, most you haven't. You know what you like—but how do you find *more* of it?
+You walk into a dispensary. The menu has 50+ flower strains. Some you've tried, most you haven't. **Your perfect strain is on that menu—but which one?**
 
-**BudMash solves this.** It builds a terpene profile from strains you've enjoyed, then scores every strain on the menu against your preferences using real chemistry.
+Here's the truth: the relaxation you get from Blue Dream, the creativity from Jack Herer, the calm from Granddaddy Purple—*these aren't accidents*. They're the result of specific terpene combinations interacting with your unique chemistry.
+
+**BudMash decodes that chemistry.**
+
+Our algorithms analyze the molecular fingerprint of every strain you love, then scan any dispensary menu to find strains with matching profiles. The result? **Discover new strains with confidence**—knowing they'll deliver the same effects, aromas, and experiences you already enjoy.
+
+<div align="center">
+
+*Same relaxation. Same euphoria. Same focus. New strains you've never tried.*
+
+</div>
+
+A 93% match isn't just a number—it's a prediction that this strain will make you feel the way your favorites do. **Stop gambling. Start matching.**
 
 ---
 
@@ -307,9 +319,11 @@ Screenshot any dispensary menu. See every strain scored against your profile.
 
 <div align="center">
 
-### Stop Guessing. Start Matching.
+### Your Chemistry. Your Matches. Your Experience.
 
-**BudMash** — *Terpene science meets AI intelligence.*
+**BudMash** — *Where terpene science meets AI intelligence.*
+
+*Every strain you love has a molecular signature. We find its matches.*
 
 [![Download](https://img.shields.io/badge/Download-Latest%20Release-green?style=for-the-badge)](https://github.com/usathyan/cannabis-strain-analyzer/releases/latest)
 
