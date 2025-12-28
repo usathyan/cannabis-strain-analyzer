@@ -206,7 +206,6 @@ See every strain scored against your profile. Tap for detailed analysis.
 | Platform | Download |
 |----------|----------|
 | Android | [Latest APK](https://github.com/usathyan/cannabis-strain-analyzer/releases/latest) |
-| macOS | [Latest DMG](https://github.com/usathyan/cannabis-strain-analyzer/releases/latest) |
 
 ---
 
