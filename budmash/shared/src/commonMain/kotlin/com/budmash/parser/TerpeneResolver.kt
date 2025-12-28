@@ -1,7 +1,6 @@
 package com.budmash.parser
 
 import com.budmash.data.StrainData
-import com.budmash.data.StrainType
 import com.budmash.llm.LlmConfig
 import com.budmash.llm.LlmMessage
 import com.budmash.llm.LlmProvider
