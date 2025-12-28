@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.budmash.llm.LlmConfigStorage
+import com.budmash.profile.ProfileStorageContext
 import com.budmash.ui.App
 
 private const val TAG = "BudMash"
@@ -17,6 +18,10 @@ class MainActivity : ComponentActivity() {
         // Initialize LlmConfigStorage with Android context
         LlmConfigStorage.init(this)
         Log.d(TAG, "LlmConfigStorage initialized")
+
+        // Initialize ProfileStorageContext for strain preferences
+        ProfileStorageContext.init(this)
+        Log.d(TAG, "ProfileStorageContext initialized")
 
         Log.d(TAG, "Setting up Compose content...")
         setContent {
