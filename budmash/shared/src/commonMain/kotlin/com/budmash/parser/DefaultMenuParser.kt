@@ -2,24 +2,32 @@ package com.budmash.parser
 
 import com.budmash.data.DispensaryMenu
 import com.budmash.data.ParseError
-import com.budmash.data.StrainData
-import com.budmash.data.StrainType
 import com.budmash.llm.LlmConfig
-import com.budmash.network.MenuFetcher
+import com.budmash.llm.LlmProvider
+import io.ktor.client.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.datetime.Clock
 
 class DefaultMenuParser(
-    private val llmExtractor: LlmMenuExtractor,
-    private val terpeneResolver: TerpeneResolver,
-    private val llmConfig: LlmConfig
+    private val llmProvider: LlmProvider,
+    private val config: LlmConfig
 ) : MenuParser {
 
+    private val extractor = LlmMenuExtractor(llmProvider)
+    private val terpeneResolver = DefaultTerpeneResolver(llmProvider, config)
+    private val httpClient = HttpClient()
+
     override fun parseMenu(url: String): Flow<ParseStatus> = flow {
+        println("[BudMash] DefaultMenuParser starting for URL: $url")
+
         emit(ParseStatus.Fetching)
 
-        val htmlResult = MenuFetcher.fetchMenuHtml(url)
+        // Fetch HTML
+        val htmlResult = fetchHtml(url)
         if (htmlResult.isFailure) {
             emit(ParseStatus.Error(ParseError.NetworkError(htmlResult.exceptionOrNull()?.message ?: "Unknown error")))
             return@flow
@@ -29,25 +37,29 @@ class DefaultMenuParser(
         emit(ParseStatus.FetchComplete(html.length))
 
         // Extract strains via LLM
-        val extractResult = llmExtractor.extractStrains(html, llmConfig)
-        if (extractResult.isFailure) {
-            emit(ParseStatus.Error(ParseError.LlmError(extractResult.exceptionOrNull()?.message ?: "Unknown error")))
+        val strainsResult = extractor.extractStrains(html, config)
+        if (strainsResult.isFailure) {
+            emit(ParseStatus.Error(ParseError.LlmError(strainsResult.exceptionOrNull()?.message ?: "Extraction failed")))
             return@flow
         }
 
-        val extracted = extractResult.getOrThrow()
-        val flowerStrains = extracted.filter {
-            it.type.lowercase() in listOf("indica", "sativa", "hybrid")
+        val extractedStrains = strainsResult.getOrThrow()
+        emit(ParseStatus.ProductsFound(extractedStrains.size, extractedStrains.size))
+
+        // Convert to StrainData
+        var strains = extractedStrains.map { it.toStrainData() }
+
+        // Resolve terpenes
+        strains = terpeneResolver.resolveAll(strains, config) { current, total ->
+            // Note: We can't emit from inside the callback directly
+            // The progress is logged instead
+            println("[BudMash] Resolving terpenes: $current/$total")
         }
-        emit(ParseStatus.ProductsFound(extracted.size, flowerStrains.size))
 
-        // Resolve terpene data for each strain
-        val strains = mutableListOf<StrainData>()
-        flowerStrains.forEachIndexed { index, strain ->
-            emit(ParseStatus.ResolvingTerpenes(index + 1, flowerStrains.size))
-
-            val strainData = terpeneResolver.resolve(strain)
-            strains.add(strainData)
+        // For UI updates, emit terpene progress
+        strains.forEachIndexed { index, _ ->
+            emit(ParseStatus.ResolvingTerpenes(index + 1, strains.size))
+            delay(50) // Brief delay for UI update
         }
 
         val menu = DispensaryMenu(
@@ -56,7 +68,27 @@ class DefaultMenuParser(
             strains = strains
         )
 
+        println("[BudMash] DefaultMenuParser complete with ${strains.size} strains")
         emit(ParseStatus.Complete(menu))
     }
-}
 
+    private suspend fun fetchHtml(url: String): Result<String> {
+        return try {
+            val response: HttpResponse = httpClient.get(url)
+            Result.success(response.bodyAsText())
+        } catch (e: Exception) {
+            // Retry with exponential backoff
+            var lastException = e
+            for (attempt in 1..3) {
+                delay((1000L * attempt).coerceAtMost(4000))
+                try {
+                    val response: HttpResponse = httpClient.get(url)
+                    return Result.success(response.bodyAsText())
+                } catch (retryError: Exception) {
+                    lastException = retryError
+                }
+            }
+            Result.failure(lastException)
+        }
+    }
+}
