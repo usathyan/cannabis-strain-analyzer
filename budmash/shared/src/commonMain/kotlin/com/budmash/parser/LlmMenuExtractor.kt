@@ -128,22 +128,22 @@ data class StrainList(val strains: List<ExtractedStrain>)
 @Serializable
 data class ExtractedStrain(
     val name: String,
-    val type: String,
-    val thcMin: Double = 0.0,
-    val thcMax: Double = 0.0,
-    val price: Double = 0.0,
+    val type: String? = null,
+    val thcMin: Double? = null,
+    val thcMax: Double? = null,
+    val price: Double? = null,
     val description: String? = null
 ) {
     fun toStrainData(): StrainData = StrainData(
         name = name,
-        type = when (type.uppercase()) {
+        type = when (type?.uppercase()) {
             "INDICA" -> StrainType.INDICA
             "SATIVA" -> StrainType.SATIVA
             else -> StrainType.HYBRID
         },
-        thcMin = thcMin,
-        thcMax = thcMax,
-        price = price,
+        thcMin = thcMin ?: 0.0,
+        thcMax = thcMax ?: 0.0,
+        price = price ?: 0.0,
         description = description ?: ""
     )
 }
