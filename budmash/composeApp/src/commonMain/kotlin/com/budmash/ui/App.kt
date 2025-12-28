@@ -10,6 +10,7 @@ import com.budmash.llm.LlmConfigStorage
 import com.budmash.llm.LlmProviderType
 import com.budmash.parser.DefaultMenuParser
 import com.budmash.parser.ParseStatus
+import com.budmash.analysis.AnalysisEngine
 import com.budmash.profile.ProfileStorage
 import com.budmash.ui.screens.DashboardScreen
 import com.budmash.ui.screens.HomeScreen
@@ -37,6 +38,9 @@ fun App() {
     val profileStorage = remember { ProfileStorage() }
     var likedStrains by remember { mutableStateOf(profileStorage.getLikedStrains()) }
     var dislikedStrains by remember { mutableStateOf(profileStorage.getDislikedStrains()) }
+
+    // Analysis engine for similarity scoring
+    val analysisEngine = remember { AnalysisEngine() }
 
     // LLM configuration storage
     val configStorage = remember { LlmConfigStorage() }
@@ -131,15 +135,28 @@ fun App() {
 
             is Screen.Dashboard -> {
                 println("[BudMash] Rendering Dashboard with ${screen.menu.strains.size} strains")
+
+                // Build ideal profile from liked strains in this menu
+                val likedStrainsInMenu = screen.menu.strains.filter { it.name in likedStrains }
+                val idealProfile = analysisEngine.buildIdealProfile(likedStrainsInMenu)
+                val hasValidProfile = likedStrainsInMenu.isNotEmpty()
+
+                println("[BudMash] Profile built from ${likedStrainsInMenu.size} liked strains")
+
+                // Calculate similarity for each strain, sorted by score
                 val results = screen.menu.strains.map { strain ->
-                    SimilarityResult(
-                        strain = strain,
-                        overallScore = 0.0, // TODO: Calculate with profile
-                        cosineScore = 0.0,
-                        euclideanScore = 0.0,
-                        pearsonScore = 0.0
-                    )
-                }
+                    if (hasValidProfile) {
+                        analysisEngine.calculateMatch(idealProfile, strain)
+                    } else {
+                        SimilarityResult(
+                            strain = strain,
+                            overallScore = 0.0,
+                            cosineScore = 0.0,
+                            euclideanScore = 0.0,
+                            pearsonScore = 0.0
+                        )
+                    }
+                }.sortedByDescending { it.overallScore }
 
                 DashboardScreen(
                     strains = results,
