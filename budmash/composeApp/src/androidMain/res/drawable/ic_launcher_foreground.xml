@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Background circle -->
+    <path
+        android:fillColor="#2E7D32"
+        android:pathData="M54,54m-40,0a40,40 0,1 1,80 0a40,40 0,1 1,-80 0"/>
+
+    <!-- Badmash Leaf Character - Main leaf body -->
+    <path
+        android:fillColor="#4CAF50"
+        android:pathData="M54,28
+                         C54,28 42,38 38,50
+                         C34,62 38,72 54,78
+                         C70,72 74,62 70,50
+                         C66,38 54,28 54,28Z"/>
+
+    <!-- Leaf veins -->
+    <path
+        android:strokeColor="#388E3C"
+        android:strokeWidth="1.5"
+        android:pathData="M54,32 L54,72"/>
+    <path
+        android:strokeColor="#388E3C"
+        android:strokeWidth="1"
+        android:pathData="M54,42 L44,50"/>
+    <path
+        android:strokeColor="#388E3C"
+        android:strokeWidth="1"
+        android:pathData="M54,42 L64,50"/>
+    <path
+        android:strokeColor="#388E3C"
+        android:strokeWidth="1"
+        android:pathData="M54,52 L46,58"/>
+    <path
+        android:strokeColor="#388E3C"
+        android:strokeWidth="1"
+        android:pathData="M54,52 L62,58"/>
+
+    <!-- Mischievous winking left eye (closed) -->
+    <path
+        android:strokeColor="#1B5E20"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"
+        android:pathData="M44,48 Q47,45 50,48"/>
+
+    <!-- Right eye (open, looking sideways) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M58,44 m-5,0 a5,6 0,1 1,10 0 a5,6 0,1 1,-10 0"/>
+    <path
+        android:fillColor="#1B5E20"
+        android:pathData="M60,44 m-2.5,0 a2.5,3 0,1 1,5 0 a2.5,3 0,1 1,-5 0"/>
+
+    <!-- Cheeky smirk -->
+    <path
+        android:strokeColor="#1B5E20"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:pathData="M46,58 Q54,66 66,56"/>
+
+    <!-- Eyebrow raised (mischievous) -->
+    <path
+        android:strokeColor="#1B5E20"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:pathData="M56,38 Q60,35 66,38"/>
+
+    <!-- Little tongue sticking out (badmash!) -->
+    <path
+        android:fillColor="#E57373"
+        android:pathData="M58,62 Q60,66 62,62 L60,60Z"/>
+
+</vector>
