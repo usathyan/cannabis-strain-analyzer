@@ -6,17 +6,20 @@ import com.budmash.data.SimilarityResult
 import com.budmash.data.StrainData
 import com.budmash.llm.KtorLlmProvider
 import com.budmash.llm.LlmConfig
+import com.budmash.llm.LlmConfigStorage
 import com.budmash.llm.LlmProviderType
 import com.budmash.parser.DefaultMenuParser
 import com.budmash.parser.ParseStatus
 import com.budmash.ui.screens.DashboardScreen
 import com.budmash.ui.screens.HomeScreen
 import com.budmash.ui.screens.ScanScreen
+import com.budmash.ui.screens.SettingsScreen
 import com.budmash.ui.theme.BudMashTheme
 import kotlinx.coroutines.flow.collect
 
 sealed class Screen {
     data object Home : Screen()
+    data object Settings : Screen()
     data class Scanning(val url: String) : Screen()
     data class Dashboard(val menu: DispensaryMenu) : Screen()
     data class StrainDetail(val strain: StrainData) : Screen()
@@ -29,16 +32,25 @@ fun App() {
     var parseStatus by remember { mutableStateOf<ParseStatus>(ParseStatus.Fetching) }
     var likedStrains by remember { mutableStateOf<Set<String>>(emptySet()) }
 
-    // LLM-based menu parser
+    // LLM configuration storage
+    val configStorage = remember { LlmConfigStorage() }
+
+    // API key and model state - load from storage
+    var apiKey by remember { mutableStateOf(configStorage.getApiKey() ?: "") }
+    var model by remember { mutableStateOf(configStorage.getModel()) }
+
+    // LLM-based menu parser - recreate when apiKey or model changes
     val llmProvider = remember { KtorLlmProvider() }
-    val config = remember {
-        LlmConfig(
-            provider = LlmProviderType.OPENROUTER,
-            apiKey = "", // TODO: Get from storage or environment
-            model = "anthropic/claude-3-haiku"
-        )
+    val config by remember(apiKey, model) {
+        derivedStateOf {
+            LlmConfig(
+                provider = LlmProviderType.OPENROUTER,
+                apiKey = apiKey,
+                model = model
+            )
+        }
     }
-    val parser = remember { DefaultMenuParser(llmProvider, config) }
+    val parser = remember(config) { DefaultMenuParser(llmProvider, config) }
 
     println("[BudMash] Current screen: $currentScreen")
 
@@ -51,6 +63,33 @@ fun App() {
                         println("[BudMash] Scan clicked with URL: $url")
                         parseStatus = ParseStatus.Fetching // Reset status
                         currentScreen = Screen.Scanning(url)
+                    },
+                    onSettingsClick = {
+                        println("[BudMash] Settings clicked")
+                        currentScreen = Screen.Settings
+                    }
+                )
+            }
+
+            is Screen.Settings -> {
+                println("[BudMash] Rendering SettingsScreen")
+                SettingsScreen(
+                    currentApiKey = apiKey,
+                    currentModel = model,
+                    onSave = { newApiKey, newModel ->
+                        println("[BudMash] Saving settings - API Key: ${newApiKey.take(8)}..., Model: $newModel")
+                        // Update state
+                        apiKey = newApiKey
+                        model = newModel
+                        // Persist to storage
+                        configStorage.setApiKey(newApiKey)
+                        configStorage.setModel(newModel)
+                        // Navigate back
+                        currentScreen = Screen.Home
+                    },
+                    onBack = {
+                        println("[BudMash] Settings cancelled")
+                        currentScreen = Screen.Home
                     }
                 )
             }

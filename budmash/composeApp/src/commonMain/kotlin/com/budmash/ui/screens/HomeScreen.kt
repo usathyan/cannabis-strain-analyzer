@@ -16,86 +16,106 @@ private const val DEFAULT_URL = "https://auntmarysnj.co/order-online/?selected_v
 
 @Composable
 fun HomeScreen(
-    onScanClick: (String) -> Unit
+    onScanClick: (String) -> Unit,
+    onSettingsClick: () -> Unit = {}
 ) {
     println("[BudMash] HomeScreen composable rendering")
     var url by remember { mutableStateOf(DEFAULT_URL) }
     println("[BudMash] HomeScreen URL field initialized: $url")
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
     ) {
-        Text(
-            text = "BudMash",
-            style = MaterialTheme.typography.headlineLarge,
-            fontWeight = FontWeight.Bold,
-            fontSize = 36.sp,
-            color = MaterialTheme.colorScheme.primary
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            text = "Paste a dispensary menu URL to find your matches",
-            style = MaterialTheme.typography.bodyLarge,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onBackground
-        )
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        OutlinedTextField(
-            value = url,
-            onValueChange = { url = it },
-            label = {
-                Text(
-                    "Dispensary Menu URL",
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-            },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
-                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
-                focusedLabelColor = MaterialTheme.colorScheme.primary,
-                unfocusedLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                cursorColor = MaterialTheme.colorScheme.primary
-            )
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = { onScanClick(url) },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = url.isNotBlank(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = Color.White
-            )
+        // Settings icon in top-right corner
+        IconButton(
+            onClick = onSettingsClick,
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(16.dp)
         ) {
             Text(
-                "Scan Menu",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium
+                text = "\u2699",  // Gear unicode symbol
+                fontSize = 24.sp,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
             )
         }
 
-        Spacer(modifier = Modifier.height(48.dp))
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = "BudMash",
+                style = MaterialTheme.typography.headlineLarge,
+                fontWeight = FontWeight.Bold,
+                fontSize = 36.sp,
+                color = MaterialTheme.colorScheme.primary
+            )
 
-        Text(
-            text = "Your profile builds as you mark strains you've tried.",
-            style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
-        )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = "Paste a dispensary menu URL to find your matches",
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            OutlinedTextField(
+                value = url,
+                onValueChange = { url = it },
+                label = {
+                    Text(
+                        "Dispensary Menu URL",
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                    focusedLabelColor = MaterialTheme.colorScheme.primary,
+                    unfocusedLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                    cursorColor = MaterialTheme.colorScheme.primary
+                )
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = { onScanClick(url) },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = url.isNotBlank(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = Color.White
+                )
+            ) {
+                Text(
+                    "Scan Menu",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+
+            Spacer(modifier = Modifier.height(48.dp))
+
+            Text(
+                text = "Your profile builds as you mark strains you've tried.",
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
+            )
+        }
     }
 }

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import com.budmash.llm.LlmConfigStorage
 import com.budmash.ui.App
 
 private const val TAG = "BudMash"
@@ -12,6 +13,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "MainActivity onCreate started")
+
+        // Initialize LlmConfigStorage with Android context
+        LlmConfigStorage.init(this)
+        Log.d(TAG, "LlmConfigStorage initialized")
+
         Log.d(TAG, "Setting up Compose content...")
         setContent {
             Log.d(TAG, "Compose setContent block executing")

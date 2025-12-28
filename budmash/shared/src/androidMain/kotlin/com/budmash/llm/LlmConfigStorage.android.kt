@@ -4,11 +4,18 @@ import android.content.Context
 import android.content.SharedPreferences
 
 actual class LlmConfigStorage {
-    private var prefs: SharedPreferences? = null
+    companion object {
+        private var sharedPrefs: SharedPreferences? = null
 
-    fun init(context: Context) {
-        prefs = context.getSharedPreferences("budmash_llm", Context.MODE_PRIVATE)
+        fun init(context: Context) {
+            if (sharedPrefs == null) {
+                sharedPrefs = context.applicationContext.getSharedPreferences("budmash_llm", Context.MODE_PRIVATE)
+            }
+        }
     }
+
+    private val prefs: SharedPreferences?
+        get() = sharedPrefs
 
     actual fun getApiKey(): String? = prefs?.getString("api_key", null)
 
