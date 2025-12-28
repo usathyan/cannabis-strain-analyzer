@@ -59,6 +59,7 @@ fun App() {
             is Screen.Home -> {
                 println("[BudMash] Rendering HomeScreen")
                 HomeScreen(
+                    hasApiKey = apiKey.isNotBlank(),
                     onScanClick = { url ->
                         println("[BudMash] Scan clicked with URL: $url")
                         parseStatus = ParseStatus.Fetching // Reset status

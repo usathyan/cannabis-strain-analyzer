@@ -16,6 +16,7 @@ private const val DEFAULT_URL = "https://auntmarysnj.co/order-online/?selected_v
 
 @Composable
 fun HomeScreen(
+    hasApiKey: Boolean = false,
     onScanClick: (String) -> Unit,
     onSettingsClick: () -> Unit = {}
 ) {
@@ -66,7 +67,40 @@ fun HomeScreen(
                 color = MaterialTheme.colorScheme.onBackground
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // API Key warning
+            if (!hasApiKey) {
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    color = MaterialTheme.colorScheme.errorContainer,
+                    shape = MaterialTheme.shapes.small
+                ) {
+                    Row(
+                        modifier = Modifier.padding(12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "API key not set. ",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onErrorContainer
+                        )
+                        TextButton(
+                            onClick = onSettingsClick,
+                            contentPadding = PaddingValues(0.dp)
+                        ) {
+                            Text(
+                                text = "Configure in Settings",
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
                 value = url,
