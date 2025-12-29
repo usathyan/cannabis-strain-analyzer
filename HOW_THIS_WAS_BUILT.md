@@ -186,6 +186,11 @@ The MVP is a foundation. The road ahead includes:
 - ~~**LLM Integration**: Connect menu parsing to actual AI extraction~~ ✅ Done
 - ~~**Terpene Resolution**: Link to Cannlytics API and local database~~ ✅ Done
 - **iOS Build**: Compile and test on iPhone/iPad
+  - Create Xcode project in `iosApp/`
+  - Add SwiftUI wrapper to host Compose Multiplatform UI
+  - Configure Info.plist and app entitlements
+  - Link ComposeApp.framework
+  - Test on iOS Simulator (no paid dev account needed)
 - ~~**Strain Detail Screen**: Deep dive into individual strains~~ ✅ Done
 - **Comparison Mode**: Side-by-side analysis
 - **Scan History**: Remember previous dispensary scans
