@@ -1,21 +1,93 @@
-MIT License
+BudMash Source Available License
+Version 1.0, December 2025
 
-Copyright (c) 2025 Cannabis Strain Recommendation System
+Copyright (c) 2025 BudMash Contributors
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+================================================================================
+                              TERMS AND CONDITIONS
+================================================================================
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+1. DEFINITIONS
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+   "Software" means the BudMash application, including all source code,
+   documentation, and associated files in this repository.
+
+   "Personal Use" means use by an individual for private, non-commercial
+   purposes, including personal strain analysis and dispensary menu scanning
+   for individual consumption decisions.
+
+   "Commercial Use" means any use intended for or directed toward commercial
+   advantage or monetary compensation. This includes, but is not limited to:
+   - Using the Software to provide services to third parties for compensation
+   - Incorporating the Software into a commercial product or service
+   - Using the Software within a business, organization, or commercial entity
+   - Distributing the Software as part of a paid offering
+   - White-labeling, rebranding, or reselling the Software
+   - Operating the Software as a hosted service for others
+
+2. GRANT OF RIGHTS FOR PERSONAL USE
+
+   Permission is hereby granted, free of charge, to any individual to use,
+   copy, modify, and run the Software for Personal Use only, subject to the
+   following conditions:
+
+   a) This license notice shall be included in all copies or substantial
+      portions of the Software.
+
+   b) You may not remove or alter any copyright notices, license terms, or
+      attribution contained in the Software.
+
+   c) Any modifications you make for Personal Use remain subject to this
+      license.
+
+3. COMMERCIAL USE REQUIRES A LICENSE
+
+   Commercial Use of this Software requires a separate commercial license
+   agreement. Use of this Software for any Commercial Use without a valid
+   commercial license is strictly prohibited.
+
+   For commercial licensing inquiries, please open an issue in this repository
+   or contact the maintainers.
+
+4. REDISTRIBUTION
+
+   You may redistribute the Software for non-commercial purposes only,
+   provided that:
+
+   a) This complete license is included with all distributions
+   b) You do not charge fees for the Software itself
+   c) You clearly indicate any modifications made
+   d) You do not misrepresent the origin of the Software
+
+5. CONTRIBUTIONS
+
+   By submitting contributions (code, documentation, or other materials) to
+   this project, you agree to license your contributions under the same terms
+   as this license and grant the project maintainers the right to include your
+   contributions in commercially licensed versions.
+
+6. NO WARRANTY
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+
+   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+   DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+   OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+   USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+7. TERMINATION
+
+   This license automatically terminates if you violate any of its terms.
+   Upon termination, you must cease all use of the Software and destroy all
+   copies in your possession.
+
+================================================================================
+                                    SUMMARY
+================================================================================
+
+   Personal Use:     FREE - Use it, modify it, enjoy it
+   Commercial Use:    REQUIRES LICENSE - Contact us for terms
+
+================================================================================

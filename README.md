@@ -10,6 +10,7 @@
 [![Release](https://img.shields.io/github/v/release/usathyan/cannabis-strain-analyzer?include_prereleases)](https://github.com/usathyan/cannabis-strain-analyzer/releases)
 [![Platform](https://img.shields.io/badge/platform-Android-green)](#)
 [![AI Powered](https://img.shields.io/badge/AI%20Powered-OpenRouter-purple)](https://openrouter.ai)
+[![License](https://img.shields.io/badge/license-Source%20Available-blue)](LICENSE)
 
 ---
 
@@ -292,6 +293,21 @@ Screenshot any dispensary menu. See every strain scored against your profile.
 - API keys stored in **device secure storage**
 - Menu images sent to AI for processing, then discarded
 - **No accounts, no tracking, no ads**
+
+---
+
+## License
+
+BudMash is **Source Available** software.
+
+| Use Case | License |
+|----------|---------|
+| **Personal Use** | **Free** — Use, modify, and enjoy |
+| **Commercial Use** | **Requires License** — [Contact us](../../issues) |
+
+This means individuals can freely use BudMash for personal strain analysis. Businesses, organizations, or anyone seeking commercial advantage must obtain a commercial license.
+
+See [LICENSE](LICENSE) for full terms.
 
 ---
 
