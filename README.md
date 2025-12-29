@@ -335,7 +335,9 @@ Then it clicked: **BudMash**.
 
 It's short. It's memorable. And it captures exactly what the app does: *mash* your terpene preferences against dispensary menus to find your perfect *bud*.
 
-Plus, there's something satisfying about saying it. **BudMash.** Try it.
+Oh, and there's a hidden meaning: In Hindi, **बदमाश** (*badmash*) means "mischievous" or "troublemaker"—someone playfully rebellious. We liked that energy.
+
+**BudMash.** Science with a little swagger.
 
 ---
 
