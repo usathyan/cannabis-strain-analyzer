@@ -324,6 +324,21 @@ See [LICENSE](LICENSE) for full terms.
 
 ---
 
+## Why "BudMash"?
+
+The name started as a brainstorm. *"Terpene Profile Analyzer"* was accurate but clinical. *"Dispensary Scout"* felt generic.
+
+Then it clicked: **BudMash**.
+
+- **Bud** — the flower you're analyzing
+- **Mash** — mashing data together, combining profiles, finding matches
+
+It's short. It's memorable. And it captures exactly what the app does: *mash* your terpene preferences against dispensary menus to find your perfect *bud*.
+
+Plus, there's something satisfying about saying it. **BudMash.** Try it.
+
+---
+
 ## Links
 
 - [OpenRouter](https://openrouter.ai) — AI API provider
