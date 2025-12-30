@@ -27,33 +27,39 @@ class MainActivity : ComponentActivity(), ImageCaptureLauncher {
     private var galleryCallback: ((ImageCaptureResult) -> Unit)? = null
     private var photoUri: Uri? = null
 
-    private val takePictureLauncher = registerForActivityResult(
-        ActivityResultContracts.TakePicture()
-    ) { success ->
-        val callback = cameraCallback
-        cameraCallback = null
-
-        if (success && photoUri != null) {
-            processImage(photoUri!!, callback)
-        } else {
-            callback?.invoke(ImageCaptureResult.Cancelled)
-        }
-    }
-
-    private val pickImageLauncher = registerForActivityResult(
-        ActivityResultContracts.GetContent()
-    ) { uri ->
-        val callback = galleryCallback
-        galleryCallback = null
-
-        if (uri != null) {
-            processImage(uri, callback)
-        } else {
-            callback?.invoke(ImageCaptureResult.Cancelled)
-        }
-    }
+    // Launchers must be registered before STARTED state
+    private lateinit var takePictureLauncher: androidx.activity.result.ActivityResultLauncher<Uri>
+    private lateinit var pickImageLauncher: androidx.activity.result.ActivityResultLauncher<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Register activity result launchers BEFORE super.onCreate()
+        // This ensures they're registered before the activity reaches STARTED state
+        takePictureLauncher = registerForActivityResult(
+            ActivityResultContracts.TakePicture()
+        ) { success ->
+            val callback = cameraCallback
+            cameraCallback = null
+
+            if (success && photoUri != null) {
+                processImage(photoUri!!, callback)
+            } else {
+                callback?.invoke(ImageCaptureResult.Cancelled)
+            }
+        }
+
+        pickImageLauncher = registerForActivityResult(
+            ActivityResultContracts.GetContent()
+        ) { uri ->
+            val callback = galleryCallback
+            galleryCallback = null
+
+            if (uri != null) {
+                processImage(uri, callback)
+            } else {
+                callback?.invoke(ImageCaptureResult.Cancelled)
+            }
+        }
+
         super.onCreate(savedInstanceState)
         Log.d(TAG, "MainActivity onCreate started")
 
@@ -91,8 +97,16 @@ class MainActivity : ComponentActivity(), ImageCaptureLauncher {
                 return
             }
 
-            // Scale down if too large (max 1920px on longest side)
-            val scaledBitmap = scaleBitmap(bitmap, 1920)
+            // For tall scroll screenshots (height > 2x width), preserve full height for chunking
+            // Only scale width to max 2000px to keep file size reasonable
+            // For regular images, scale longest side to 1920px
+            val scaledBitmap = if (bitmap.height > bitmap.width * 2) {
+                // Tall image - preserve height for proper chunking, just limit width
+                scaleBitmapByWidth(bitmap, 2000)
+            } else {
+                // Regular image - scale by longest side
+                scaleBitmap(bitmap, 1920)
+            }
 
             // Convert to base64 JPEG
             val outputStream = ByteArrayOutputStream()
@@ -119,6 +133,19 @@ class MainActivity : ComponentActivity(), ImageCaptureLauncher {
 
         val ratio = minOf(maxSize.toFloat() / width, maxSize.toFloat() / height)
         val newWidth = (width * ratio).toInt()
+        val newHeight = (height * ratio).toInt()
+
+        return Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true)
+    }
+
+    private fun scaleBitmapByWidth(bitmap: Bitmap, maxWidth: Int): Bitmap {
+        val width = bitmap.width
+        val height = bitmap.height
+
+        if (width <= maxWidth) return bitmap
+
+        val ratio = maxWidth.toFloat() / width
+        val newWidth = maxWidth
         val newHeight = (height * ratio).toInt()
 
         return Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true)
