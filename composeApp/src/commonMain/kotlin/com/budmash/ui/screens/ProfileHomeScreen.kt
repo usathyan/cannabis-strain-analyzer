@@ -215,7 +215,7 @@ private fun TerpeneBar(name: String, value: Double, maxValue: Double) {
             )
         }
         Text(
-            text = String.format("%.2f", value),
+            text = formatDecimal(value, 2),
             modifier = Modifier.width(40.dp),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -351,4 +351,11 @@ private fun QuickAddSection(
             }
         }
     }
+}
+
+private fun formatDecimal(value: Double, decimals: Int): String {
+    var multiplier = 1.0
+    repeat(decimals) { multiplier *= 10 }
+    val rounded = kotlin.math.round(value * multiplier) / multiplier
+    return rounded.toString()
 }

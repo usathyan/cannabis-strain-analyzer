@@ -41,6 +41,9 @@ kotlin {
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.androidx.activity.compose)
         }
+
+        iosMain.dependencies {
+        }
     }
 }
 

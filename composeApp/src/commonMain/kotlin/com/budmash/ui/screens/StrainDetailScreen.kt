@@ -574,7 +574,7 @@ private fun TerpeneBar(name: String, value: Double, maxValue: Double) {
 
         // Value
         Text(
-            text = String.format("%.2f", value),
+            text = formatDecimal(value, 2),
             modifier = Modifier.width(40.dp),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -636,9 +636,14 @@ private fun LikeDislikeRow(
 }
 
 private fun formatPercent(value: Double): String {
-    return if (value >= 1) {
-        String.format("%.1f%%", value)
-    } else {
-        String.format("%.1f%%", value * 100)
-    }
+    val percentage = if (value >= 1) value else value * 100
+    val rounded = kotlin.math.round(percentage * 10) / 10
+    return "${rounded}%"
+}
+
+private fun formatDecimal(value: Double, decimals: Int): String {
+    var multiplier = 1.0
+    repeat(decimals) { multiplier *= 10 }
+    val rounded = kotlin.math.round(value * multiplier) / multiplier
+    return rounded.toString()
 }
