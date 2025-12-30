@@ -82,10 +82,10 @@ class VisionMenuExtractor(
         visionModel: String
     ): Result<List<StrainData>> {
         // Use configured vision model (via OpenRouter)
-        // Increase maxTokens to ensure complete JSON response
+        // Increase maxTokens to ensure complete JSON response for large menus (100+ products)
         val visionConfig = config.copy(
             model = visionModel,
-            maxTokens = 8192
+            maxTokens = 16384
         )
 
         val messages = listOf(
@@ -278,19 +278,24 @@ If a type is unclear, use HYBRID. Return [] if no strains found.
 
     companion object {
         private val EXTRACTION_PROMPT = """
-Look at this dispensary menu screenshot and extract ALL cannabis flower products visible.
+Extract EVERY cannabis flower product from this dispensary menu screenshot.
+
+CRITICAL: This menu may contain 50-100+ products. You MUST extract ALL of them.
+Do NOT stop early. Do NOT skip products. Scroll through the ENTIRE image carefully.
 
 For each flower product, provide:
 - name: exact product/strain name as shown (required)
-- type: INDICA, SATIVA, or HYBRID (infer from name if not shown)
+- type: INDICA, SATIVA, or HYBRID (infer from name/color coding if not explicitly shown)
 - thcPercent: THC percentage if visible (number only like 25.5, or null)
 - price: price if visible (number only like 45.00, or null)
 
 IMPORTANT RULES:
-1. Only extract FLOWER products (not edibles, vapes, concentrates, etc.)
+1. Only extract FLOWER products (not edibles, vapes, concentrates, pre-rolls, etc.)
 2. Use the EXACT name shown on screen - do not guess or invent names
-3. If you cannot clearly read a product name, skip it
-4. Extract ALL visible flower products, not just a few
+3. If a product name is partially visible, include what you can read
+4. Count the products as you go to ensure completeness
+5. Look for all columns if the menu has multiple columns
+6. Check top-to-bottom AND left-to-right of the entire image
 
 Return ONLY valid JSON (no other text):
 {"strains": [{"name": "Blue Dream", "type": "HYBRID", "thcPercent": 24.5, "price": 45.00}]}

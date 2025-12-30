@@ -1,6 +1,10 @@
 package com.budmash.ui
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -215,19 +219,19 @@ fun App() {
                 bottomBar = {
                     NavigationBar {
                         NavigationBarItem(
-                            icon = { Text("H") },
+                            icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
                             label = { Text("Home") },
                             selected = currentTab == BottomTab.HOME,
                             onClick = { currentTab = BottomTab.HOME }
                         )
                         NavigationBarItem(
-                            icon = { Text("S") },
+                            icon = { Icon(Icons.Default.Search, contentDescription = "Search") },
                             label = { Text("Search") },
                             selected = currentTab == BottomTab.SEARCH,
                             onClick = { currentTab = BottomTab.SEARCH }
                         )
                         NavigationBarItem(
-                            icon = { Text("G") },
+                            icon = { Icon(Icons.Default.Settings, contentDescription = "Settings") },
                             label = { Text("Settings") },
                             selected = currentTab == BottomTab.SETTINGS,
                             onClick = { currentTab = BottomTab.SETTINGS }
