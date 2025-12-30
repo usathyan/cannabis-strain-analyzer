@@ -8,7 +8,7 @@
 
 [![Build](https://github.com/usathyan/cannabis-strain-analyzer/actions/workflows/ci.yml/badge.svg)](https://github.com/usathyan/cannabis-strain-analyzer/actions)
 [![Release](https://img.shields.io/github/v/release/usathyan/cannabis-strain-analyzer?include_prereleases)](https://github.com/usathyan/cannabis-strain-analyzer/releases)
-[![Platform](https://img.shields.io/badge/platform-Android-green)](#)
+[![Platform](https://img.shields.io/badge/platform-Android%20%7C%20iOS-green)](#)
 [![AI Powered](https://img.shields.io/badge/AI%20Powered-OpenRouter-purple)](https://openrouter.ai)
 [![License](https://img.shields.io/badge/license-Source%20Available-blue)](LICENSE)
 
@@ -318,9 +318,18 @@ See [LICENSE](LICENSE) for full terms.
 | Platform | Download | Status |
 |----------|----------|--------|
 | **Android** | [**Download APK**](https://github.com/usathyan/cannabis-strain-analyzer/releases/latest) | Available |
-| iOS | Coming Soon | In Development |
+| **iOS** | Build from source (Xcode) | Available |
 
 </div>
+
+### Building for iOS
+
+1. Clone the repository
+2. Open `iosApp/iosApp.xcodeproj` in Xcode 15+
+3. Select your device or simulator
+4. Build and run (⌘R)
+
+The iOS app uses the same codebase as Android via Kotlin Multiplatform.
 
 ---
 

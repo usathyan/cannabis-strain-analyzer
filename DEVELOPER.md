@@ -309,4 +309,4 @@ OpenRouter API key is stored in platform secure storage:
 
 ## License
 
-[Add your license here]
+See [LICENSE](LICENSE) for full terms. Personal use is free; commercial use requires a license.
