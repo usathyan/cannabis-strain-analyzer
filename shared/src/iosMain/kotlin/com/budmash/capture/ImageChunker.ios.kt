@@ -71,10 +71,12 @@ actual class ImageChunker actual constructor() {
             println("[BudMash] Creating chunk $chunkIndex: y=$chunkTop to $chunkBottom (height=$chunkHeight)")
 
             // Create chunk by cropping
-            // Note: CGImage y-axis is flipped compared to UIKit
+            // CGImage origin is bottom-left, so we need to flip the Y coordinate
+            // chunkTop from UIKit coords -> (height - chunkBottom) in CGImage coords
+            val cgY = (height - chunkBottom).toDouble()
             val cropRect = CGRectMake(
                 0.0,
-                (height - chunkBottom).toDouble(),
+                cgY,
                 width.toDouble(),
                 chunkHeight.toDouble()
             )

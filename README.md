@@ -287,6 +287,44 @@ Screenshot any dispensary menu. See every strain scored against your profile.
 
 ---
 
+## Why Results May Vary Between Devices
+
+If you scan the same menu on both iOS and Android, you may notice slightly different results—different strain counts or different top matches. **This is expected behavior**, not a bug.
+
+### Why This Happens
+
+1. **AI Vision is Non-Deterministic**
+
+   BudMash uses Gemini's vision AI to read strain names from your screenshot. Like all AI models, it doesn't produce identical results every time. The same image sent twice might extract "Blue Dream | 3.5g" one time and "Blue Dream 3.5g" another.
+
+2. **Image Processing Differences**
+
+   Each platform processes images slightly differently before sending to the AI:
+   - Different JPEG compression algorithms
+   - Slight variations in color handling
+   - Platform-specific image scaling
+
+   These subtle differences can affect OCR accuracy.
+
+3. **Chunk Boundary Effects**
+
+   Tall screenshots (like scrolling menu captures) are split into chunks for better text recognition. A strain that falls at a chunk boundary might be captured differently on each platform.
+
+### What This Means For You
+
+- **Both results are valid** — Each platform extracts real strains from your menu
+- **Match percentages are consistent** — The same strain will score the same on both platforms
+- **Total counts are similar** — You'll typically see within 1-2 strains of each other
+- **Your recommendations are reliable** — High-match strains will appear on both platforms
+
+<div align="center">
+
+*The AI sees the same menu but reads it slightly differently each time—like two people looking at the same handwriting.*
+
+</div>
+
+---
+
 ## Privacy
 
 - Terpene profile stored **locally on your device**
