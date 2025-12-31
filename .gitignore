@@ -60,3 +60,7 @@ user_profiles.json
 custom_strains.json
 *.tmp
 *.temp
+
+# Keystore credentials (DO NOT COMMIT)
+keystore.properties
+*.jks

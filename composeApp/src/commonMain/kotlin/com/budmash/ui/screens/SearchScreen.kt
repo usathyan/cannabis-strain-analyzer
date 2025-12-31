@@ -21,6 +21,9 @@ import com.budmash.data.SimilarityResult
 import com.budmash.data.StrainData
 import com.budmash.data.StrainType
 import com.budmash.database.StrainDatabase
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.ImeAction
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,11 +35,13 @@ fun SearchScreen(
     likedStrains: Set<String>,
     dislikedStrains: Set<String>,
     lastScannedMenu: DispensaryMenu?,
+    isAnalyzing: Boolean = false,
     onPhotoCapture: (String) -> Unit,
     onViewLastScan: () -> Unit,
     onStrainClick: (StrainData, SimilarityResult?) -> Unit,
     onLikeClick: (StrainData) -> Unit,
-    onDislikeClick: (StrainData) -> Unit
+    onDislikeClick: (StrainData) -> Unit,
+    onAnalyzeStrain: (String) -> Unit = {}
 ) {
     var searchQuery by remember { mutableStateOf("") }
     var isCapturing by remember { mutableStateOf(false) }
@@ -140,8 +145,16 @@ fun SearchScreen(
                     value = searchQuery,
                     onValueChange = { searchQuery = it },
                     modifier = Modifier.fillMaxWidth(),
-                    placeholder = { Text("Search strains by name, effect, flavor...") },
-                    singleLine = true
+                    placeholder = { Text("Search strains by name...") },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                    keyboardActions = KeyboardActions(
+                        onSearch = {
+                            if (searchQuery.isNotBlank() && hasApiKey) {
+                                onAnalyzeStrain(searchQuery.trim())
+                            }
+                        }
+                    )
                 )
             }
 
@@ -163,11 +176,59 @@ fun SearchScreen(
                 }
             }
 
+            // Analyze button for strains not in database
+            if (searchQuery.isNotBlank() && hasApiKey) {
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(
+                                text = "Can't find your strain?",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.Medium
+                            )
+                            Text(
+                                text = "Use AI to analyze \"${searchQuery.trim()}\" and get terpene data",
+                                style = MaterialTheme.typography.bodySmall,
+                                textAlign = TextAlign.Center,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                            Button(
+                                onClick = { onAnalyzeStrain(searchQuery.trim()) },
+                                enabled = !isAnalyzing
+                            ) {
+                                if (isAnalyzing) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(16.dp),
+                                        strokeWidth = 2.dp,
+                                        color = MaterialTheme.colorScheme.onPrimary
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text("Analyzing...")
+                                } else {
+                                    Text("Analyze with AI")
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             // Search results
             if (searchQuery.isNotBlank()) {
                 item {
                     Text(
-                        text = "${searchResults.size} results",
+                        text = "${searchResults.size} results in database",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

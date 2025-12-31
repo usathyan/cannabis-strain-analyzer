@@ -7,7 +7,7 @@ sealed class ImageCaptureResult {
     data object Cancelled : ImageCaptureResult()
 }
 
-expect class ImageCapture {
+expect class ImageCapture() {
     fun captureFromCamera(onResult: (ImageCaptureResult) -> Unit)
     fun pickFromGallery(onResult: (ImageCaptureResult) -> Unit)
 }

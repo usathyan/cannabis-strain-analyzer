@@ -16,13 +16,17 @@ import com.budmash.llm.LlmConfig
 import com.budmash.llm.LlmConfigStorage
 import com.budmash.llm.LlmProviderType
 import com.budmash.parser.DefaultMenuParser
+import com.budmash.parser.DefaultTerpeneResolver
+import com.budmash.parser.ExtractedStrain
 import com.budmash.parser.ParseStatus
+import kotlinx.coroutines.launch
 import com.budmash.analysis.AnalysisEngine
 import com.budmash.database.StrainDatabase
 import com.budmash.profile.ProfileStorage
 import com.budmash.ui.screens.*
 import com.budmash.ui.theme.BudMashTheme
 import kotlinx.coroutines.flow.collect
+import androidx.compose.runtime.rememberCoroutineScope
 
 // Bottom navigation tabs
 enum class BottomTab {
@@ -93,6 +97,13 @@ fun App() {
         }
     }
     val parser = remember(config, visionModel) { DefaultMenuParser(llmProvider, config, visionModel) }
+
+    // Terpene resolver for analyzing strains by name
+    val terpeneResolver = remember(llmProvider, config) { DefaultTerpeneResolver(llmProvider, config) }
+
+    // State for strain analysis
+    var isAnalyzingStrain by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
 
     // Helper to add/remove strains from profile
     fun toggleLike(strainName: String) {
@@ -266,6 +277,7 @@ fun App() {
                                 likedStrains = likedStrains,
                                 dislikedStrains = dislikedStrains,
                                 lastScannedMenu = lastScannedMenu,
+                                isAnalyzing = isAnalyzingStrain,
                                 onPhotoCapture = { imageBase64 ->
                                     parseStatus = ParseStatus.Fetching
                                     subScreen = SubScreen.Scanning(imageBase64)
@@ -279,7 +291,30 @@ fun App() {
                                     subScreen = SubScreen.StrainDetail(strain, similarity)
                                 },
                                 onLikeClick = { strain -> toggleLike(strain.name) },
-                                onDislikeClick = { strain -> toggleDislike(strain.name) }
+                                onDislikeClick = { strain -> toggleDislike(strain.name) },
+                                onAnalyzeStrain = { strainName ->
+                                    coroutineScope.launch {
+                                        isAnalyzingStrain = true
+                                        try {
+                                            // Create an extracted strain from just the name
+                                            val extracted = ExtractedStrain(name = strainName)
+                                            // Resolve terpene profile using AI
+                                            val resolvedStrain = terpeneResolver.resolve(extracted)
+                                            // Calculate similarity if user has a profile
+                                            val similarity = if (hasProfile) {
+                                                analysisEngine.calculateMatch(idealProfile, resolvedStrain)
+                                            } else {
+                                                null
+                                            }
+                                            // Navigate to strain detail
+                                            subScreen = SubScreen.StrainDetail(resolvedStrain, similarity)
+                                        } catch (e: Exception) {
+                                            println("[BudMash] Strain analysis failed: ${e.message}")
+                                        } finally {
+                                            isAnalyzingStrain = false
+                                        }
+                                    }
+                                }
                             )
                         }
 
