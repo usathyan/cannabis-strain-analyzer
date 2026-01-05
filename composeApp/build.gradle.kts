@@ -58,14 +58,17 @@ kotlin {
 
 android {
     namespace = "com.budmash.app"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.budmash.app"
         minSdk = 26
-        targetSdk = 34
-        versionCode = 1
-        versionName = "1.0.0"
+        targetSdk = 35
+        versionCode = 3
+        versionName = "1.3.0"
+        ndk {
+            debugSymbolLevel = "FULL"
+        }
     }
 
     signingConfigs {
