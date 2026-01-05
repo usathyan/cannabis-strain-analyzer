@@ -16,16 +16,20 @@
 
 <table>
 <tr>
-<td><img src="screenshots/01-my-profile.png" width="180" alt="Profile"></td>
-<td><img src="screenshots/02-search.png" width="180" alt="Search"></td>
-<td><img src="screenshots/04-strain-detail-top.png" width="180" alt="Match"></td>
-<td><img src="screenshots/05-strain-detail-terpenes.png" width="180" alt="Details"></td>
+<th colspan="2">Android</th>
+<th colspan="2">iOS</th>
 </tr>
 <tr>
-<td align="center"><b>Your Profile</b></td>
-<td align="center"><b>Scan Menu</b></td>
-<td align="center"><b>Similarity Breakdown</b></td>
-<td align="center"><b>Terpene Analysis</b></td>
+<td><img src="screenshots/01-my-profile.png" width="160" alt="Android Profile"></td>
+<td><img src="screenshots/05-strain-detail-terpenes.png" width="160" alt="Android Terpenes"></td>
+<td><img src="ios-screenshots/02-profile-with-terpenes.png" width="160" alt="iOS Profile"></td>
+<td><img src="ios-screenshots/06-strain-detail-terpenes.png" width="160" alt="iOS Terpenes"></td>
+</tr>
+<tr>
+<td align="center"><em>Your Profile</em></td>
+<td align="center"><em>Terpene Chart</em></td>
+<td align="center"><em>Your Profile</em></td>
+<td align="center"><em>Terpene Chart</em></td>
 </tr>
 </table>
 
@@ -97,13 +101,15 @@ Every strain is scored against your profile. A 93% match means the chemistry ali
 <div align="center">
 <table>
 <tr>
-<td><img src="screenshots/03-scan-results.png" width="250" alt="Results"></td>
-<td width="40"></td>
-<td><img src="screenshots/04-strain-detail-top.png" width="250" alt="Details"></td>
+<th>Android</th>
+<th>iOS</th>
+</tr>
+<tr>
+<td><img src="screenshots/03-scan-results.png" width="220" alt="Android Results"></td>
+<td><img src="ios-screenshots/05-strain-detail-match.png" width="220" alt="iOS Results"></td>
 </tr>
 <tr>
 <td align="center"><em>Strains ranked by match %</em></td>
-<td></td>
 <td align="center"><em>Detailed similarity breakdown</em></td>
 </tr>
 </table>
@@ -145,7 +151,16 @@ BudMash uses [**OpenRouter**](https://openrouter.ai)—a unified API gateway tha
 5. Paste it in BudMash **Settings**
 
 <div align="center">
-<img src="screenshots/06-settings.png" width="250" alt="Settings">
+<table>
+<tr>
+<td><img src="screenshots/06-settings.png" width="200" alt="Android Settings"></td>
+<td><img src="ios-screenshots/07-settings.png" width="200" alt="iOS Settings"></td>
+</tr>
+<tr>
+<td align="center"><em>Android</em></td>
+<td align="center"><em>iOS</em></td>
+</tr>
+</table>
 </div>
 
 ### What It Costs
@@ -247,7 +262,7 @@ Create a free [OpenRouter](https://openrouter.ai) account, add $5 credit, and co
 
 Open BudMash, go to **Settings**, paste your API key, and save.
 
-<img src="screenshots/06-settings.png" width="200" alt="Settings">
+<img src="screenshots/06-settings.png" width="180" alt="Android Settings"> <img src="ios-screenshots/07-settings.png" width="180" alt="iOS Settings">
 
 </td>
 </tr>
@@ -261,7 +276,7 @@ Open BudMash, go to **Settings**, paste your API key, and save.
 
 Like 3-5 strains you know you enjoy. Your terpene profile builds automatically.
 
-<img src="screenshots/01-my-profile.png" width="200" alt="Profile">
+<img src="screenshots/01-my-profile.png" width="180" alt="Android Profile"> <img src="ios-screenshots/02-profile-with-terpenes.png" width="180" alt="iOS Profile">
 
 </td>
 <td width="50%" valign="top">
@@ -270,7 +285,7 @@ Like 3-5 strains you know you enjoy. Your terpene profile builds automatically.
 
 Screenshot any dispensary menu. See every strain scored against your profile.
 
-<img src="screenshots/05-strain-detail-terpenes.png" width="200" alt="Detail">
+<img src="screenshots/05-strain-detail-terpenes.png" width="180" alt="Android Detail"> <img src="ios-screenshots/06-strain-detail-terpenes.png" width="180" alt="iOS Detail">
 
 </td>
 </tr>
