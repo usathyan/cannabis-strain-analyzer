@@ -355,19 +355,24 @@ See [LICENSE](LICENSE) for full terms.
 
 | Platform | Download | Status |
 |----------|----------|--------|
-| **Android** | [**Download APK**](https://github.com/usathyan/cannabis-strain-analyzer/releases/latest) | Available |
-| **iOS** | Build from source (Xcode) | Available |
+| **Android** | [**Google Play Store**](https://play.google.com/store/apps/details?id=com.budmash.app) / [**APK**](https://github.com/usathyan/cannabis-strain-analyzer/releases/latest) | Available |
+| **iOS** | [**TestFlight**](https://testflight.apple.com/join/YOUR_CODE) | Beta |
 
 </div>
 
-### Building for iOS
+### Building from Source
 
-1. Clone the repository
-2. Open `iosApp/iosApp.xcodeproj` in Xcode 15+
-3. Select your device or simulator
-4. Build and run (⌘R)
+**Android:**
+```bash
+./gradlew assembleRelease
+```
 
-The iOS app uses the same codebase as Android via Kotlin Multiplatform.
+**iOS:**
+1. Open `iosApp/iosApp.xcodeproj` in Xcode 15+
+2. Select your device or simulator
+3. Build and run (Cmd+R)
+
+Both platforms share the same codebase via Kotlin Multiplatform.
 
 ---
 

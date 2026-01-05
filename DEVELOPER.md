@@ -230,8 +230,28 @@ sealed class SubScreen {
 ### iOS
 
 ```bash
-./gradlew :composeApp:iosSimulatorArm64Debug
-# Or open iosApp/iosApp.xcworkspace in Xcode
+./gradlew :composeApp:linkDebugFrameworkIosSimulatorArm64
+# Or open iosApp/iosApp.xcodeproj in Xcode
+```
+
+### Release Builds
+
+**Android (AAB for Play Store):**
+```bash
+./gradlew :composeApp:bundleRelease
+# Output: composeApp/build/outputs/bundle/release/composeApp-release.aab
+```
+
+**Android (APK for direct install):**
+```bash
+./gradlew :composeApp:assembleRelease
+# Output: composeApp/build/outputs/apk/release/composeApp-release.apk
+```
+
+**iOS (Archive for TestFlight):**
+```bash
+./gradlew :composeApp:linkReleaseFrameworkIosArm64
+# Then in Xcode: Product → Archive → Distribute App
 ```
 
 ### Environment Setup
