@@ -7,7 +7,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -21,6 +24,7 @@ fun SettingsScreen(
     var apiKey by remember { mutableStateOf(currentApiKey) }
     var model by remember { mutableStateOf(currentModel) }
     var visionModel by remember { mutableStateOf(currentVisionModel) }
+    var showApiKey by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -43,8 +47,14 @@ fun SettingsScreen(
             onValueChange = { apiKey = it },
             label = { Text("OpenRouter API Key") },
             modifier = Modifier.fillMaxWidth(),
-            visualTransformation = PasswordVisualTransformation(),
-            singleLine = true,
+            visualTransformation = if (showApiKey) VisualTransformation.None else PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+            maxLines = 1,
+            trailingIcon = {
+                TextButton(onClick = { showApiKey = !showApiKey }) {
+                    Text(if (showApiKey) "Hide" else "Show", style = MaterialTheme.typography.bodySmall)
+                }
+            },
             colors = OutlinedTextFieldDefaults.colors(
                 focusedTextColor = MaterialTheme.colorScheme.onSurface,
                 unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
