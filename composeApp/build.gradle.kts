@@ -31,6 +31,8 @@ kotlin {
         target.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
+            // Match the iOS app deployment target
+            freeCompilerArgs += listOf("-Xoverride-konan-properties=osVersionMin.ios_arm64=15.0;osVersionMin.ios_x64=15.0;osVersionMin.ios_simulator_arm64=15.0")
         }
     }
 
